@@ -235,6 +235,10 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 .db{flex:1;padding:.38rem;border:1px solid var(--border);background:transparent;color:var(--text-d);border-radius:5px;cursor:pointer;font-family:'Cinzel',serif;font-size:.7rem;transition:all .2s}
 .db.sel{border-color:var(--gold);background:var(--glow);color:var(--gold)}
 .db:hover{border-color:var(--gold)}
+.lang-switch{display:inline-flex;align-items:center;gap:.2rem;margin:.65rem auto .35rem;padding:.2rem;border:1px solid var(--border);border-radius:999px;background:rgba(7,9,15,.58);box-shadow:var(--shadow-gold)}
+.lang-btn{border:0;background:transparent;color:var(--text-dd);font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.08em;border-radius:999px;padding:.28rem .58rem;cursor:pointer;transition:all .18s}
+.lang-btn.sel{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:#140f03;box-shadow:0 0 16px rgba(232,197,71,.18)}
+.lang-btn:hover{color:var(--gold-l)}
 
 /* ENTITY CHIPS */
 .eg{display:grid;grid-template-columns:repeat(3,1fr);gap:.38rem;margin:.55rem 0}
@@ -309,9 +313,23 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 .lbr{display:flex;align-items:center;padding:.42rem .65rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem;transition:background .2s}
 .lbr:hover{background:var(--glow)}
 .lbr.me{background:var(--glow-l)}
+.lbr.top1{background:linear-gradient(90deg,rgba(201,162,39,.18),rgba(13,17,32,.42));border-left:3px solid var(--gold)}
+.lbr.top2{background:linear-gradient(90deg,rgba(192,192,255,.12),rgba(13,17,32,.36));border-left:3px solid #c0c0ff}
+.lbr.top3{background:linear-gradient(90deg,rgba(205,127,50,.13),rgba(13,17,32,.34));border-left:3px solid #cd7f32}
 .lbrank{font-family:'Cinzel',serif;color:var(--gold);width:26px;font-size:.82rem}
 .lbname{flex:1}
 .lbscore{font-family:'Cinzel',serif;color:var(--gold)}
+.lb-summary{
+  display:grid;grid-template-columns:1.1fr .9fr;gap:.55rem;margin:.35rem 0 .55rem
+}
+.lb-summary>div{
+  background:linear-gradient(145deg,rgba(13,17,32,.78),rgba(10,61,61,.13));
+  border:1px solid rgba(232,197,71,.2);border-radius:8px;padding:.55rem .65rem;
+}
+.lb-summary strong{display:block;font-family:'Cinzel',serif;color:var(--gold);font-size:.72rem;margin-bottom:.18rem}
+.lb-summary span{font-size:.72rem;color:var(--text-d)}
+.lbval{font-family:'Cinzel',serif;color:var(--gold-l);font-size:1rem;margin-top:.15rem}
+.lbmetric{font-size:.66rem;color:var(--text-dd);text-align:center;flex:1;min-width:90px}
 
 /* DIAGNOSIS */
 .di{display:flex;gap:.45rem;padding:.38rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.78rem;line-height:1.52}
@@ -335,6 +353,52 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 .ga{color:#c0c0ff}
 .gb{color:var(--teal-ll)}
 .gc{color:var(--text-d)}
+.result-hero{
+  text-align:center;padding:1.55rem .8rem .8rem;margin:.35rem 0 .7rem;
+  background:
+    linear-gradient(135deg,rgba(30,18,69,.48),rgba(10,61,61,.24)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 32px);
+  border:1px solid rgba(232,197,71,.28);border-radius:12px;box-shadow:var(--shadow-gold);
+  position:relative;overflow:hidden
+}
+.result-hero::before{
+  content:'';position:absolute;inset:-35% auto auto 50%;width:380px;height:380px;transform:translateX(-50%);
+  background:conic-gradient(from 90deg,rgba(201,162,39,.2),transparent,rgba(29,142,138,.18),transparent,rgba(201,162,39,.2));
+  opacity:.34;filter:blur(1px);animation:awardSpin 16s linear infinite;pointer-events:none
+}
+.result-hero>*{position:relative}
+@keyframes awardSpin{to{transform:translateX(-50%) rotate(360deg)}}
+.award-ribbon{
+  display:inline-flex;align-items:center;justify-content:center;gap:.35rem;
+  border:1px solid rgba(232,197,71,.44);border-radius:999px;
+  background:rgba(7,9,15,.52);color:var(--gold-l);font-family:'Cinzel',serif;
+  font-size:.72rem;letter-spacing:.07em;padding:.28rem .75rem;margin:.35rem auto .25rem;
+  box-shadow:0 0 18px rgba(201,162,39,.12)
+}
+.res-meta{font-size:.66rem;color:var(--text-dd);margin-top:.32rem;line-height:1.5}
+.cloud-save-badge{
+  display:inline-flex;align-items:center;justify-content:center;max-width:720px;margin:.65rem auto 0;
+  border:1px solid rgba(29,142,138,.36);border-radius:8px;padding:.45rem .7rem;
+  background:rgba(10,61,61,.16);color:#9de8e8;font-size:.76rem;line-height:1.45
+}
+.cloud-save-badge.ok{border-color:var(--green-ll);background:rgba(10,61,26,.22);color:#a8e8b8}
+.cloud-save-badge.bad{border-color:var(--red-ll);background:rgba(92,10,10,.22);color:#ffaaaa}
+.cloud-save-badge.warn{border-color:var(--gold);background:rgba(100,80,0,.14);color:var(--gold)}
+.section-title{font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.55rem}
+.outcome-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem}
+.outcome{
+  background:rgba(13,17,32,.58);border:1px solid var(--border);border-radius:8px;padding:.62rem;
+  min-height:118px;display:flex;flex-direction:column;gap:.28rem;position:relative;overflow:hidden
+}
+.outcome::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--gold);opacity:.55}
+.outcome.mastery::after{background:var(--green-ll)}
+.outcome.practice::after{background:var(--gold)}
+.outcome.review::after{background:var(--red-ll)}
+.outcome-k{font-family:'Cinzel',serif;color:var(--text);font-size:.68rem}
+.outcome-v{font-family:'Cinzel',serif;color:var(--gold-l);font-size:1.15rem}
+.outcome-d{font-size:.68rem;color:var(--text-d);line-height:1.35}
+.outcome-meter{height:5px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;margin-top:auto}
+.outcome-meter span{display:block;height:100%;background:linear-gradient(90deg,var(--teal-ll),var(--gold));border-radius:inherit;transition:width .6s}
 
 /* INTRO */
 #screen-intro{text-align:center;padding:2.2rem 0}
@@ -453,12 +517,25 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 
 /* RESPONSIVE */
 @media(max-width:600px){
+  #app{padding:.72rem}
   .role-grid{grid-template-columns:1fr}
   .bp{grid-template-columns:1fr;grid-template-rows:auto auto auto}
   .eg{grid-template-columns:repeat(2,1fr)}
   .sc-grid{grid-template-columns:1fr 1fr}
-  .sg{grid-template-columns:1fr 1fr}
+  .sg{grid-template-columns:1fr}
   .two-col{grid-template-columns:1fr}
+  .result-hero{padding:1.1rem .55rem .7rem}
+  .rg{font-size:2.35rem}
+  .outcome-grid{grid-template-columns:1fr}
+  .lb-summary{grid-template-columns:1fr}
+  .lbr{display:grid;grid-template-columns:34px 1fr auto;gap:.28rem;padding:.52rem .48rem}
+  .lbmetric{grid-column:2 / 4;grid-row:2;text-align:left;min-width:0}
+  .lbscore{grid-column:3;grid-row:1}
+  #dash-content>div[style*="grid-template-columns:repeat(4,1fr)"],
+  #dash-content>div[style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr!important}
+  #screen-results .btn{min-width:0!important;width:100%;white-space:normal;line-height:1.35}
+  #screen-results .card{padding:.88rem}
+  .cloud-save-badge{display:flex}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
@@ -469,7 +546,7 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 
 <div id="loading">
   <div class="lr">⬡</div>
-  <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.85rem;letter-spacing:.12em">AVALON YÜKLENIYOR...</div>
+  <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.85rem;letter-spacing:.12em">LOADING AVALON...</div>
 </div>
 
 <div id="ambient-runes" aria-hidden="true"></div>
@@ -488,6 +565,10 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 <div id="screen-intro" class="screen">
   <h1 class="intro-title glitch">The Architects of Avalon</h1>
   <p class="intro-sub">Data Modeling Quest · COM4061</p>
+  <div class="lang-switch" role="group" aria-label="Language selection">
+    <button type="button" class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+    <button type="button" class="lang-btn" id="lang-tr" onclick="setLang('tr')">TR</button>
+  </div>
   <div class="meta-row">
     <span>⚔️ 3 Bölüm</span><span>🏰 3 Senaryo</span><span>💎 Logic Runes</span>
     <span>⏱ ~45 Dakika</span><span>🎓 Bloom L3–L6</span><span>📦 GPAF Log Ready</span>
@@ -637,19 +718,26 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
 
 <!-- ═══════════════════════════════ RESULTS ══════════════════════════════ -->
 <div id="screen-results" class="screen">
-  <div style="text-align:center;padding:1.4rem 0 .4rem">
+  <div class="result-hero">
     <div class="rg" id="res-grade">S</div>
     <h2 id="res-title" style="color:var(--gold);margin-bottom:.18rem">Avalon Kurtarıldı!</h2>
     <p id="res-sub" style="color:var(--text-d);font-size:.88rem;font-style:italic"></p>
-    <div style="font-size:.65rem;color:var(--text-dd);margin-top:.3rem">
+    <div class="award-ribbon" id="res-rank-title">Mimar Rutbesi: Guardian Architect</div>
+    <div class="res-meta" id="res-meta-line">
       Target Engagement: 85% · Baseline: 40% · Transfer Target: 40% ↓ M:N errors
     </div>
+    <div class="cloud-save-badge" id="res-cloud-banner">Cloud kaydi sonuc ekrani acilinca otomatik baslar.</div>
   </div>
 
   <div class="sg">
     <div class="sc2"><div class="sn" id="rs-score">0</div><div class="sl">Logic Runes</div></div>
     <div class="sc2"><div class="sn" id="rs-hp">100</div><div class="sl">Son HP</div></div>
     <div class="sc2"><div class="sn" id="rs-acc">0%</div><div class="sl">Doğruluk Oranı</div></div>
+  </div>
+
+  <div class="card card-t">
+    <div class="section-title">🎓 Akademik Ustalik Ozeti</div>
+    <div id="learning-outcomes" class="outcome-grid"></div>
   </div>
 
   <div class="card card-g">
@@ -696,6 +784,15 @@ input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
     <button class="btn" style="flex:1;min-width:130px;border-color:var(--teal-ll);color:var(--teal-ll)" onclick="exportGpafLog()">⬇ GPAF Log (.jsonl)</button>
     <button class="btn" style="flex:1;min-width:120px;border-color:var(--teal-l);color:var(--teal-ll)" onclick="exportReport()">⬇ Diagnostic JSON</button>
     <button class="btn" style="flex:1;min-width:130px;border-color:var(--purple-ll);color:#c4aaff" onclick="printReport()">🖨 Yazdırılabilir PDF Raporu</button>
+  </div>
+  <div class="card card-g" style="margin:.45rem 0">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.35rem">☁ Cloud Score Sync</div>
+    <div id="cloud-sync-status" style="font-size:.72rem;color:var(--text-d);line-height:1.55;margin-bottom:.5rem">Scores are automatically sent to the class dashboard when the game ends.</div>
+    <div style="display:flex;gap:.45rem;flex-wrap:wrap">
+      <button class="btn" style="flex:1;min-width:130px;border-color:var(--green-ll);color:var(--green-ll)" onclick="submitScoreToCloud(true)">☁ Send Score</button>
+      <button class="btn" style="flex:1;min-width:130px;border-color:var(--teal-ll);color:var(--teal-ll)" onclick="loadCloudScores(true)">↻ Load Cloud Scores</button>
+      <button class="btn" style="flex:1;min-width:130px;border-color:var(--gold-d);color:var(--gold)" onclick="openDashboard()">📊 Dashboard</button>
+    </div>
   </div>
   <div style="display:flex;gap:.45rem;margin:.4rem 0;flex-wrap:wrap">
     <button class="btn" style="flex:1;min-width:130px;border-color:var(--gold-d);color:var(--gold)" onclick="copyPlayerCode()">📋 Copy Player Code</button>
@@ -915,6 +1012,824 @@ const BDEFS={
 };
 
 // ══════════════════════════════════════════
+// LANGUAGE LAYER (default EN, optional TR)
+// ══════════════════════════════════════════
+const LANG_KEY='avalon_lang';
+let currentLang='en';
+try{currentLang=localStorage.getItem(LANG_KEY)||'en'}catch(_){currentLang='en'}
+
+const TEXT_EN={
+  '⚔️ 3 Bölüm':'⚔️ 3 Chapters',
+  '🏰 3 Senaryo':'🏰 3 Scenarios',
+  '⏱ ~45 Dakika':'⏱ ~45 Minutes',
+  '🎓 Bloom L3–L6':'🎓 Bloom L3–L6',
+  '📦 GPAF Log Ready':'📦 GPAF Log Ready',
+  'Player Code / Pseudonymous Code:':'Player Code / Pseudonymous Code:',
+  'GPAF Uyum Notu':'GPAF Compatibility Note',
+  'Game ID / Published Game Code:':'Game ID / Published Game Code:',
+  'Teslim İçin':'For Submission',
+  'Zorluk Seviyesi:':'Difficulty Level:',
+  'Kolay (+50 HP)':'Easy (+50 HP)',
+  'Normal':'Normal',
+  'İleri (−25 HP)':'Advanced (−25 HP)',
+  '📝 Ön Test':'📝 Pre-Test',
+  'Kirkpatrick L2 — Ön Test':'Kirkpatrick L2 — Pre-Test',
+  'Skorlar oyun sonunda sinif dashboarduna otomatik gonderilir.':'Scores are automatically sent to the class dashboard at the end of the game.',
+  'Oyun bittiginde skor otomatik olarak sinif dashboarduna kaydedilir.':'When the game ends, the score is automatically saved to the class dashboard.',
+  'Maceraya Başla →':'Start Quest →',
+  'Guardian Sınıfını Seç':'Choose Your Guardian Class',
+  'Her Guardian farklı bir modelleme becerisine uzmanlaşmıştır':'Each Guardian specializes in a different modeling skill',
+  "Entity Discovery'de +%20 puan · Nitelik tespitinde ipucu":'Entity Discovery +20% score · Attribute hint support',
+  'Bridge aşamasında +%15 · M:N hatalarında otomatik ipucu':'Bridge stage +15% · Automatic hints for M:N mistakes',
+  'Süre +30 saniye · Zaman baskısını azaltır':'Time +30 seconds · Reduces time pressure',
+  "Monster'a +%25 hasar · 3NF açıklamaları genişletilmiş":'Monster damage +25% · Expanded 3NF explanations',
+  'Senaryo Seç:':'Choose Scenario:',
+  'Üniversite':'University',
+  'E-Ticaret':'E-Commerce',
+  'Hastane':'Hospital',
+  'Öğrenci · Ders · Kayıt':'Student · Course · Enrollment',
+  'Müşteri · Sipariş · Ürün':'Customer · Order · Product',
+  'Hasta · Doktor · Randevu':'Patient · Doctor · Appointment',
+  "Guardian'ı Onayla — Göreve Başla ⚔️":'Confirm Guardian — Begin Quest ⚔️',
+  '⚠ Data Corruption Algılandı':'⚠ Data Corruption Detected',
+  'Entity Discovery — Varlıkları ve Birincil Anahtarları belirle':'Entity Discovery — Identify entities and primary keys',
+  "Bağımsız Entity'leri seç (3 tane):":'Select the independent entities (3 total):',
+  'Bilgi Rehberi':'Knowledge Guide',
+  "⚔️ Guardian's Shield — Her Entity için Primary Key seç:":"⚔️ Guardian's Shield — Choose a Primary Key for each entity:",
+  'PK Kuralları':'PK Rules',
+  "Shield'i Kilitle ⚔️":'Lock the Shield ⚔️',
+  "Nitelikleri (Attributes) doğru tabloya":'Place the attributes in the correct table',
+  'sürükle-bırak':'drag and drop',
+  'ya da tıkla:':'or click:',
+  "Bölüm 1'i Tamamla →":'Complete Chapter 1 →',
+  '⚠ Yapısal Çöküş — Cardinality Hatası':'⚠ Structural Collapse — Cardinality Error',
+  "Cardinality — Entity'ler arası ilişki türlerini doğru belirle":'Cardinality — Choose the correct relationship type between entities',
+  '💎 Junction Stone — Ara Tablo Oluştur (M:N çözümü)':'💎 Junction Stone — Create a junction table (M:N solution)',
+  'Ara tablo adı:':'Junction table name:',
+  'FK-1 (sol entity):':'FK-1 (left entity):',
+  'FK-2 (sağ entity):':'FK-2 (right entity):',
+  "Junction Stone'u Yerleştir 💎":'Place the Junction Stone 💎',
+  "Purification Combat'a Geç ⚔️":'Enter Purification Combat ⚔️',
+  '⚠ Transitive Dependency Tespit Edildi':'⚠ Transitive Dependency Detected',
+  "Normalization — Redundancy Monster'ı 1NF → 2NF → 3NF ile yenmek için doğru bağımlılığı tespit et":'Normalization — Defeat the Redundancy Monster by identifying the correct dependency from 1NF → 2NF → 3NF',
+  '"Veriyi kirlet... Tekrar et... Çelişki yarat..."':'"Corrupt the data... Repeat it... Create contradictions..."',
+  'Avalon Kurtarıldı!':'Avalon Restored!',
+  'Son HP':'Final HP',
+  'Doğruluk Oranı':'Accuracy',
+  'Kazanılan Badges':'Earned Badges',
+  '📋 Post-Session Tanı Raporu (FR5 — Pedagogical Diagnostic)':'📋 Post-Session Diagnostic Report (FR5 — Pedagogical Diagnostic)',
+  'Mutlak Puan':'Total Score',
+  'Analitik':'Analytical',
+  'İşbirliği':'Collaboration',
+  'Gelişim':'Improvement',
+  "🙈 Leaderboard'dan Çık":'🙈 Opt out of Leaderboard',
+  '📊 Kirkpatrick L1 — Oturum Değerlendirmesi':'📊 Kirkpatrick L1 — Session Evaluation',
+  'Bu oturumu nasıl değerlendiriyorsun? (1–5)':'How do you rate this session? (1–5)',
+  'Eğlence & Motivasyon':'Fun & Motivation',
+  'Öğrenme Katkısı':'Learning Value',
+  'UI Kullanılabilirlik':'UI Usability',
+  'Değerlendirmeyi Kaydet ✓':'Save Evaluation ✓',
+  '↺ Yeniden Oyna':'↺ Play Again',
+  '🖨 Yazdırılabilir PDF Raporu':'🖨 Printable PDF Report',
+  '📝 Son Test (KL2)':'📝 Post-Test (KL2)',
+  'Örn: P-A7K2 — gerçek ad/numara yazma':'Ex: P-A7K2 — do not enter real name/number',
+  'GM-XXXXXXXXXXXX — yayınlandıktan sonra girilecek':'GM-XXXXXXXXXXXX — enter after publication',
+  'örn: Kayit, Siparis_Urun...':'ex: Enrollment, Order_Item...',
+  'örn: ogrenci_no':'ex: student_no',
+  'örn: ders_kodu':'ex: course_code',
+  'Maceraya başla':'Start the quest',
+  'Guardian rolunu onayla':'Confirm Guardian role',
+  'Hoş Geldin, Guardian!':'Welcome, Guardian!',
+  'Data Integrity (HP) Barı':'Data Integrity (HP) Bar',
+  'Logic Runes — Puan Sistemi':'Logic Runes — Scoring System',
+  'Bölüm 1: Library of Entities':'Chapter 1: Library of Entities',
+  'Bölüm 2: Bridge Building':'Chapter 2: Bridge Building',
+  'Bölüm 3: Normalizasyon Savaşı':'Chapter 3: Normalization Battle',
+  'Hazırsın!':'You are ready!',
+  'Başla! ⚔️':'Start! ⚔️',
+  'İleri →':'Next →',
+  'Avalon Kurtarıldı! Mükemmel Zafer!':'Avalon Restored! Perfect Victory!',
+  'Zafer Kazanıldı!':'Victory Achieved!',
+  'İyi Mücadele!':'Good Fight!',
+  'Öğrenme Devam Ediyor':'Learning Continues',
+  "Sınıfın En İyi Architect'i — S Tier":'Top Architect of the class — S Tier',
+  'Güçlü veri modelleme becerileri — A Tier':'Strong data modeling skills — A Tier',
+  'Bazı kavramları pekiştir — B Tier':'Reinforce a few concepts — B Tier',
+  'Tekrar dene, deneyim kazanıldı — C Tier':'Try again; experience gained — C Tier',
+  'Mimar Rutbesi: Guardian Architect':'Architect Rank: Guardian Architect',
+  'Cloud kaydi sonuc ekrani acilinca otomatik baslar.':'Cloud save starts automatically when the result screen opens.',
+  '🎓 Akademik Ustalik Ozeti':'🎓 Academic Mastery Snapshot',
+  'Your Rank':'Your Rank',
+  'Current Leader':'Current Leader',
+  'Category':'Category',
+  'Senin Sıran':'Your Rank',
+  'Mevcut Lider':'Current Leader',
+  'Kategori':'Category',
+  'Henüz badge kazanılmadı.':'No badges earned yet.',
+  'Kısayollar (Alt+)':'Shortcuts (Alt+)'
+};
+
+Object.assign(TEXT_EN,{
+  'Nitelik (attribute) — Öğrenci\'nin bir özelliği, kendi başına var olamaz.':'Attribute — A property of Student; it cannot exist independently.',
+  'Nitelik — Öğrenci\'nin bir özelliği.':'Attribute — A property of Student.',
+  'Nitelik — Öğrenci\'nin iletişim bilgisi.':'Attribute — Student contact information.',
+  'Ad Soyad benzersiz olmayabilir; Öğrenci No sistem tarafından atanır.':'Full Name may not be unique; Student No is assigned by the system.',
+  'Ders Kodu her dersi benzersiz tanımlar; isim değişebilir.':'Course Code uniquely identifies each course; the course name can change.',
+  'Sicil No değişmez, benzersiz ve boş olamaz.':'Employee ID is stable, unique, and cannot be empty.',
+  'Bir öğrenci birden fazla derse, bir ders birden fazla öğrenciye sahip olabilir → M:N':'A student can enroll in many courses, and a course can have many students → M:N',
+  'Bir öğretim üyesi birden fazla ders verebilir; her dersin tek sorumlu öğretmeni var → 1:N':'One instructor can teach multiple courses; each course has one responsible instructor → 1:N',
+  'Her öğrencinin tam bir danışmanı, her danışmanın tam bir birincil öğrencisi var → 1:1':'Each student has exactly one advisor, and each advisor has exactly one primary student → 1:1',
+  '"dersler" ve "telefonlar" sütunlarında birden fazla değer var. Bu 1NF ihlali (multi-valued attribute).':'The "courses" and "phones" columns contain multiple values. This violates 1NF (multi-valued attribute).',
+  'Aşağıdakilerden hangisi 1NF ihlaline örnektir?':'Which of the following is an example of a 1NF violation?',
+  'ogrenci_no (PK — benzersiz)':'student_no (PK — unique)',
+  'ad_soyad (atomik — uygun)':'full_name (atomic — valid)',
+  'dersler (multi-valued ✗)':'courses (multi-valued ✗)',
+  '"Tek hücrede iki değer... veri bataklığı!"':'"Two values in one cell... a data swamp!"',
+  'Her hücrede tek değer olmalı. Dersler ayrı satırlara bölünmeli ya da ayrı Ders tablosuna taşınmalı.':'Each cell must contain a single value. Courses should be split into separate rows or moved to a separate Course table.',
+  'Apply (Bloom L3): 1NF kuralı uygulama — multi-valued attribute eliminasyonu.':'Apply (Bloom L3): Apply the 1NF rule by eliminating multi-valued attributes.',
+  'Composite PK (ogrenci_no, ders_kodu). "ogrenci_ad" yalnızca ogrenci_no\'ya, "ders_adi" yalnızca ders_kodu\'ya bağlı; bu kısmi bağımlılıktır.':'Composite PK (student_no, course_code). "student_name" depends only on student_no, and "course_name" depends only on course_code; this is partial dependency.',
+  'Kısmi bağımlılık (partial dependency) hangi sütunda?':'Which column shows partial dependency?',
+  'vize_notu (composite PK tamamına bağlı ✓)':'midterm_grade (depends on the whole composite PK ✓)',
+  'ders_adi (sadece ders_kodu\'na bağlı ✗)':'course_name (depends only on course_code ✗)',
+  'ogrenci_no (composite PK parçası ✓)':'student_no (part of the composite PK ✓)',
+  'ders_kodu (composite PK parçası ✓)':'course_code (part of the composite PK ✓)',
+  '"Composite key\'e kısmi bağımlılık... veri tekrarı artıyor!"':'"Partial dependency on a composite key... data repetition is increasing!"',
+  'ogrenci_ad → Öğrenci tablosuna, ders_adi → Ders tablosuna. Kayıt tablosunda yalnızca FK\'lar ve kayıt-özgü veriler kalmalı.':'Move student_name to the Student table and course_name to the Course table. The Enrollment table should keep only FKs and enrollment-specific data.',
+  'Analyse (Bloom L4): Composite key bağımlılıklarını analiz et.':'Analyze (Bloom L4): Analyze composite-key dependencies.',
+  'personel_no → bolum_kodu → bolum_adi, dekan zinciri var. Non-key alan başka bir non-key alana bağlı (transitive dependency).':'There is a personnel_no → department_code → department_name/dean chain. A non-key field depends on another non-key field (transitive dependency).',
+  'Geçişli bağımlılık (transitive dependency) hangi sütunda?':'Which column shows transitive dependency?',
+  'personel_no (PK ✓)':'personnel_no (PK ✓)',
+  'ad_soyad (PK\'ya bağlı ✓)':'full_name (depends on the PK ✓)',
+  'bolum_adi (non-key→non-key ✗)':'department_name (non-key → non-key ✗)',
+  'bolum_kodu (FK — PK\'ya bağlı ✓)':'department_code (FK — depends on the PK ✓)',
+  '"Bağımlılık zinciri... Monster güçleniyor!"':'"Dependency chain... the Monster grows stronger!"',
+  'bolum_adi ve dekan ayrı Bölüm tablosuna taşınmalı. Personel tablosunda yalnızca bolum_kodu FK kalmalı.':'department_name and dean should be moved to a separate Department table. The Personnel table should keep only department_code as FK.',
+  'Evaluate (Bloom L5): Non-key→non-key bağımlılığını tespit edip tabloyu ayrıştır.':'Evaluate (Bloom L5): Identify the non-key → non-key dependency and decompose the table.',
+
+  'Nitelik — Müşteri\'nin bir özelliği.':'Attribute — A property of Customer.',
+  'Nitelik — Ürünün bir özelliği.':'Attribute — A property of Product.',
+  'Nitelik — Siparişin bir özelliği.':'Attribute — A property of Order.',
+  'Müşteri ID sistem tarafından atanır, benzersiz ve değişmez.':'Customer ID is assigned by the system; it is unique and stable.',
+  'Sipariş No her işlemi benzersiz tanımlar.':'Order No uniquely identifies each transaction.',
+  'Ürün Kodu değişmez ve benzersizdir.':'Product Code is stable and unique.',
+  'Bir sipariş birden fazla ürün içerebilir; bir ürün birden fazla siparişte bulunabilir → M:N':'One order can contain multiple products, and one product can appear in multiple orders → M:N',
+  'Bir müşterinin birden fazla siparişi olabilir; her sipariş tek bir müşteriye aittir → 1:N':'One customer can have multiple orders; each order belongs to exactly one customer → 1:N',
+  'Bir kategoride birden fazla ürün bulunabilir; her ürün tek bir kategoriye aittir → 1:N':'One category can contain multiple products; each product belongs to one category → 1:N',
+  '"urunler" ve "adresler" sütunlarında birden fazla değer var (multi-valued). 1NF ihlali.':'The "products" and "addresses" columns contain multiple values. This violates 1NF.',
+  'siparis_no (PK ✓)':'order_no (PK ✓)',
+  'musteri_ad (atomik ✓)':'customer_name (atomic ✓)',
+  'urunler (multi-valued ✗)':'products (multi-valued ✗)',
+  '"Virgülle ayrılmış değerler... veri kirlendi!"':'"Comma-separated values... the data is contaminated!"',
+  'Her ürün ayrı satıra. Adresler ayrı Adres tablosuna taşınmalı.':'Each product should be a separate row. Addresses should be moved to a separate Address table.',
+  'Apply (Bloom L3): Multi-valued attribute\'ı atomik yapıya dönüştür.':'Apply (Bloom L3): Convert the multi-valued attribute into an atomic structure.',
+  '"musteri_ad" sadece siparis_no\'ya, "urun_adi" sadece urun_kodu\'ya bağlı. Composite PK\'ye kısmi bağımlılık.':'"customer_name" depends only on order_no, and "product_name" depends only on product_code. This is partial dependency on a composite PK.',
+  'Kısmi bağımlılık hangi sütunda?':'Which column shows partial dependency?',
+  'miktar (PK tamamına bağlı ✓)':'quantity (depends on the whole PK ✓)',
+  'urun_adi (sadece urun_kodu\'na bağlı ✗)':'product_name (depends only on product_code ✗)',
+  'siparis_no (PK)':'order_no (PK)',
+  'urun_kodu (PK)':'product_code (PK)',
+  '"Ürün adı her satırda tekrarlanıyor... veri artıklığı!"':'"The product name repeats on every row... data redundancy!"',
+  'urun_adi → Ürün tablosuna, musteri_ad → Müşteri tablosuna. Sipariş-Ürün tablosunda sadece FK\'lar ve miktar kalmalı.':'Move product_name to the Product table and customer_name to the Customer table. The Order-Product table should keep only FKs and quantity.',
+  'Analyse (Bloom L4): Composite key bağımlılıklarını incele.':'Analyze (Bloom L4): Inspect composite-key dependencies.',
+  'urun_kodu → kategori_kodu → kategori_adi, kat_yonetici zinciri var. Transitive dependency.':'There is a product_code → category_code → category_name/category_manager chain. This is transitive dependency.',
+  'Transitive dependency hangi sütunda?':'Which column shows transitive dependency?',
+  'urun_kodu (PK ✓)':'product_code (PK ✓)',
+  'urun_adi (PK\'ya bağlı ✓)':'product_name (depends on the PK ✓)',
+  'kategori_adi (non-key→non-key ✗)':'category_name (non-key → non-key ✗)',
+  'kategori_kodu (FK ✓)':'category_code (FK ✓)',
+  '"Kategori adı her üründe tekrar ediyor... Monster büyüyor!"':'"The category name repeats for each product... the Monster grows!"',
+  'kategori_adi ve kat_yonetici ayrı Kategori tablosuna. Ürün tablosunda sadece kategori_kodu FK kalmalı.':'Move category_name and category_manager to a separate Category table. The Product table should keep only category_code as FK.',
+  'Evaluate (Bloom L5): Non-key→non-key bağımlılığını tespit et ve tabloyu ayrıştır.':'Evaluate (Bloom L5): Identify the non-key → non-key dependency and decompose the table.',
+
+  'Nitelik — Hastanın bir özelliği (muayeneye bağlı).':'Attribute — A property of Patient, tied to an examination.',
+  'Nitelik — Doktorun bir özelliği.':'Attribute — A property of Doctor.',
+  'Nitelik — Hastanın iletişim bilgisi.':'Attribute — Patient contact information.',
+  'TC Kimlik No devlet tarafından atanmış, benzersiz ve değişmez.':'National ID is government-assigned, unique, and stable.',
+  'Diploma No benzersiz ve değişmez resmi tanımlayıcı.':'Diploma No is a unique and stable official identifier.',
+  'Randevu ID sistem tarafından atanır; tarih değişken olabilir.':'Appointment ID is assigned by the system; date/time can change.',
+  'Bir hasta birden fazla doktora gidebilir; bir doktor birden fazla hastayı görebilir → M:N':'One patient can visit multiple doctors, and one doctor can see multiple patients → M:N',
+  'Bir poliklinik birden fazla doktora sahip olabilir; bir doktor bir poliklinik altında çalışır → 1:N':'One clinic can have multiple doctors; each doctor works under one clinic → 1:N',
+  'Bir randevuda birden fazla ilaç reçete edilebilir; bir ilaç birden fazla randevuda kullanılabilir → M:N':'One appointment can prescribe multiple medications, and one medication can be used in multiple appointments → M:N',
+  '"sigorta_no_lar" ve "kronik_hastaliklar" sütunlarında birden fazla değer var. 1NF ihlali.':'The "insurance_numbers" and "chronic_conditions" columns contain multiple values. This violates 1NF.',
+  'tc_no (PK ✓)':'national_id (PK ✓)',
+  'kronik_hastaliklar (multi-valued ✗)':'chronic_conditions (multi-valued ✗)',
+  '"Virgülle ayrılmış hastalıklar... tıbbi kayıt bozuldu!"':'"Comma-separated diseases... the medical record is corrupted!"',
+  'Her kronik hastalık ayrı satıra veya ayrı Hasta_Hastalik tablosuna. Sigorta numaraları da atomik yapıya getirilmeli.':'Each chronic condition should be a separate row or moved to a Patient_Condition table. Insurance numbers should also be made atomic.',
+  'Apply (Bloom L3): Atomik veri yapısına dönüştür.':'Apply (Bloom L3): Convert the data to an atomic structure.',
+  'Composite PK (tc_no, diploma_no, randevu_tarihi). "hasta_ad" yalnızca tc_no\'ya, "doktor_ad" yalnızca diploma_no\'ya bağlı; bu kısmi bağımlılıktır.':'Composite PK (national_id, diploma_no, appointment_date). "patient_name" depends only on national_id, and "doctor_name" depends only on diploma_no; this is partial dependency.',
+  'sikayet (composite PK tamamına bağlı ✓)':'complaint (depends on the whole composite PK ✓)',
+  'doktor_ad (sadece diploma_no\'ya bağlı ✗)':'doctor_name (depends only on diploma_no ✗)',
+  'tc_no (composite PK parçası ✓)':'national_id (part of the composite PK ✓)',
+  'diploma_no (composite PK parçası ✓)':'diploma_no (part of the composite PK ✓)',
+  '"Doktor adı her randevuda tekrarlanıyor!"':'"The doctor name repeats in every appointment!"',
+  'hasta_ad → Hasta tablosuna, doktor_ad → Doktor tablosuna. Randevu tablosunda yalnızca FK\'lar ve randevu bilgisi kalmalı.':'Move patient_name to the Patient table and doctor_name to the Doctor table. The Appointment table should keep only FKs and appointment-specific data.',
+  'Analyse (Bloom L4): Composite key bağımlılıklarını tespit et.':'Analyze (Bloom L4): Identify composite-key dependencies.',
+  'doktor_no → bolum_kodu → bolum_adi, bolum_yonetici zinciri var. Transitive dependency.':'There is a doctor_no → department_code → department_name/department_manager chain. This is transitive dependency.',
+  'doktor_no (PK ✓)':'doctor_no (PK ✓)',
+  'doktor_ad (PK\'ya bağlı ✓)':'doctor_name (depends on the PK ✓)',
+  '"Bölüm bilgisi her doktorda tekrar ediyor!"':'"Department information repeats for every doctor!"',
+  'bolum_adi ve bolum_yonetici ayrı Bölüm tablosuna. Doktor tablosunda sadece bolum_kodu FK kalmalı.':'Move department_name and department_manager to a separate Department table. The Doctor table should keep only department_code as FK.',
+  'Evaluate (Bloom L5): Transitive dependency tespiti ve 3NF ayrıştırma.':'Evaluate (Bloom L5): Identify transitive dependency and perform 3NF decomposition.',
+
+  'Bu oyunda <strong>Avalon Krallığı\'nın Dijital Arşivleri\'ni</strong> kurtaracaksın. Glitch virüsü veri modelini bozdu — onu düzeltmek için COM4061 veri modelleme becerilerini kullanacaksın.':'In this game, you will save <strong>Avalon\'s Digital Archives</strong>. The Glitch virus has corrupted the data model, and you will fix it using COM4061 data modeling skills.',
+  'Ekranın üstündeki <strong>HP barı</strong> veri bütünlüğünü gösterir. Her yanlış cevap HP düşürür. HP sıfıra düşerse Glitch kazanır! Doğru cevaplarla HP\'yi koru.':'The <strong>HP bar</strong> at the top shows Data Integrity. Each wrong answer reduces HP. If HP reaches zero, the Glitch wins. Protect HP with correct answers.',
+  'Doğru her hamle <strong>Logic Rune</strong> kazandırır:<br>• Entity tespiti: +50 Rune<br>• Primary Key: +150 Rune<br>• Cardinality: +100 Rune<br>• Normalizasyon: +200 Rune<br>• Junction Stone: +200 Rune':'Every correct move earns <strong>Logic Runes</strong>:<br>• Entity detection: +50 Rune<br>• Primary Key: +150 Rune<br>• Cardinality: +100 Rune<br>• Normalization: +200 Rune<br>• Junction Stone: +200 Rune',
+  'İlk görevin <strong>Entity\'leri</strong> tespit etmek. Entity: kendi başına var olan, benzersiz kimliği olan nesnedir.<br><br>Örnek: <em>Öğrenci ✓ Entity</em> — <em>Ad Soyad ✗ Nitelik (attribute)</em>':'Your first task is to identify <strong>entities</strong>. An entity exists independently and has a unique identity.<br><br>Example: <em>Student ✓ Entity</em> — <em>Full Name ✗ Attribute</em>',
+  'Entity\'ler arasındaki ilişki türlerini belirle:<br>• <strong>1:1</strong> — Bir öğrencinin bir pasaportu<br>• <strong>1:N</strong> — Bir öğretmenin birden fazla dersi<br>• <strong>M:N</strong> — Öğrenci ↔ Ders (Junction Table gerekir!)':'Choose relationship types between entities:<br>• <strong>1:1</strong> — One student has one passport<br>• <strong>1:N</strong> — One instructor teaches multiple courses<br>• <strong>M:N</strong> — Student ↔ Course (requires a Junction Table)',
+  'Redundancy Monster\'ı yenmek için tablodaki bağımlılık ihlalini tespit et:<br>• <strong>1NF</strong>: Multi-valued attribute yok et<br>• <strong>2NF</strong>: Kısmi bağımlılığı gider<br>• <strong>3NF</strong>: Geçişli bağımlılığı yok et':'Defeat the Redundancy Monster by identifying dependency violations:<br>• <strong>1NF</strong>: Eliminate multi-valued attributes<br>• <strong>2NF</strong>: Remove partial dependency<br>• <strong>3NF</strong>: Remove transitive dependency',
+  'Bölüm 2\'nin ardından <strong>Etkileşimli ERD Canvas</strong> açılır. Entity kutularını sürükle, aralarına ilişki çizgileri çiz. Bağlantıları doğru etiketle: <em>1:1 / 1:N / M:N</em>.':'After Chapter 2, the <strong>interactive ERD Canvas</strong> opens. Drag entity boxes, draw relationship lines, and label each relation correctly: <em>1:1 / 1:N / M:N</em>.',
+  'Guardian rolünü seçip maceraya başlayabilirsin. Her rolün farklı bir avantajı var — kendine en yakın rolü seç!<br><br><em>İpucu: Zor sorularda ipucu kutularını dikkatli oku.</em>':'Choose your Guardian role and begin the quest. Each role has a different advantage, so choose the one that fits you best.<br><br><em>Tip: Read hint boxes carefully on difficult questions.</em>'
+});
+
+Object.assign(TEXT_EN,{
+  'Toplam Öğrenci':'Total Students',
+  'Ort. Puan':'Avg. Score',
+  'Ort. Doğruluk':'Avg. Accuracy',
+  'En Kritik Alan':'Most Critical Area',
+  '📊 Hata Dağılımı — Sınıf Geneli':'📊 Error Distribution — Class Overview',
+  'toplam hata':'total errors',
+  '🏆 Öğrenci Tablosu (Gerçek Zamanlı)':'🏆 Student Table (Real Time)',
+  'Öğrenci':'Student',
+  'Rol':'Role',
+  'Puan':'Score',
+  'Doğruluk':'Accuracy',
+  'En Kötü Alan':'Weakest Area',
+  'Süre':'Time',
+  '📋 Kirkpatrick L2 — Bilgi Öncesi/Sonrası Karşılaştırma':'📋 Kirkpatrick L2 — Before/After Knowledge Comparison',
+  'Entity Tespiti':'Entity Detection',
+  '3NF Normalizasyon':'3NF Normalization',
+  'Öncesi':'Before',
+  'Sonrası':'After',
+  '⚠ Bu dashboard demo verileri içermektedir. Gerçek deployment\'ta öğrenci verileri sunucu tarafında saklanır. NFR5: 0% PII toplanmaz — yalnızca hata tipleri ve puan verileri kaydedilir.':'⚠ This dashboard contains demo data. In a real deployment, student data is stored server-side. NFR5: 0% PII is collected; only error types and score data are recorded.',
+  'Avalon tehlikede':'Avalon in danger',
+  'Entity keşfi':'Entity discovery',
+  'Köprüler':'Bridges',
+  '3NF savaşı':'3NF battle',
+  'Kurtarıldı':'Restored',
+  'HP +5 yenile (Access Tier)':'Restore +5 HP (Access Tier)',
+  'Guardian avatarın için kozmetik yükseltme (Access Tier)':'Cosmetic upgrade for your Guardian avatar (Access Tier)',
+  "'Master of 3NF' Sertifikası":"'Master of 3NF' Certificate",
+  'Demo başarı rozeti; resmi belge değildir (Professional Tier)':'Demo achievement badge; not an official document (Professional Tier)',
+  'Demo kaynak paketi; paylaşım için instructor onayı gerekir (Professional Tier)':'Demo resource pack; instructor approval is required before sharing (Professional Tier)',
+  'Demo muafiyet tokenı — yalnızca instructor onayıyla geçerli (Elite Tier)':'Demo exemption token — valid only with instructor approval (Elite Tier)',
+  'Demo review ödülü — TOP 3 ve instructor onayı gerekir (Elite Tier)':'Demo review reward — TOP 3 status and instructor approval required (Elite Tier)',
+  'Stok':'Stock',
+  '❤️ +5 HP kazanıldı!':'❤️ +5 HP gained!',
+  '🧥 Scout Cloak aktif! Avatar güncellendi.':'🧥 Scout Cloak active! Avatar updated.',
+  '📜 Demo başarı rozeti kazanıldı! Resmi belge değildir; ekran görüntüsünü instructora iletebilirsin.':'📜 Demo achievement badge earned! It is not an official document; you may send a screenshot to the instructor.',
+  '📚 Demo Chapter 6 kaynak paketi açıldı! Paylaşım için instructor onayı gerekir.':'📚 Demo Chapter 6 resource pack unlocked! Instructor approval is required before sharing.',
+  '🏆 Demo muafiyet tokenı kazanıldı! Yalnızca instructor onayıyla geçerlidir.':'🏆 Demo exemption token earned! It is valid only with instructor approval.',
+  '👑 Demo review ödülü kazanıldı! TOP 3 ve instructor onayı gerekir.':'👑 Demo review reward earned! TOP 3 status and instructor approval required.',
+  'satın alındı! Yeni bakiye:':'purchased! New balance:',
+  'Gerçek dünyada bağımsız olarak var olan, benzersiz kimliği bulunan ve niteliklere sahip nesne veya kavram. Örn: Öğrenci, Ders, Müşteri.':'An object or concept in the real world that exists independently, has a unique identity, and has attributes. Examples: Student, Course, Customer.',
+  'Bir entity\'nin özelliği. Kendi başına var olamaz, her zaman bir entity\'e aittir. Örn: Ad Soyad, GPA, Fiyat.':'A property of an entity. It cannot exist on its own and always belongs to an entity. Examples: Full Name, GPA, Price.',
+  'Bir tablodaki her satırı benzersiz olarak tanımlayan alan. NULL olamaz, değişmez ve benzersiz olmalıdır. Sistem tarafından atanan ID\'ler en iyi PK adayıdır.':'A field that uniquely identifies every row in a table. It cannot be NULL, should be stable, and must be unique. System-assigned IDs are strong PK candidates.',
+  'Başka bir tablonun Primary Key\'ine referans veren alan. Referential Integrity\'yi sağlar.':'A field that references another table\'s Primary Key. It enforces Referential Integrity.',
+  'İki entity arasındaki ilişkinin sayısal doğası. 1:1 (Bire-Bir), 1:N (Bire-Çok), M:N (Çoka-Çok) olmak üzere üç türü vardır.':'The numerical nature of a relationship between two entities. The main types are 1:1, 1:N, and M:N.',
+  'M:N ilişkisini çözmek için oluşturulan ara tablo. Her iki entity\'nin PK\'larını FK olarak içerir. Associative Entity olarak da bilinir. Örn: Kayıt (Öğrenci↔Ders).':'A junction table created to resolve an M:N relationship. It contains both entities\' PKs as FKs and is also known as an associative entity. Example: Enrollment (Student ↔ Course).',
+  'Her hücrede yalnızca atomik (tekil) değer bulunur. Multi-valued ve tekrarlayan gruplar yoktur.':'Each cell contains only atomic single values. There are no multi-valued attributes or repeating groups.',
+  '1NF\'yi karşılar ve composite PK\'ye kısmi bağımlılık yoktur. Tüm non-key attribute\'lar PK\'nın tamamına bağımlıdır.':'Satisfies 1NF and has no partial dependency on a composite PK. All non-key attributes depend on the whole PK.',
+  '2NF\'yi karşılar ve geçişli bağımlılık yoktur. Non-key attribute\'lar yalnızca PK\'ya bağımlıdır, başka non-key alanlara değil. PK → A → B zinciri yasaktır.':'Satisfies 2NF and has no transitive dependency. Non-key attributes depend only on the PK, not on other non-key fields. A PK → A → B chain is not allowed.',
+  'Composite bir PK\'nın yalnızca bir parçasına bağımlı olan attribute. 2NF ihlali oluşturur. Çözüm: ilgili attribute\'u ayrı tabloya taşı.':'An attribute that depends on only part of a composite PK. It violates 2NF. Solution: move the attribute to the appropriate separate table.',
+  'PK → Non-key-A → Non-key-B zinciri. Non-key bir alan başka bir non-key alana bağımlıdır. 3NF ihlali. Çözüm: Non-key-B\'yi ayrı tabloya taşı.':'A PK → Non-key-A → Non-key-B chain. One non-key field depends on another non-key field. This violates 3NF. Solution: move Non-key-B to a separate table.',
+  'Entity-Relationship Diagram. Entity\'leri, nitelikleri ve aralarındaki ilişkileri görsel olarak gösteren diyagram. Veritabanı tasarımının temel belgesidir.':'Entity-Relationship Diagram. A visual diagram showing entities, attributes, and relationships. It is a core database design artifact.',
+  'Verinin doğruluğunu ve tutarlılığını ifade eder. Entity Integrity (PK kuralları), Referential Integrity (FK kuralları) ve Domain Integrity\'yi kapsar.':'Refers to the correctness and consistency of data. It includes Entity Integrity, Referential Integrity, and Domain Integrity.',
+  'Veri tekrarını (redundancy) azaltmak ve anomalileri gidermek için tabloları yapılandırma süreci. 1NF → 2NF → 3NF → BCNF adımlarını izler.':'The process of structuring tables to reduce redundancy and remove anomalies. It follows steps such as 1NF → 2NF → 3NF → BCNF.',
+  'Aynı verinin birden fazla yerde tekrarlanması. Güncelleme anomalisi, ekleme anomalisi ve silme anomalisine yol açar.':'The same data repeated in multiple places. It can cause update, insertion, and deletion anomalies.',
+  'Oyundaki para birimi. Doğru modelleme hamlelerinden kazanılır, Grandmaster\'s Vault\'ta harcanabilir.':'The in-game currency. It is earned from correct modeling moves and can be spent in the Grandmaster\'s Vault.',
+  'Oyuncunun seçtiği uzmanlaşma sınıfı: Scout (UC), Builder (CL), Time-Keeper (SQ), Data Sage (ER). Her rol farklı avantaj sağlar.':'The specialization class selected by the player: Scout, Builder, Time-Keeper, or Data Sage. Each role provides a different advantage.',
+  'Bilişsel öğrenme hedeflerini sınıflandıran hiyerarşi: Hatırla → Anla → Uygula (1NF) → Analiz Et (2NF) → Değerlendir (3NF) → Yarat.':'A hierarchy for classifying cognitive learning objectives: Remember → Understand → Apply (1NF) → Analyze (2NF) → Evaluate (3NF) → Create.',
+  'Eğitim etkinliğini 4 düzeyde ölçer: L1 Reaction (memnuniyet anketi), L2 Learning (bilgi testi), L3 Behavior (transfer), L4 Results (sınav ortalaması).':'Measures training effectiveness at four levels: L1 Reaction, L2 Learning, L3 Behavior, and L4 Results.',
+  'Yu-kai Chou\'nun 8 oyunlaştırma boyutu: Epic Meaning, Development, Empowerment, Ownership, Social Influence, Scarcity, Unpredictability, Loss Avoidance.':'Yu-kai Chou\'s eight gamification drives: Epic Meaning, Development, Empowerment, Ownership, Social Influence, Scarcity, Unpredictability, and Loss Avoidance.',
+  '3 üst üste hata — Scout devreye girdi! (Compassion Model ✓)':'3 consecutive mistakes — Scout stepped in! (Compassion Model ✓)',
+  '📋 Entity Nedir?':'📋 What Is an Entity?',
+  '<strong style="color:var(--text)">Entity:</strong> Kendi başına var olan, benzersiz kimliği bulunan ve birden fazla niteliği olan nesne.':'<strong style="color:var(--text)">Entity:</strong> An object that exists independently, has a unique identity, and has multiple attributes.',
+  '<strong style="color:var(--text)">Attribute:</strong> Bir entity\'nin özelliği — kendi başına var olamaz.':'<strong style="color:var(--text)">Attribute:</strong> A property of an entity; it cannot exist independently.',
+  'Bu senaryoda doğru Entity\'ler:':'Correct entities in this scenario:',
+  'Seçtiğin yanlışlar:':'Your wrong selections:',
+  'Bloom L2 Understand: Entity vs Attribute ayrımını açıklayabilmek':'Bloom L2 Understand: Explain the difference between Entity and Attribute',
+  'Anladım — Tekrar Dene ⚔️':'Got it — Try Again ⚔️',
+  '📋 Cardinality Rehberi':'📋 Cardinality Guide',
+  '<strong>1:1 (Bire-Bir):</strong> Her instance tam olarak bir diğer instance ile eşleşir. Örn: Her öğrencinin tam bir öğrenci kartı.':'<strong>1:1 (One-to-One):</strong> Each instance matches exactly one instance on the other side. Example: each student has exactly one student card.',
+  '<strong>1:N (Bire-Çok):</strong> Bir instance birden fazla diğer instance ile ilişkilidir. Örn: Bir öğretmen birden fazla ders verebilir.':'<strong>1:N (One-to-Many):</strong> One instance is related to many instances on the other side. Example: one instructor can teach many courses.',
+  '<strong>M:N (Çoka-Çok):</strong> Her iki taraftan birden fazla instance ilişkilidir. Örn: Öğrenci ↔ Ders. Bu ilişki için Junction Table (Ara Tablo) zorunludur!':'<strong>M:N (Many-to-Many):</strong> Multiple instances on both sides are related. Example: Student ↔ Course. This relationship requires a Junction Table.',
+  'Bu ilişki için ipucu:':'Hint for this relationship:',
+  'Doğru cevap:':'Correct answer:',
+  'Bloom L3 Apply: Cardinality kuralını doğru ilişkiye uygulayabilmek':'Bloom L3 Apply: Apply the cardinality rule to the correct relationship',
+  'Varlıkları ve anahtarları uyandır.':'Awaken the entities and keys.',
+  'İlişkileri kur, kırık köprüleri onar.':'Build relationships and repair broken bridges.',
+  'Redundancy Monster veri tekrarlarıyla besleniyor.':'The Redundancy Monster feeds on repeated data.',
+  'Oturum raporu, loglar ve başarılar hazır.':'Session report, logs, and achievements are ready.'
+});
+
+Object.assign(TEXT_EN,{
+  '\'yi yeniden tesis etmek zorundasın."':'must restore it."',
+  'kullanılır.':'is used.',
+  'Hoş Geldin!':'Welcome!',
+  'Entity kutularını sürükle · Sağ portuna tıkla → bağlantı başlat → diğer porta tıkla → ilişki etiketini gir':'Drag entity boxes · Click the right port → start a connection → click another port → enter the relationship label',
+  'Sıfırla ↺':'Reset ↺',
+  '💡 İpucu: Yanlış bağlantı için bağlantı üzerindeki × butonuna bas. Bağlantı etiketi:':'💡 Tip: For a wrong connection, press the × button on the relation. Relationship label:',
+  'Demo/local analytics · Kirkpatrick L1-L4 · Hata Analizi · Öğrenci Karşılaştırması':'Demo/local analytics · Kirkpatrick L1-L4 · Error Analysis · Student Comparison',
+  'SDT Relatedness — Arkadaşına Meydan Oku':'SDT Relatedness — Challenge a Friend',
+  "🏪 Grandmaster's Vault — Ödül Mağazası":"🏪 Grandmaster's Vault — Reward Shop",
+  'Ön test ile son test karşılaştırılacak':'Pre-test and post-test will be compared'
+});
+
+Object.assign(TEXT_EN,{
+  'Hangi iliski turu Junction Table gerektirir?':'Which relationship type requires a Junction Table?',
+  'Hicbiri':'None',
+  '3NF\'de hangi bagimlilik turu ihlal olusturur?':'Which dependency type violates 3NF?',
+  'Tam bagimlilik':'Full dependency',
+  'Kismi bagimlilik':'Partial dependency',
+  'Gecisli bagimlilik':'Transitive dependency',
+  'Fonksiyonel bagimlilik':'Functional dependency',
+  'Primary Key icin hangi ozellik zorunludur?':'Which property is required for a Primary Key?',
+  'NULL olabilir':'Can be NULL',
+  'Degisebilir':'Can change',
+  'Benzersiz ve NULL olamaz':'Unique and cannot be NULL',
+  'Birden fazla olabilir':'Can have multiple values',
+  '2NF ihlali hangisidir?':'Which one is a 2NF violation?',
+  'M:N iliskisinde Junction Table icin minimum gereksinim:':'Minimum requirement for a Junction Table in an M:N relationship:',
+  'Sadece kendi PK\'si':'Only its own PK',
+  'Her iki entity PK\'lari (FK olarak)':'Both entity PKs as FKs',
+  'Sadece attribute\'lar':'Only attributes',
+  'Alan gerekmez':'No field required',
+  'doğru':'correct',
+  'Ön Test':'Pre-Test',
+  'Son Test':'Post-Test',
+  'Gelişim':'Improvement',
+  'puan':'points',
+  'Kapat':'Close',
+  'Soru':'Question',
+  'Gereksinim':'Requirement',
+  'Durum':'Status',
+  'Uygulama Notu':'Implementation Note',
+  '4 Guardian rolü seçimi':'4 Guardian role selection',
+  'HP barı azalır — yanlış cardinality/dependency':'HP bar decreases after wrong cardinality/dependency answers',
+  'Drag-and-drop ERD arayüzü':'Drag-and-drop ERD interface',
+  'Gerçek zamanlı Structural Integrity + Data Corruption Alert':'Real-time Structural Integrity + Data Corruption Alert',
+  'Post-session tanı raporu':'Post-session diagnostic report',
+  'Feedback render latency <16ms hedefi':'Feedback render latency target <16ms',
+  'Tutorial < 3 dakika':'Tutorial < 3 minutes',
+  'Uptime > 99% — static HTML hedefi':'Uptime >99% — static HTML target',
+  'WCAG AA renk kontrast':'WCAG AA color contrast',
+  'Privacy — gerçek kimlik loglanmaz':'Privacy — real identity is not logged',
+  'Team Tool uyumlu JSONL game logs':'Team Tool-compatible JSONL game logs',
+  '10s cooldown sonrası yanlış cevap':'10s cooldown after wrong answer',
+  '3 üst üste hata → Scout Hint pop-up':'3 consecutive mistakes → Scout Hint pop-up',
+  'Wi-Fi kesintisinde otomatik cache':'Automatic cache during Wi-Fi interruption',
+  '+50 Rune — M:N 15sn altında çözme':'+50 Rune — solve M:N under 15s',
+  'Flawless badge — 3NF hatasız tamamlama':'Flawless badge — complete 3NF without mistakes',
+  'Ön/Son test karşılaştırması':'Pre/Post test comparison',
+  '5 kategori leaderboard':'5-category leaderboard',
+  'Grandmaster Vault — 6 item, döküman maliyetleri':'Grandmaster Vault — 6 items, documented costs',
+  '5 boyutlu mastery radar chart':'5-dimensional mastery radar chart',
+  'Hero Journey görseli':'Hero Journey visual',
+  '8 boyut Octalysis skoru':'8-dimensional Octalysis score',
+  'hp-fill animasyonu':'hp-fill animation',
+  'port bağlantı':'port connection',
+  'kişiselleştirilmiş hata analizi':'personalized error analysis',
+  '8 adımlı tutorial overlay — ~2dk':'8-step tutorial overlay — ~2 min',
+  'sadece playerPseudoId taşır':'contains only playerPseudoId',
+  'kırmızı progress bar':'red progress bar',
+  'tetikleme':'trigger',
+  'her hamle':'every move',
+  'Date.now() farkı':'Date.now() delta',
+  'localStorage kayıt':'localStorage save',
+  'hata oranı':'error rate',
+  '5 aşama progress':'5-stage progress',
+  'döküman değerleri':'documented values',
+  'Oyuncu Bilgileri':'Player Information',
+  'Guardian Rolü':'Guardian Role',
+  'Performans':'Performance',
+  'Son HP':'Final HP',
+  'Doğruluk Oranı':'Accuracy Rate',
+  'Hata Analizi':'Error Analysis',
+  'Hata Sayısı':'Error Count',
+  'Entity Tanımlama':'Entity Identification',
+  'Primary Key Seçimi':'Primary Key Selection',
+  'Normalizasyon (1NF→3NF)':'Normalization (1NF→3NF)',
+  '✓ Mükemmel':'✓ Excellent',
+  '✗ Geliştir':'✗ Improve',
+  'Kazanılan Badges':'Earned Badges',
+  'Henüz badge yok':'No badges yet',
+  'Bloom Taxonomy Karşılaması':'Bloom Taxonomy Coverage',
+  'Düzey':'Level',
+  'Aktivite':'Activity',
+  'Sonuç':'Result',
+  '1NF — Multi-valued attribute eliminasyonu':'1NF — Multi-valued attribute elimination',
+  '2NF — Kısmi bağımlılık tespiti':'2NF — Partial dependency detection',
+  '3NF — Geçişli bağımlılık ayrıştırma':'3NF — Transitive dependency decomposition',
+  'Bu rapor The Architects of Avalon oyunundan otomatik oluşturulmuştur.':'This report was generated automatically by The Architects of Avalon.',
+  'NFR5: 0% PII toplanmamıştır — yalnızca modelleme hataları kaydedilmiştir.':'NFR5: 0% PII was collected; only modeling errors were recorded.',
+  '🖨 Yazdır / PDF Kaydet':'🖨 Print / Save PDF'
+});
+
+const PHRASES_EN=[
+  [/Avalon Krallığı'nın Dijital Arşivleri/g,"Avalon's Digital Archives"],
+  [/adlı kaotik bir virüsün saldırısı altında/g,'are under attack by a chaotic virus called'],
+  [/Veri tekrarlamaları ve kırık bağımlılıklar krallığı çöküşe sürüklüyor/g,'Data repetition and broken dependencies are pushing the kingdom toward collapse'],
+  [/Sen bir/g,'You are a'],
+  [/olarak veritabanı mimarisini doğru modelleyerek/g,'who must model the database architecture correctly to'],
+  [/Veri bütünlüğünü yeniden tesis etmek zorundasın/g,'restore Data Integrity'],
+  [/Bu kod, Player Tool'daki/g,'This code must match the'],
+  [/ile aynı olmalı/g,'field in the Player Tool'],
+  [/Gerçek ad, soyad veya öğrenci numarası girme; yalnızca takma\/pseudonymous kod kullan/g,'Do not enter a real name, surname, or student number; use only a pseudonymous code'],
+  [/Hoca oyunu yayınladığında verilen kısa Game code buraya yazılır/g,'Enter the short Game Code provided when the instructor publishes the game'],
+  [/Şimdilik boş kalırsa log içinde/g,'If left empty for now, the log will use'],
+  [/Bağımsız Entity: kendi başına var olan, benzersiz kimliği bulunan ve birden fazla niteliği olan nesne/g,'Independent Entity: an object that exists on its own, has a unique identity, and has multiple attributes'],
+  [/Nitelik \(attribute\), bir entity'nin özelliğidir — kendi başına var olamaz/g,'An attribute is a property of an entity and cannot exist independently'],
+  [/Benzersiz · NULL olamaz · Değişmez · Sistem tarafından atanmış değerler tercih edilir/g,'Unique · Cannot be NULL · Stable · System-assigned values are preferred'],
+  [/Avalon adaları koptu/g,'The islands of Avalon are disconnected'],
+  [/Doğru ilişki türünü seç/g,'Choose the correct relationship type'],
+  [/M:N köprüler için Junction Stone zorunlu/g,'Junction Stone is required for M:N bridges'],
+  [/İlişki (\d+)\/(\d+)/g,'Relationship $1/$2'],
+  [/İpucu/g,'Hint'],
+  [/Doğru!/g,'Correct!'],
+  [/Doğrusu:/g,'Correct answer:'],
+  [/köprüsü kuruldu/g,'bridge established'],
+  [/Köprü Kuruldu/g,'Bridge Established'],
+  [/Köprü Çöktü/g,'Bridge Collapsed'],
+  [/Junction Stone gerekli/g,'Junction Stone required'],
+  [/ara tablo oluştur/g,'create a junction table'],
+  [/İki Foreign Key zorunlu/g,'Two Foreign Keys are required'],
+  [/Tablo adı \(≥3 harf\), FK1 ve FK2 zorunlu/g,'Table name (≥3 letters), FK1, and FK2 are required'],
+  [/Bölüm (\d+)/g,'Chapter $1'],
+  [/Tamamlandı/g,'Completed'],
+  [/Tüm köprüler kuruldu/g,'All bridges are established'],
+  [/Purification Combat başlıyor/g,'Purification Combat begins'],
+  [/Glitch Tespiti/g,'Glitch Detection'],
+  [/Bloom Düzeyi/g,'Bloom Level'],
+  [/Uyarlanabilir Zorluk Aktif/g,'Adaptive Difficulty Active'],
+  [/Tablo basitleştirildi/g,'The table was simplified'],
+  [/Önce temel bağımlılığa odaklan/g,'Focus on the core dependency first'],
+  [/Hasar verildi/g,'Damage dealt'],
+  [/Monster Vuruldu/g,'Monster Hit'],
+  [/Monster Saldırdı/g,'Monster Attacked'],
+  [/Redundancy Monster Yenildi/g,'Redundancy Monster Defeated'],
+  [/3NF Tamamlandı/g,'3NF Completed'],
+  [/Kalan HP/g,'Remaining HP'],
+  [/Yeni Badge/g,'New Badge'],
+  [/Kopyalanacak Player Code yok/g,'No Player Code to copy'],
+  [/Player Code kopyalandı/g,'Player Code copied'],
+  [/Önce Player Code gir/g,'Enter a Player Code first'],
+  [/Tüm tablolar için PK seç/g,'Choose a PK for every table'],
+  [/Tüm Primary Key'ler doğru atandı/g,'All Primary Keys were assigned correctly'],
+  [/Nitelikleri yerleştir/g,'Place the attributes'],
+  [/Yanlış PK/g,'Wrong PK'],
+  [/Geçersiz Primary Key/g,'Invalid Primary Key'],
+  [/Entity Integrity Tehlikede/g,'Entity Integrity at Risk'],
+  [/Hatalı Entity seçimi/g,'Wrong entity selection'],
+  [/Bağımsız Entity'ler doğru seçildi/g,'Independent entities selected correctly'],
+  [/Primary Key aşamasına geç/g,'Move to the Primary Key stage'],
+  [/Yanlış Entity/g,'Wrong Entity'],
+  [/Data Corruption Algılandı/g,'Data Corruption Detected'],
+  [/farklı bir Entity'e ait/g,'belongs to a different entity'],
+  [/En az (\d+) nitelik yerleştirmelisin/g,'You must place at least $1 attributes'],
+  [/GPAF JSONL log indirildi/g,'GPAF JSONL log downloaded'],
+  [/Team Tool → Logs bölümüne ekleyin/g,'Add it to Team Tool → Logs'],
+  [/Oyun kaldığı yerden devam ediyor/g,'Game resumed'],
+  [/Süre Doldu/g,'Time is up'],
+  [/Son 1 dakika/g,'Last 1 minute'],
+  [/Kirkpatrick L1 kaydedildi/g,'Kirkpatrick L1 saved'],
+  [/Teşekkürler/g,'Thank you'],
+  [/Leaderboard'dan çıkıldı/g,'Opted out of leaderboard'],
+  [/Leaderboard'a geri döndün/g,'You are back on the leaderboard'],
+  [/ERD bağlantısı doğru/g,'ERD relation is correct'],
+  [/ERD bağlantısı yanlış/g,'ERD relation is wrong'],
+  [/ERD Skoru/g,'ERD Score'],
+  [/Mükemmel/g,'Excellent'],
+  [/Yanlış veya eksik bağlantıları düzelt/g,'Fix wrong or missing relations'],
+  [/Ara Tablo Oluştur/g,'Create Junction Table'],
+  [/Bağlantı başlat/g,'Start connection'],
+  [/İlişki türünü gir/g,'Enter relationship type'],
+  [/Tıklamak için/g,'Click to'],
+  [/Kendi başına var olan, benzersiz kimliği bulunan ve birden fazla niteliği olan nesne/g,'An object that exists independently, has a unique identity, and has multiple attributes'],
+  [/Bir entity'nin özelliği — kendi başına var olamaz/g,'A property of an entity; it cannot exist independently'],
+  [/Bu senaryoda doğru Entity'ler/g,'Correct entities in this scenario'],
+  [/Seçtiğin yanlışlar/g,'Your wrong selections'],
+  [/Her instance tam olarak bir diğer instance ile eşleşir/g,'Each instance matches exactly one instance on the other side'],
+  [/Bir instance birden fazla diğer instance ile ilişkilidir/g,'One instance is related to many instances on the other side'],
+  [/Her iki taraftan birden fazla instance ilişkilidir/g,'Multiple instances on both sides are related'],
+  [/Bu ilişki için Junction Table \(Ara Tablo\) zorunludur/g,'This relationship requires a Junction Table'],
+  [/Bu ilişki için ipucu/g,'Hint for this relationship'],
+  [/Doğru cevap/g,'Correct answer'],
+  [/Örn:/g,'Example:'],
+  [/Bir öğretmen birden fazla ders verebilir/g,'One instructor can teach multiple courses'],
+  [/Her öğrencinin tam bir öğrenci kartı/g,'Each student has exactly one student card'],
+  [/Oyuncu teslim adımları/g,'Player submission steps'],
+  [/Öğrenme Devam Ediyor/g,'Learning Continues'],
+  [/Zorluk/g,'Difficulty'],
+  [/Senaryo/g,'Scenario'],
+  [/Süre/g,'Time'],
+  [/Skor/g,'Score']
+];
+
+const TOKEN_EN=[
+  ['Avalon Krallığı','Kingdom of Avalon'],
+  ['Dijital Arşivleri','Digital Archives'],
+  ['kaotik bir virüsün saldırısı altında','under attack by a chaotic virus'],
+  ['Veri tekrarlamaları','Data repetitions'],
+  ['kırık bağımlılıklar','broken dependencies'],
+  ['krallığı çöküşe sürüklüyor','are dragging the kingdom toward collapse'],
+  ['veritabanı mimarisini doğru modelleyerek','by modeling the database architecture correctly'],
+  ['yeniden tesis etmek','restore'],
+  ['Üniversite Kayıt Sistemi','University Registration System'],
+  ['E-Ticaret Sistemi','E-Commerce System'],
+  ['Hastane Yönetim Sistemi','Hospital Management System'],
+  ['Öğretim Üyesi','Instructor'],
+  ['Öğrenci No','Student No'],
+  ['Ders Kodu','Course Code'],
+  ['Ders Adı','Course Name'],
+  ['Kredi Saati','Credit Hours'],
+  ['Sicil No','Employee ID'],
+  ['Ofis No','Office No'],
+  ['Müşteri ID','Customer ID'],
+  ['Sipariş No','Order No'],
+  ['Ürün Kodu','Product Code'],
+  ['Ürün Adı','Product Name'],
+  ['TC Kimlik No','National ID'],
+  ['Diploma No','Diploma No'],
+  ['Randevu ID','Appointment ID'],
+  ['Doğum Tarihi','Birth Date'],
+  ['Ad Soyad','Full Name'],
+  ['E-posta','Email'],
+  ['Telefon No','Phone No'],
+  ['Telefon','Phone'],
+  ['Adres','Address'],
+  ['Dersler','Courses'],
+  ['Telefonlar','Phones'],
+  ['Kayıt Tarihi','Registration Date'],
+  ['Sipariş Tarihi','Order Date'],
+  ['Teslimat Adresi','Delivery Address'],
+  ['Toplam Tutar','Total Amount'],
+  ['Stok Miktarı','Stock Quantity'],
+  ['Randevu Tarihi','Appointment Date'],
+  ['Tarih-Saat','Date-Time'],
+  ['Kan Grubu','Blood Type'],
+  ['Sigorta No','Insurance No'],
+  ['Uzmanlık Alanı','Specialization'],
+  ['Uzmanlık','Specialty'],
+  ['Bölüm','Department'],
+  ['Çalışma Günleri','Working Days'],
+  ['Şikayet','Complaint'],
+  ['Durum','Status'],
+  ['Açıklama','Description'],
+  ['Müfredat','Curriculum'],
+  ['Ücret','Salary'],
+  ['Fiyat','Price'],
+  ['Stok','Stock'],
+  ['Kategori','Category'],
+  ['Danışman','Advisor'],
+  ['Poliklinik','Clinic'],
+  ['İlaç','Medication'],
+  ['Öğrenci','Student'],
+  ['Ders','Course'],
+  ['Müşteri','Customer'],
+  ['Sipariş','Order'],
+  ['Ürün','Product'],
+  ['Hasta','Patient'],
+  ['Doktor','Doctor'],
+  ['Randevu','Appointment'],
+  ['Semptom','Symptom'],
+  ['GPA Değeri','GPA Value'],
+  ['Nitelik','Attribute'],
+  ['nitelik','attribute'],
+  ['Bağımsız','Independent'],
+  ['bağımsız','independent'],
+  ['Bire-Bir','One-to-One'],
+  ['Bire-Çok','One-to-Many'],
+  ['Çoka-Çok','Many-to-Many'],
+  ['Ara tablo','Junction table'],
+  ['ara tablo','junction table'],
+  ['Birincil Anahtar','Primary Key'],
+  ['Birincil anahtar','Primary key'],
+  ['Geçişli bağımlılık','Transitive dependency'],
+  ['geçişli bağımlılık','transitive dependency'],
+  ['Kısmi bağımlılık','Partial dependency'],
+  ['kısmi bağımlılık','partial dependency'],
+  ['Tekrarlayan Grupları Temizle','Clean Repeating Groups'],
+  ['Kısmi Bağımlılıkları Gider','Remove Partial Dependencies'],
+  ['Geçişli Bağımlılıkları Yok Et','Remove Transitive Dependencies'],
+  ['Yapısal Çöküş','Structural Collapse'],
+  ['Çelişki','Contradiction'],
+  ['Doğru','Correct'],
+  ['Yanlış','Wrong'],
+  ['Hatalı','Incorrect'],
+  ['üst üste hata','consecutive mistakes'],
+  ['devreye girdi','stepped in'],
+  ['Bu senaryoda','In this scenario'],
+  ['doğru Entity','correct Entity'],
+  ['yanlışlar','wrong selections'],
+  ['tehlikede','in danger'],
+  ['keşfi','discovery'],
+  ['savaşı','battle'],
+  ['boyutlu yetkinlik haritası','dimensional competency map'],
+  ['Gerçek Zamanlı','Real Time'],
+  ['Sınıf Geneli','Class Overview'],
+  ['Hata Dağılımı','Error Distribution'],
+  ['Toplam','Total'],
+  ['Öğrenci Tablosu','Student Table'],
+  ['Kritik Alan','Critical Area'],
+  ['Kötü Alan','Weakest Area'],
+  ['Öncesi','Before'],
+  ['Sonrası','After'],
+  ['doğruluk','accuracy'],
+  ['satın alındı','purchased'],
+  ['Yeni bakiye','New balance'],
+  ['Arkadaşına gönder','Send it to a friend'],
+  ['Link kopyalandı','Link copied'],
+  ['Linki manuel kopyala','Copy the link manually'],
+  ['Leaderboard\'a Katıl','Join Leaderboard'],
+  ['Leaderboard\'dan Çık','Opt out of Leaderboard'],
+  ['Leaderboard\'dan çıkıldı','Opted out of Leaderboard'],
+  ['geri döndün','you are back'],
+  ['sana meydan okudu','challenged you'],
+  ['Hedef','Target'],
+  ['dk','min'],
+  ['Seç','Choose'],
+  ['seç','choose'],
+  ['Kaydet','Save'],
+  ['Yazdırılabilir','Printable']
+];
+
+TOKEN_EN.push(
+  ['ogrenci_no','student_no'],
+  ['ogrenci_ad','student_name'],
+  ['ogrenci','student'],
+  ['ders_kodu','course_code'],
+  ['ders_adi','course_name'],
+  ['dersler','courses'],
+  ['telefonlar','phones'],
+  ['vize_notu','midterm_grade'],
+  ['kayit','enrollment'],
+  ['Kayıt','Enrollment'],
+  ['kayıt','enrollment'],
+  ['sicil_no','employee_id'],
+  ['adi','name'],
+  ['ad_soyad','full_name'],
+  ['personel_no','personnel_no'],
+  ['bolum_kodu','department_code'],
+  ['bolum_adi','department_name'],
+  ['bolum_yonetici','department_manager'],
+  ['dekan','dean'],
+  ['Programlama','Programming'],
+  ['Veri Yapıları','Data Structures'],
+  ['Bilgisayar Müh.','Computer Engineering'],
+  ['Prof. Can','Prof. Can'],
+
+  ['musteri_id','customer_id'],
+  ['musteri_ad','customer_name'],
+  ['musteri','customer'],
+  ['siparis_no','order_no'],
+  ['siparis','order'],
+  ['siparis_detay','order_detail'],
+  ['urun_kodu','product_code'],
+  ['urun_adi','product_name'],
+  ['urunler','products'],
+  ['urun','product'],
+  ['miktar','quantity'],
+  ['adresler','addresses'],
+  ['kategori_id','category_id'],
+  ['kategori_kodu','category_code'],
+  ['kategori_adi','category_name'],
+  ['kat_yonetici','category_manager'],
+  ['Elektronik','Electronics'],
+  ['Klavye','Keyboard'],
+  ['Ev','Home'],
+  ['İş','Work'],
+
+  ['tc_kimlik','national_id'],
+  ['tc_no','national_id'],
+  ['hasta_ad','patient_name'],
+  ['doktor_no','doctor_no'],
+  ['doktor_ad','doctor_name'],
+  ['randevu_id','appointment_id'],
+  ['randevu_tarihi','appointment_date'],
+  ['sikayet','complaint'],
+  ['sigorta_no_lar','insurance_numbers',
+  ],
+  ['kronik_hastaliklar','chronic_conditions'],
+  ['poliklinik_id','clinic_id'],
+  ['ilac_kodu','medication_code'],
+  ['recete','prescription'],
+  ['Diyabet','Diabetes'],
+  ['HT','Hypertension'],
+  ['Kontrol','Checkup'],
+  ['Tahlil','Lab Test'],
+  ['Kardiyoloji','Cardiology'],
+  ['ÖS-445','PRIVATE-445'],
+  ['SGK','INS']
+);
+
+TOKEN_EN.push(
+  ['Adı','Name'],
+  ['adı','name'],
+  ['(Sen)','(You)'],
+  ['Ayşe Kaya','Aylin Kaya'],
+  ['Ayşe','Aylin'],
+  ['Özkan','Ozkan'],
+  ['Şahin','Sahin'],
+  ['Yıldız','Yildiz'],
+  ['Öztürk','Ozturk'],
+  ['Çelik','Celik'],
+  ['Kültür','Kultur']
+);
+
+const textOriginals=new WeakMap();
+let langObserver=null;
+let applyingLang=false;
+
+function setLang(lang){
+  currentLang=lang==='tr'?'tr':'en';
+  try{localStorage.setItem(LANG_KEY,currentLang)}catch(_){}
+  document.documentElement.lang=currentLang;
+  if(document.body)document.body.dataset.lang=currentLang;
+  updateLangButtons();
+  applyLanguage(document.body||document);
+}
+function updateLangButtons(){
+  const en=$('lang-en'),tr=$('lang-tr');
+  if(en){en.classList.toggle('sel',currentLang==='en');en.setAttribute('aria-pressed',currentLang==='en'?'true':'false')}
+  if(tr){tr.classList.toggle('sel',currentLang==='tr');tr.setAttribute('aria-pressed',currentLang==='tr'?'true':'false')}
+}
+function translateText(raw){
+  const str=String(raw);
+  if(!str.trim())return str;
+  const lead=str.match(/^\s*/)?.[0]||'';
+  const tail=str.match(/\s*$/)?.[0]||'';
+  let body=str.trim();
+  if(TEXT_EN[body])return lead+TEXT_EN[body]+tail;
+  PHRASES_EN.forEach(([re,to])=>{body=body.replace(re,to)});
+  TOKEN_EN.forEach(([from,to])=>{body=body.split(from).join(to)});
+  return lead+body+tail;
+}
+function uiText(raw){return currentLang==='tr'?String(raw):translateText(raw)}
+function L(tr,en){return currentLang==='tr'?tr:en}
+function localizeHtml(html){
+  if(currentLang==='tr')return html;
+  return String(html)
+    .replace(/>([^<>]+)</g,(m,text)=>'>'+translateText(text)+'<')
+    .replace(/(title=")([^"]*)(")/g,(m,a,text,b)=>a+translateText(text)+b);
+}
+function skipLangNode(node){
+  return node&&node.nodeType===1&&['SCRIPT','STYLE','NOSCRIPT','TEMPLATE'].includes(node.tagName);
+}
+function applyTextNode(node){
+  if(!node||node.nodeType!==3||!node.nodeValue.trim())return;
+  if(!textOriginals.has(node))textOriginals.set(node,node.nodeValue);
+  const src=textOriginals.get(node);
+  const next=currentLang==='tr'?src:translateText(src);
+  if(node.nodeValue!==next)node.nodeValue=next;
+}
+function applyElementAttrs(el){
+  if(!el||el.nodeType!==1||skipLangNode(el))return;
+  ['placeholder','title','aria-label'].forEach(attr=>{
+    if(!el.hasAttribute(attr))return;
+    if(!el.__i18nAttrs)el.__i18nAttrs={};
+    if(!(attr in el.__i18nAttrs))el.__i18nAttrs[attr]=el.getAttribute(attr);
+    const src=el.__i18nAttrs[attr];
+    const next=currentLang==='tr'?src:translateText(src);
+    if(el.getAttribute(attr)!==next)el.setAttribute(attr,next);
+  });
+}
+function applyLanguage(root=document.body){
+  if(!root)return;
+  applyingLang=true;
+  try{
+    if(root.nodeType===3){applyTextNode(root);return}
+    if(root.nodeType===1)applyElementAttrs(root);
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{
+      acceptNode(node){
+        if(skipLangNode(node))return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    let node=walker.currentNode;
+    while(node){
+      if(node.nodeType===3)applyTextNode(node);
+      else if(node.nodeType===1)applyElementAttrs(node);
+      node=walker.nextNode();
+    }
+  }finally{
+    applyingLang=false;
+  }
+}
+function initLanguage(){
+  setLang(currentLang);
+  if(langObserver||!document.body)return;
+  langObserver=new MutationObserver(muts=>{
+    if(applyingLang)return;
+    muts.forEach(m=>{
+      if(m.type==='childList')m.addedNodes.forEach(n=>applyLanguage(n));
+      else if(m.type==='characterData')applyTextNode(m.target);
+      else if(m.type==='attributes')applyElementAttrs(m.target);
+    });
+  });
+  langObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','title','aria-label']});
+}
+
+// ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
 const G={
@@ -925,9 +1840,10 @@ const G={
   bridgesDone:[],jCurrent:null,bridgeAllOk:true,
   mHp:100,nErrors:0,
   integ:100,log:[],startTime:null,
-  playerCode:'',gameId:'GM-AVALON-PENDING',sessionId:'',gpafLog:[],gpafEnded:false,buildVersion:'avalon-final-gpaf-1.5-verified'
+  playerCode:'',gameId:'GM-AVALON-PENDING',sessionId:'',gpafLog:[],gpafEnded:false,cloudEndpoint:'',cloudSubmitted:false,buildVersion:'avalon-final-gpaf-2.1-presentation-polish'
 };
 const SCORE_CAP=1600;
+const DEFAULT_CLOUD_ENDPOINT='https://script.google.com/macros/s/AKfycbyrsQdSnapFw79cAAwL3eqRotao6X4oTpsKjNOq2-leJWT_3xFovBLhtU5rcJK2xWBy/exec';
 const DIFF={easy:{maxHp:150,loss:.6},normal:{maxHp:100,loss:1},hard:{maxHp:75,loss:1.4}};
 let timerID=null,timeLeft=2700;
 let entSel=[];
@@ -979,6 +1895,98 @@ function finishGpafSession(){
   G.gpafEnded=true;
   const elapsed=G.startTime?Math.round((Date.now()-G.startTime)/1000):0;
   gpafEvent('session_end',{completed:true,durationSec:elapsed,accuracy:G.total>0?Math.round(G.correct/G.total*100):0,errors:G.errors,badges:G.badges,role:G.role,scenario:G.sc,difficulty:G.diff,maxGameScore:SCORE_CAP});
+}
+
+let cloudScores=[];
+function getCloudEndpoint(){
+  G.cloudEndpoint=DEFAULT_CLOUD_ENDPOINT;
+  return DEFAULT_CLOUD_ENDPOINT;
+}
+function setCloudStatus(msg,type='warn'){
+  const el=$('cloud-sync-status');
+  const text=uiText(msg);
+  if(el){el.textContent=text;el.style.color=type==='ok'?'#a8e8b8':type==='bad'?'#ffaaaa':'var(--text-d)'}
+  const banner=$('res-cloud-banner');
+  if(banner){banner.textContent=text;banner.className='cloud-save-badge '+type}
+  if(type==='bad')notify(text,'bad',3500);
+  else if(type==='ok')notify(text,'ok',3000);
+}
+function buildCloudPayload(){
+  const elapsed=G.startTime?Math.round((Date.now()-G.startTime)/1000):0;
+  const accuracy=G.total>0?Math.round(G.correct/G.total*100):0;
+  return {
+    event:'avalon_score_submit',
+    ts:new Date().toISOString(),
+    gameTitle:'The Architects of Avalon',
+    course:'COM4061',
+    buildVersion:G.buildVersion,
+    playerCode:G.playerCode||safeCode(G.player)||'anonymous',
+    gameId:getGameId(),
+    sessionId:G.sessionId||makeSessionId(),
+    role:G.role||'',
+    roleName:ROLES[G.role]?.name||'',
+    scenario:G.sc||'',
+    scenarioName:SC[G.sc]?.name||G.sc||'',
+    difficulty:G.diff,
+    score:G.score,
+    hp:G.hp,
+    maxHp:G.maxHp,
+    accuracy,
+    correct:G.correct,
+    total:G.total,
+    badges:G.badges,
+    errors:G.errors,
+    durationSec:elapsed,
+    language:currentLang
+  };
+}
+function submitScoreToCloud(manual=false){
+  const url=getCloudEndpoint();
+  if(!url){setCloudStatus(L('Cloud skor baglantisi bu oyun surumunde eksik.','Cloud score endpoint is missing in this game build.'),'bad');return}
+  if(G.cloudSubmitted&&!manual){setCloudStatus(L('Bu oturum icin skor zaten dashboarda gonderildi.','Score already sent for this session.'),'warn');return}
+  finishGpafSession();
+  const payload=buildCloudPayload();
+  const body=JSON.stringify(payload);
+  let sent=false;
+  try{
+    if(navigator.sendBeacon){
+      sent=navigator.sendBeacon(url,new Blob([body],{type:'text/plain;charset=utf-8'}));
+    }
+  }catch(_){sent=false}
+  if(!sent){
+    try{
+      fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body,keepalive:true})
+        .catch(()=>cloudSubmitByGet(url,body));
+      sent=true;
+    }catch(_){sent=false}
+  }
+  if(!sent)cloudSubmitByGet(url,body);
+  G.cloudSubmitted=true;
+  setCloudStatus(L('Skor sinif dashboarduna gonderildi. Google Sheet yenilenmesi birkac saniye surebilir.','Score sent to the class dashboard. Google Sheet may need a few seconds to refresh.'),'ok');
+  if(manual)setTimeout(()=>loadCloudScores(false),1200);
+}
+function cloudSubmitByGet(url,body){
+  const img=new Image();
+  img.referrerPolicy='no-referrer';
+  img.src=url+(url.includes('?')?'&':'?')+'action=submit&p='+encodeURIComponent(body)+'&_='+Date.now();
+}
+function loadCloudScores(manual=false){
+  const url=getCloudEndpoint();
+  if(!url){if(manual)setCloudStatus(L('Cloud skor baglantisi bu oyun surumunde eksik.','Cloud score endpoint is missing in this game build.'),'bad');return}
+  const cb='avalonCloudScores_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+  const script=document.createElement('script');
+  let done=false;
+  const cleanup=()=>{delete window[cb];script.remove();clearTimeout(timer)};
+  const timer=setTimeout(()=>{if(!done){cleanup();if(manual)setCloudStatus(L('Cloud dashboard zaman asimina ugradi. Google Sheets deployment ayarini kontrol et.','Cloud dashboard load timed out. Ask the game owner to check the Google Sheets deployment.'),'bad')}},9000);
+  window[cb]=(data)=>{
+    done=true;cleanup();
+    cloudScores=Array.isArray(data?.scores)?data.scores:[];
+    setCloudStatus(L('Cloud dashboard yuklendi: '+cloudScores.length+' skor satiri.','Cloud dashboard loaded: '+cloudScores.length+' score row(s).'),'ok');
+    if($('dash-overlay')?.style.display==='flex')renderDashboard();
+  };
+  script.onerror=()=>{if(!done){done=true;cleanup();if(manual)setCloudStatus(L('Cloud dashboard yuklenemedi. Google Sheets deployment ayarini kontrol et.','Cloud dashboard could not be loaded. Check the Google Sheets deployment.'),'bad')}};
+  script.src=url+(url.includes('?')?'&':'?')+'action=list&gameId='+encodeURIComponent(getGameId())+'&callback='+encodeURIComponent(cb)+'&_='+Date.now();
+  document.body.appendChild(script);
 }
 
 function loseHp(amt,reason){
@@ -1095,6 +2103,7 @@ function goRole(){
   G.player=n;G.playerCode=n;
   const gid=($('inp-gameid')?.value||'').trim();
   G.gameId=gid||localStorage.getItem('avalon_game_id')||'GM-AVALON-PENDING';
+  G.cloudEndpoint=DEFAULT_CLOUD_ENDPOINT;
   localStorage.setItem('avalon_player_code',G.playerCode);
   localStorage.setItem('avalon_game_id',G.gameId);
   G.maxHp=DIFF[G.diff].maxHp;G.hp=G.maxHp;
@@ -1463,6 +2472,41 @@ function chkNorm(pi,ch){
 // ══════════════════════════════════════════
 // RESULTS
 // ══════════════════════════════════════════
+function getArchitectRank(score,acc,hpP){
+  if(score>=1200&&acc>=88&&hpP>=75)return {grade:'S',cls:'gs',rank:L('Grand Data Architect','Grand Data Architect'),title:L('Avalon Kurtarıldı! Mükemmel Zafer!','Avalon Restored! Perfect Victory!'),sub:L("Sınıfın En İyi Architect'i — S Tier",'Top Architect of the class — S Tier')};
+  if(score>=800&&acc>=72)return {grade:'A',cls:'ga',rank:L('Senior Schema Guardian','Senior Schema Guardian'),title:L('Zafer Kazanıldı!','Victory Achieved!'),sub:L('Güçlü veri modelleme becerileri — A Tier','Strong data modeling skills — A Tier')};
+  if(score>=450)return {grade:'B',cls:'gb',rank:L('Apprentice Modeler','Apprentice Modeler'),title:L('İyi Mücadele!','Good Fight!'),sub:L('Bazı kavramları pekiştir — B Tier','Reinforce a few concepts — B Tier')};
+  return {grade:'C',cls:'gc',rank:L('Novice Data Guardian','Novice Data Guardian'),title:L('Öğrenme Devam Ediyor','Learning Continues'),sub:L('Tekrar dene, deneyim kazanıldı — C Tier','Try again; experience gained — C Tier')};
+}
+function outcomeCard(label,score,detail){
+  const cls=score>=85?'mastery':score>=65?'practice':'review';
+  const status=score>=85?L('Mastery','Mastery'):score>=65?L('Practice','Practice'):L('Review','Review');
+  return `<div class="outcome ${cls}">
+    <div class="outcome-k">${label}</div>
+    <div class="outcome-v">${status}</div>
+    <div class="outcome-d">${detail}</div>
+    <div class="outcome-meter"><span style="width:${Math.max(8,Math.min(100,score))}%"></span></div>
+  </div>`;
+}
+function buildLearningOutcomes(acc,elapsed,rank){
+  const entityScore=Math.max(35,100-G.errors.ent*28);
+  const pkScore=Math.max(35,100-G.errors.pk*28);
+  const bridgeScore=Math.max(35,100-G.errors.br*24);
+  const normScore=Math.max(35,100-G.errors.nr*24);
+  const roleName=ROLES[G.role]?.name||'Architect';
+  const scenarioName=SC[G.sc]?.name||G.sc||'Avalon';
+  $('res-rank-title').textContent=L('Mimar Rutbesi: ','Architect Rank: ')+rank.rank;
+  $('res-meta-line').textContent=L(
+    `${roleName} · ${scenarioName} · ${G.diff} · ${Math.floor(elapsed/60)}dk ${elapsed%60}sn`,
+    `${roleName} · ${translateText(scenarioName)} · ${G.diff} · ${Math.floor(elapsed/60)}m ${elapsed%60}s`
+  );
+  $('learning-outcomes').innerHTML=[
+    outcomeCard(L('Entity Modeling','Entity Modeling'),entityScore,G.errors.ent?L(`${G.errors.ent} entity/attribute ayrimi tekrar edilmeli.`,`${G.errors.ent} entity/attribute distinction issue(s) to review.`):L('Entity ve attribute ayrimi guclu.','Strong entity and attribute distinction.')),
+    outcomeCard(L('Key Integrity','Key Integrity'),pkScore,G.errors.pk?L(`${G.errors.pk} primary key karari pekistirilmeli.`,`${G.errors.pk} primary key decision(s) need reinforcement.`):L('PK secimleri tutarli ve benzersiz.','PK choices are consistent and unique.')),
+    outcomeCard(L('Cardinality','Cardinality'),bridgeScore,G.errors.br?L(`${G.errors.br} relationship/junction hatasi var.`,`${G.errors.br} relationship/junction issue(s) found.`):L('1:1, 1:N ve M:N iliskiler net.','1:1, 1:N, and M:N relationships are clear.')),
+    outcomeCard(L('Normalization','Normalization'),normScore,G.errors.nr?L(`${G.errors.nr} 1NF-3NF noktasi tekrar edilmeli.`,`${G.errors.nr} 1NF-3NF point(s) to review.`):L('1NF, 2NF ve 3NF basariyla uygulandi.','1NF, 2NF, and 3NF were applied successfully.'))
+  ].join('');
+}
 function showResults(){
   clearInterval(timerID);
   finishGpafSession();
@@ -1470,14 +2514,10 @@ function showResults(){
   const acc=G.total>0?Math.round(G.correct/G.total*100):0;
   const hpP=Math.round(G.hp/G.maxHp*100);
 
-  let gr,gc,title,sub;
-  if(G.score>=1200&&acc>=88&&hpP>=75){gr='S';gc='gs';title='Avalon Kurtarıldı! Mükemmel Zafer!';sub='Sınıfın En İyi Architect\'i — S Tier'}
-  else if(G.score>=800&&acc>=72){gr='A';gc='ga';title='Zafer Kazanıldı!';sub='Güçlü veri modelleme becerileri — A Tier'}
-  else if(G.score>=450){gr='B';gc='gb';title='İyi Mücadele!';sub='Bazı kavramları pekiştir — B Tier'}
-  else{gr='C';gc='gc';title='Öğrenme Devam Ediyor';sub='Tekrar dene, deneyim kazanıldı — C Tier'}
+  const rank=getArchitectRank(G.score,acc,hpP);
 
-  $('res-grade').textContent=gr;$('res-grade').className='rg '+gc;
-  $('res-title').textContent=title;$('res-sub').textContent=sub;
+  $('res-grade').textContent=rank.grade;$('res-grade').className='rg '+rank.cls;
+  $('res-title').textContent=rank.title;$('res-sub').textContent=rank.sub;
   $('rs-score').textContent=G.score.toLocaleString();
   $('rs-hp').textContent=G.hp;$('rs-acc').textContent=acc+'%';
 
@@ -1485,7 +2525,10 @@ function showResults(){
   const br=$('res-badges');
   br.innerHTML=G.badges.length?G.badges.map(b=>`<div class="badge">${BDEFS[b]?.l||b}</div>`).join(''):'<span style="font-size:.78rem;color:var(--text-dd)">Henüz badge kazanılmadı.</span>';
 
-  buildDiag(acc,el);buildLB('score');show('screen-results');if(G.role)setTimeout(()=>{openPortfolio()},900);
+  buildLearningOutcomes(acc,el,rank);buildDiag(acc,el);buildLB('score');show('screen-results');
+  setCloudStatus(L('Skor sonucu hazir. Dashboard kaydi otomatik olarak baslatiliyor.','Result ready. Dashboard save starts automatically.'),'warn');
+  setTimeout(()=>submitScoreToCloud(false),800);
+  if(G.role)setTimeout(()=>{openPortfolio()},4200);
 }
 
 function buildDiag(acc,el){
@@ -1562,12 +2605,23 @@ function copyPlayerCode(){
   navigator.clipboard?.writeText(code).then(()=>notify('📋 Player Code kopyalandı: '+code,'ok',2500)).catch(()=>notify('Player Code: '+code,'warn',4500));
 }
 function showSubmitHelp(){
-  const msg=`Oyuncu teslim adımları:
+  const msg=currentLang==='tr'
+    ? `Oyuncu teslim adımları:
 
 1) Bu oyundaki Player Code'u Player Tool'daki Player code alanına aynen yaz.
 2) Hoca yayınladığında verilen Game Code'u Player Tool → Games kısmına ekle.
 3) Oyunu bitirince buradan GPAF Log (.jsonl) indir; bu dosyayı takım Team Tool → Logs kısmına ekleyecek.
 4) Oyuncu ayrıca Player Tool'dan kendi gpaf_player_export JSON dosyasını hocaya gönderir.
+
+Player Code: ${G.playerCode||G.player||'—'}
+Game ID: ${getGameId()}
+Session ID: ${G.sessionId||'—'}`
+    : `Player submission steps:
+
+1) Enter this game's Player Code exactly in the Player Tool's Player code field.
+2) When the instructor publishes the game, add the provided Game Code in Player Tool → Games.
+3) After finishing the game, download the GPAF Log (.jsonl) here; your team will add it to Team Tool → Logs.
+4) Each player also exports their own gpaf_player_export JSON file from Player Tool and submits it to the instructor.
 
 Player Code: ${G.playerCode||G.player||'—'}
 Game ID: ${getGameId()}
@@ -1598,7 +2652,7 @@ The team imports all .jsonl files into GPAF Team Tool → Logs and tags real cla
 
 function restart(){
   clearInterval(timerID);
-  Object.assign(G,{player:'',playerCode:'',gameId:localStorage.getItem('avalon_game_id')||'GM-AVALON-PENDING',sessionId:'',gpafLog:[],gpafEnded:false,role:null,sc:'uni',diff:'normal',hp:100,maxHp:100,score:0,correct:0,total:0,badges:[],errors:{ent:0,pk:0,br:0,nr:0},entDone:false,pkDone:false,bridgesDone:[],jCurrent:null,bridgeAllOk:true,mHp:100,nErrors:0,integ:100,log:[],startTime:null});
+  Object.assign(G,{player:'',playerCode:'',gameId:localStorage.getItem('avalon_game_id')||'GM-AVALON-PENDING',sessionId:'',gpafLog:[],gpafEnded:false,cloudEndpoint:DEFAULT_CLOUD_ENDPOINT,cloudSubmitted:false,role:null,sc:'uni',diff:'normal',hp:100,maxHp:100,score:0,correct:0,total:0,badges:[],errors:{ent:0,pk:0,br:0,nr:0},entDone:false,pkDone:false,bridgesDone:[],jCurrent:null,bridgeAllOk:true,mHp:100,nErrors:0,integ:100,log:[],startTime:null});
   entSel=[];jCur=null;mHp=100;nPhase=0;nErr=0;
   Object.keys(aPlaced).forEach(k=>aPlaced[k]=0);
   document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
@@ -1616,6 +2670,7 @@ function initAvalon(){
   if(__avalonInitDone) return;
   __avalonInitDone=true;
   try{
+    initLanguage();
     const ld=$('loading');
     if(ld){ld.classList.add('hidden');setTimeout(()=>{ld.style.display='none'},450);}
     createAmbientRunes();
@@ -1828,7 +2883,7 @@ function renderERD(){
           // create relation
           const existing=erdState.relations.find(r=>(r.from===erdState.entities[erdState.connecting].k&&r.to===e.k)||(r.from===e.k&&r.to===erdState.entities[erdState.connecting].k));
           if(!existing){
-            const label=prompt('İlişki türünü gir:\n1:1  veya  1:N  veya  M:N','1:N')||'1:N';
+            const label=prompt(currentLang==='tr'?'İlişki türünü gir:\n1:1  veya  1:N  veya  M:N':'Enter relationship type:\n1:1  or  1:N  or  M:N','1:N')||'1:N';
             const sc=SC[G.sc];
             const fromEntity=erdState.entities[erdState.connecting];
             const fromKey=fromEntity.k;
@@ -1899,11 +2954,24 @@ const MOCK_STUDENTS=[
 function openDashboard(){
   renderDashboard();
   $('dash-overlay').style.display='flex';
+  loadCloudScores(false);
 }
 function renderDashboard(){
-  // Add current player
-  const allStudents=[...MOCK_STUDENTS];
-  if(G.player&&G.score>0){
+  const cloudRows=cloudScores.map(r=>({
+    name:r.playerCode||r.player||'Cloud Player',
+    role:r.role||'',
+    sc:r.scenario||r.sc||'',
+    score:Number(r.score)||0,
+    hp:Number(r.hp)||0,
+    maxHp:Number(r.maxHp)||100,
+    acc:Number(r.accuracy)||0,
+    errors:r.errors||{ent:0,pk:0,br:0,nr:0},
+    badges:Array.isArray(r.badges)?r.badges:String(r.badges||'').split(',').filter(Boolean),
+    time:r.durationSec?Math.floor(Number(r.durationSec)/60)+'dk':'cloud',
+    sessionId:r.sessionId||''
+  }));
+  const allStudents=cloudRows.length?[...cloudRows]:[...MOCK_STUDENTS];
+  if(G.player&&G.score>0&&!allStudents.some(s=>s.sessionId&&s.sessionId===G.sessionId)){
     const acc=G.total>0?Math.round(G.correct/G.total*100):0;
     allStudents.unshift({name:G.player+' (Sen)',role:G.role,sc:G.sc,score:G.score,hp:G.hp,acc,errors:G.errors,badges:G.badges,time:'—'});
   }
@@ -1928,6 +2996,9 @@ function renderDashboard(){
 
     <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.5rem">
       📊 Hata Dağılımı — Sınıf Geneli
+    </div>
+    <div style="font-size:.68rem;color:var(--text-dd);margin:-.25rem 0 .55rem">
+      ${cloudRows.length?L('☁ Cloud dashboard: '+cloudRows.length+' skor satiri Google Sheets uzerinden yuklendi.','☁ Cloud dashboard: '+cloudRows.length+' score row(s) loaded from Google Sheets.'):L('Cloud dashboard: henuz Google Sheet skoru yuklenmedi; oyun bitince satirlar burada gorunur.','Cloud dashboard: no Google Sheet scores loaded yet; finished games will appear here.')}
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.8rem">
       ${[['Entity',allStudents.reduce((a,s)=>a+s.errors.ent,0),'var(--teal-ll)'],
@@ -1968,7 +3039,8 @@ function renderDashboard(){
           const isMe=s.name.includes('Sen');
           const hp=Math.min(100,Math.round(s.hp/(s.maxHp||100)*100));
           const hpColor=hp>60?'#27ae60':hp>30?'#e67e22':'#e74c3c';
-          return `<tr style="background:${isMe?'rgba(201,162,39,0.07)':''}">
+          const rankBg=i===0?'rgba(201,162,39,0.11)':i===1?'rgba(192,192,255,0.08)':i===2?'rgba(205,127,50,0.08)':isMe?'rgba(201,162,39,0.07)':'';
+          return `<tr style="background:${rankBg}">
             <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);color:var(--gold);font-family:'Cinzel',serif">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td>
             <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);${isMe?'color:var(--gold);font-weight:600':''}">${s.name}</td>
             <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);font-size:.68rem;color:var(--text-dd)">${s.role?ROLES[s.role]?.name||s.role:'—'}</td>
@@ -2199,16 +3271,28 @@ function buildLB(sk){
   ];
   const all=[me,...others];
   const CATS={
-    score:{fn:(a,b)=>b.score-a.score,val:p=>p.score.toLocaleString()+' Rune'},
-    period:{fn:(a,b)=>b.score-a.score,val:p=>'+'+Math.round(p.score*.3).toLocaleString()},
-    analytical:{fn:(a,b)=>b.acc-a.acc,val:p=>p.acc+'% doğruluk'},
-    collab:{fn:(a,b)=>b.collab-a.collab,val:p=>p.collab+' pt'},
-    improvement:{fn:(a,b)=>b.improvement-a.improvement,val:p=>'+'+p.improvement+'%'}
+    score:{label:L('Mutlak Puan','Score'),fn:(a,b)=>b.score-a.score,val:p=>p.score.toLocaleString()+' Rune'},
+    period:{label:L('Sprint','Sprint'),fn:(a,b)=>b.score-a.score,val:p=>'+'+Math.round(p.score*.3).toLocaleString()},
+    analytical:{label:L('Analitik','Analytical'),fn:(a,b)=>b.acc-a.acc,val:p=>p.acc+L('% doğruluk','% accuracy')},
+    collab:{label:L('İşbirliği','Collaboration'),fn:(a,b)=>b.collab-a.collab,val:p=>p.collab+' pt'},
+    improvement:{label:L('Gelişim','Improvement'),fn:(a,b)=>b.improvement-a.improvement,val:p=>'+'+p.improvement+'%'}
   };
   const cat=CATS[sk]||CATS.score;
   all.sort(cat.fn);
   const medals=['🥇','🥈','🥉','',''];
-  $('lb').innerHTML=all.map((p,i)=>`<div class="lbr ${p.me?'me':''}"><div class="lbrank">${medals[i]||'#'+(i+1)}</div><div class="lbname">${p.n}</div><div style="font-size:.7rem;color:var(--text-dd);flex:1;text-align:center">${cat.val(p)}</div><div class="lbscore">${p.score.toLocaleString()}</div></div>`).join('');
+  const myIndex=all.findIndex(p=>p.me);
+  const leader=all[0]||me;
+  $('lb').innerHTML=`
+    <div class="lb-summary">
+      <div><strong>${L('Senin Sıran','Your Rank')}</strong><span>${cat.label}</span><div class="lbval">#${myIndex+1} · ${cat.val(me)}</div></div>
+      <div><strong>${L('Mevcut Lider','Current Leader')}</strong><span>${leader.n}</span><div class="lbval">${cat.val(leader)}</div></div>
+    </div>
+    ${all.map((p,i)=>`<div class="lbr ${p.me?'me':''} ${i<3?'top'+(i+1):''}">
+      <div class="lbrank">${medals[i]||'#'+(i+1)}</div>
+      <div class="lbname">${p.n}</div>
+      <div class="lbmetric">${cat.val(p)}</div>
+      <div class="lbscore">${p.score.toLocaleString()}</div>
+    </div>`).join('')}`;
 }
 
 // ══════════════════════════════════════════
@@ -2489,7 +3573,7 @@ function showTraceability(){
     {id:'Octalysis',desc:'8 boyut Octalysis skoru',status:'✅',impl:'renderOctalysis() — döküman değerleri'},
   ];
   const win=window.open('','_blank','width=700,height=600');
-  win.document.write(`<html><head><title>FR/NFR Traceability Matrix</title>
+  win.document.write(localizeHtml(`<html><head><title>FR/NFR Traceability Matrix</title>
   <style>body{background:#07090f;color:#e8dcc8;font-family:Arial,sans-serif;padding:1rem}
   table{width:100%;border-collapse:collapse;font-size:.78rem}
   th{background:#1e1245;padding:.4rem .6rem;color:#c9a227;text-align:left;border:1px solid rgba(201,162,39,.2)}
@@ -2502,7 +3586,7 @@ function showTraceability(){
   ${matrix.map(r=>`<tr><td><strong>${r.id}</strong></td><td>${r.desc}</td><td style="text-align:center">${r.status}</td><td style="color:#9de8e8;font-size:.72rem">${r.impl}</td></tr>`).join('')}
   </tbody></table>
   <p style="font-size:.7rem;color:#7a6a50;margin-top:1rem">COM4061 · Istanbul Kültür University · The Architects of Avalon</p>
-  </body></html>`);
+  </body></html>`));
   win.document.close();
 }
 
@@ -2610,7 +3694,7 @@ function printReport(){
   const acc = G.total>0 ? Math.round(G.correct/G.total*100) : 0;
   const elapsed = G.startTime ? Math.round((Date.now()-G.startTime)/1000) : 0;
   const win = window.open('','_blank','width=700,height=900');
-  win.document.write(`<!DOCTYPE html><html><head><title>Avalon Report — ${G.player}</title>
+  win.document.write(localizeHtml(`<!DOCTYPE html><html><head><title>Avalon Report — ${G.player}</title>
   <style>
     body{font-family:Georgia,serif;color:#1a1a2e;padding:2rem;max-width:700px;margin:auto}
     h1{font-size:1.6rem;color:#8a6e1a;border-bottom:2px solid #c9a227;padding-bottom:.5rem}
@@ -2666,7 +3750,7 @@ function printReport(){
     NFR5: 0% PII toplanmamıştır — yalnızca modelleme hataları kaydedilmiştir.
   </p>
   <button onclick="window.print()" style="margin-top:1rem;padding:.5rem 1.2rem;background:#1e1245;color:#c9a227;border:none;border-radius:5px;cursor:pointer;font-size:.9rem">🖨 Yazdır / PDF Kaydet</button>
-  </body></html>`);
+  </body></html>`));
   win.document.close();
 }
 
@@ -2722,7 +3806,7 @@ showResults = function(){
   _origShowResults();
   const el = $('rs-score');
   if(el) animateCount(el, 0, G.score, 1200);
-  if(G.score >= 1000) setTimeout(launchConfetti, 400);
+  if(G.score >= 800) setTimeout(launchConfetti, 400);
   sfxBadge();
 };
 
