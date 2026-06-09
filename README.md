@@ -5,7 +5,7 @@ Developed within the scope of Istanbul Kültür University, The Architects of Av
 🚀 Quick Access Links
 🕹️ Play Link (Live Game): https://kubraoykum.github.io/gamification-project/
 
-📹 Project Demo Video: [PASTE_YOUR_DRIVE_OR_YOUTUBE_VIDEO_LINK_HERE]
+📹 Project Demo Video: https://drive.google.com/file/d/1tWh3E4bRscFAufwIp-G7dykWaeZH23R5/view?usp=sharing
 
 🕹️ How to Play
 Entry & Class Selection: Click the play link above to start the adventure. Enter a pseudonymous Player Code, choose your difficulty level, and select a Guardian Class (Scout, Builder, Time-Keeper, Data Sage) that suits your modeling style.
