@@ -1,0 +1,2894 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Architects of Avalon — Data Modeling Quest · COM4061</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a227;--gold-l:#e8c547;--gold-d:#8a6e1a;
+  --dark:#07090f;--dark2:#0d1120;--dark3:#131929;
+  --purple:#1e1245;--purple-l:#2d1b69;--purple-ll:#4a2d9f;
+  --teal:#0a3d3d;--teal-l:#155f5f;--teal-ll:#1d8a8a;
+  --red:#5c0a0a;--red-l:#8b1515;--red-ll:#c0392b;
+  --green:#0a3d1a;--green-ll:#27ae60;
+  --text:#e8dcc8;--text-d:#b8a888;--text-dd:#7a6a50;
+  --border:rgba(201,162,39,0.22);--border-l:rgba(201,162,39,0.5);
+  --glow:rgba(201,162,39,0.07);--glow-l:rgba(201,162,39,0.14);
+  --panel:rgba(11,15,29,.82);--panel-hi:rgba(22,29,48,.86);
+  --shadow-soft:0 18px 52px rgba(0,0,0,.32);
+  --shadow-gold:0 0 0 1px rgba(232,197,71,.08),0 18px 44px rgba(201,162,39,.09);
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    linear-gradient(145deg,rgba(7,9,15,1) 0%,rgba(13,17,32,1) 45%,rgba(5,18,22,1) 100%);
+  color:var(--text);font-family:'Crimson Pro',Georgia,serif;min-height:100vh;overflow-x:hidden
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    linear-gradient(118deg,rgba(29,142,138,.12) 0%,transparent 24%,rgba(74,45,159,.12) 58%,transparent 78%),
+    conic-gradient(from 210deg at 50% 22%,rgba(201,162,39,.08),transparent 18%,rgba(29,142,138,.07) 30%,transparent 45%,rgba(74,45,159,.08) 62%,transparent 76%,rgba(201,162,39,.08)),
+    radial-gradient(1px 1px at 8% 12%,rgba(255,255,255,.55) 0%,transparent 100%),
+    radial-gradient(1px 1px at 22% 48%,rgba(255,255,255,.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 38% 22%,rgba(255,255,255,.45) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 68%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 72% 33%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 88% 78%,rgba(255,255,255,.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 14% 85%,rgba(255,255,255,.28) 0%,transparent 100%),
+    radial-gradient(1px 1px at 48% 55%,rgba(255,255,255,.32) 0%,transparent 100%),
+    radial-gradient(1px 1px at 93% 8%,rgba(255,255,255,.48) 0%,transparent 100%),
+    radial-gradient(2px 2px at 30% 75%,rgba(201,162,39,.35) 0%,transparent 100%),
+    radial-gradient(2px 2px at 68% 20%,rgba(201,162,39,.28) 0%,transparent 100%);
+  animation:twinkle 9s ease-in-out infinite alternate
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:
+    linear-gradient(90deg,rgba(201,162,39,.035) 1px,transparent 1px),
+    linear-gradient(0deg,rgba(29,142,138,.028) 1px,transparent 1px),
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px);
+  background-size:120px 120px,120px 120px,auto;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.72),rgba(0,0,0,.18));
+}
+@keyframes twinkle{0%{opacity:.65}100%{opacity:1}}
+
+#app{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:1rem}
+#app::before{
+  content:'A V A L O N';position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-18deg);
+  z-index:-1;font-family:'Cinzel Decorative',serif;font-size:clamp(3rem,12vw,9rem);
+  color:rgba(201,162,39,.035);white-space:nowrap;pointer-events:none;
+}
+
+.screen{display:none}
+.screen.active{display:block;animation:fadeIn .42s cubic-bezier(.2,.85,.2,1)}
+.screen.active>.card,.screen.active>.banner,.screen.active>.hud,.screen.active>.monster,.screen.active>.sg,.screen.active>.role-grid,.screen.active>.sc-grid{
+  animation:contentReveal .62s cubic-bezier(.18,.9,.2,1) both;
+}
+.screen.active>.card:nth-of-type(2){animation-delay:.06s}
+.screen.active>.card:nth-of-type(3){animation-delay:.12s}
+.screen.active>.card:nth-of-type(4){animation-delay:.18s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes contentReveal{0%{opacity:0;transform:translateY(18px) scale(.985);filter:blur(4px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.06em}
+h1{font-family:'Cinzel Decorative',serif}
+
+/* NOTIF BAR (FR4) */
+#notif{position:fixed;top:0;left:0;right:0;z-index:200;padding:.55rem 1rem;font-family:'Cinzel',serif;font-size:.78rem;text-align:center;transform:translateY(-100%);transition:transform .28s;border-bottom:1px solid transparent}
+#notif.show{transform:translateY(0)}
+#notif.ok{background:rgba(10,61,26,.96);border-color:var(--green-ll);color:#a8ffbc}
+#notif.bad{background:rgba(92,10,10,.96);border-color:var(--red-ll);color:#ffaaaa}
+#notif.warn{background:rgba(30,18,69,.96);border-color:var(--gold);color:var(--gold)}
+
+/* CORRUPTION ALERT (FR4) */
+.ca{display:none;align-items:center;gap:.5rem;padding:.45rem .75rem;background:rgba(139,21,21,.35);border:1px solid var(--red-ll);border-radius:6px;font-size:.76rem;color:#ffaaaa;margin:.35rem 0;animation:ca-pulse 1.8s ease-in-out infinite}
+.ca.show{display:flex}
+.ca-dot{width:8px;height:8px;border-radius:50%;background:#e74c3c;animation:pulse-r 1s infinite;flex-shrink:0}
+@keyframes ca-pulse{0%,100%{border-color:rgba(192,57,43,.4)}50%{border-color:rgba(192,57,43,1)}}
+@keyframes pulse-r{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* HUD */
+.hud{
+  display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+  background:linear-gradient(135deg,rgba(13,17,32,.94),rgba(10,61,61,.18));
+  border:1px solid rgba(232,197,71,.28);border-radius:10px;padding:.65rem 1rem;margin:.65rem 0;
+  backdrop-filter:blur(8px);box-shadow:var(--shadow-gold);position:relative;overflow:hidden
+}
+.hud::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(232,197,71,.08),transparent);
+  transform:translateX(-110%);animation:hud-sheen 6s ease-in-out infinite;
+}
+@keyframes hud-sheen{0%,55%{transform:translateX(-110%)}80%,100%{transform:translateX(110%)}}
+.hud-name{font-family:'Cinzel',serif;color:var(--gold);font-size:.76rem}
+.hud-role{font-size:.62rem;background:rgba(74,45,159,.25);border:1px solid var(--purple-ll);border-radius:3px;padding:1px 5px;color:#c4aaff;margin-top:2px}
+.hp-wrap{flex:1;min-width:110px}
+.hp-lbl{font-size:.62rem;color:var(--text-dd);margin-bottom:3px;display:flex;justify-content:space-between}
+.hp-track{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;border:1px solid rgba(255,255,255,.04)}
+.hp-fill{height:100%;border-radius:4px;transition:width .6s,background .6s}
+.hp-ok{background:linear-gradient(90deg,#1a6b3a,#27ae60)}
+.hp-mid{background:linear-gradient(90deg,#7a5200,#e67e22)}
+.hp-low{background:linear-gradient(90deg,#7a0a0a,#e74c3c);animation:pulse-r 1.3s infinite}
+.int-wrap{display:flex;align-items:center;gap:.4rem;font-size:.62rem;color:var(--text-dd)}
+.int-bar{width:70px;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.int-fill{height:100%;background:var(--green-ll);border-radius:3px;transition:width .5s,background .5s}
+.int-fill.deg{background:var(--red-ll)}
+.sc-wrap{text-align:right}
+.sc-num{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem}
+.sc-lbl{font-size:.58rem;color:var(--text-dd)}
+.tmr{font-family:'Cinzel',serif;font-size:.78rem;color:var(--text-d);white-space:nowrap}
+.tmr.urg{color:#e74c3c;animation:pulse-r 1s infinite}
+
+/* PROGRESS */
+.prog{display:flex;gap:3px;margin:.4rem 0}
+.ps{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.07);transition:background .4s}
+.ps.done{background:var(--gold)}
+.ps.active{background:var(--teal-ll);animation:prog-p 2s ease-in-out infinite}
+@keyframes prog-p{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* CARDS */
+.card{
+  background:linear-gradient(145deg,var(--panel),rgba(13,17,32,.72));
+  border:1px solid rgba(232,197,71,.22);border-radius:10px;padding:1.05rem 1.15rem;margin:.55rem 0;
+  backdrop-filter:blur(10px);box-shadow:var(--shadow-soft);position:relative;overflow:hidden
+}
+.card::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,197,71,.66),rgba(29,142,138,.46),transparent);
+  opacity:.78;pointer-events:none
+}
+.card:hover{border-color:rgba(232,197,71,.36);box-shadow:var(--shadow-gold)}
+.card-g{border-color:rgba(201,162,39,.46);background:linear-gradient(145deg,rgba(33,26,9,.72),rgba(13,17,32,.76))}
+.card-p{border-color:rgba(74,45,159,.72);background:linear-gradient(145deg,rgba(30,18,69,.52),rgba(13,17,32,.78))}
+.card-t{border-color:rgba(29,142,138,.7);background:linear-gradient(145deg,rgba(10,61,61,.38),rgba(13,17,32,.78))}
+.card-r{border-color:rgba(192,57,43,.58);background:linear-gradient(145deg,rgba(92,10,10,.34),rgba(13,17,32,.8))}
+
+/* PHASE BANNER */
+.banner{
+  text-align:center;padding:1rem;background:
+    linear-gradient(135deg,rgba(30,18,69,.7),rgba(10,61,61,.42)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 28px);
+  border:1px solid rgba(74,45,159,.5);border-radius:10px;margin:.6rem 0;
+  box-shadow:var(--shadow-soft);position:relative;overflow:hidden
+}
+.banner::after{
+  content:'';position:absolute;left:50%;bottom:-1px;width:62%;height:1px;transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,var(--gold-l),transparent)
+}
+.banner h2{color:var(--gold-l);font-size:1.1rem}
+.banner p{color:var(--text-d);font-size:.82rem;margin-top:.25rem;font-style:italic}
+
+/* BUTTONS */
+.btn{
+  font-family:'Cinzel',serif;padding:.5rem 1rem;border:1px solid var(--border-l);
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(201,162,39,.04));
+  color:var(--gold);cursor:pointer;border-radius:6px;font-size:.78rem;letter-spacing:.05em;transition:all .2s;display:inline-block;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);position:relative;overflow:hidden
+}
+.btn::after{
+  content:'';position:absolute;top:-40%;bottom:-40%;width:34px;left:-54px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  transform:skewX(-22deg);opacity:.55
+}
+.btn:hover::after{animation:btn-shine .75s ease}
+@keyframes btn-shine{to{left:calc(100% + 54px)}}
+.btn:hover{background:linear-gradient(180deg,rgba(232,197,71,.16),rgba(201,162,39,.08));border-color:var(--gold);transform:translateY(-1px);box-shadow:0 10px 24px rgba(201,162,39,.12)}
+.btn:focus-visible{outline:2px solid rgba(232,197,71,.8);outline-offset:3px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-p{background:rgba(201,162,39,.11);border-color:var(--gold);animation:primary-breathe 3.6s ease-in-out infinite}
+.btn-full{width:100%;text-align:center}
+@keyframes primary-breathe{0%,100%{box-shadow:0 6px 18px rgba(0,0,0,.18),0 0 0 rgba(201,162,39,0)}50%{box-shadow:0 12px 30px rgba(0,0,0,.22),0 0 18px rgba(201,162,39,.12)}}
+
+/* FEEDBACK */
+.fb{padding:.5rem .8rem;border-radius:6px;font-size:.8rem;margin:.35rem 0;border-left:3px solid transparent;line-height:1.55;display:none}
+.fb.show{display:block}
+.fb.ok{background:rgba(10,61,26,.22);border-color:var(--green-ll);color:#a8e8b8}
+.fb.bad{background:rgba(92,10,10,.22);border-color:var(--red-ll);color:#ffb0b0}
+.fb.info{background:rgba(30,18,69,.3);border-color:var(--purple-ll);color:#d0c0ff}
+.fb.warn{background:rgba(100,80,0,.22);border-color:var(--gold);color:var(--gold)}
+
+/* HINT */
+.hint{background:rgba(10,61,61,.18);border:1px solid rgba(29,142,138,.35);border-radius:6px;padding:.5rem .75rem;font-size:.76rem;color:#9de8e8;margin:.35rem 0}
+.hint strong{font-family:'Cinzel',serif;font-size:.68rem;display:block;margin-bottom:.12rem;color:var(--teal-ll)}
+
+/* INPUTS */
+input[type=text],select,input[type=range]{background:rgba(7,9,15,.8);border:1px solid var(--border);color:var(--text);padding:.38rem .6rem;border-radius:5px;font-family:'Crimson Pro',serif;font-size:.84rem;width:100%;transition:border-color .2s}
+input[type=text]:focus,select:focus{outline:none;border-color:var(--gold)}
+input[type=range]{padding:0;height:4px;cursor:pointer;accent-color:var(--gold)}
+
+/* ROLE CARDS */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin:.7rem 0}
+.rc{
+  background:linear-gradient(145deg,rgba(13,17,32,.86),rgba(30,18,69,.24));
+  border:1px solid var(--border);border-radius:10px;padding:.95rem .85rem;cursor:pointer;transition:all .25s;text-align:center;
+  box-shadow:0 12px 32px rgba(0,0,0,.18);position:relative;overflow:hidden
+}
+.rc::before{content:'';position:absolute;inset:0;background:linear-gradient(130deg,rgba(255,255,255,.06),transparent 40%,rgba(29,142,138,.06));opacity:.65;pointer-events:none}
+.rc:hover{border-color:var(--gold);background:linear-gradient(145deg,rgba(33,26,9,.44),rgba(13,17,32,.82));transform:translateY(-3px)}
+.rc.sel{border-color:var(--gold);background:linear-gradient(145deg,rgba(201,162,39,.18),rgba(30,18,69,.38));box-shadow:0 0 0 1px rgba(232,197,71,.18),0 18px 38px rgba(201,162,39,.13)}
+.rc-icon{font-size:1.7rem;margin-bottom:.35rem;display:block;filter:drop-shadow(0 0 5px rgba(201,162,39,.4))}
+.rc:hover .rc-icon,.rc.sel .rc-icon{animation:icon-float 2.2s ease-in-out infinite}
+.rc.sel .rc-name{text-shadow:0 0 18px rgba(232,197,71,.35)}
+@keyframes icon-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.04)}}
+.rc-name{font-family:'Cinzel',serif;color:var(--gold);font-size:.82rem;margin-bottom:.2rem}
+.rc-skill{font-size:.72rem;color:var(--text-d);font-style:italic;margin-bottom:.35rem}
+.rc-perk{font-size:.68rem;color:var(--teal-ll);border-top:1px solid var(--border);padding-top:.35rem;margin-top:.2rem}
+
+/* SCENARIO CARDS */
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin:.6rem 0}
+.scc{background:linear-gradient(145deg,rgba(13,17,32,.72),rgba(10,61,61,.15));border:1px solid var(--border);border-radius:8px;padding:.75rem;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.14)}
+.scc:hover{border-color:var(--teal-ll);background:linear-gradient(145deg,rgba(10,61,61,.35),rgba(13,17,32,.72));transform:translateY(-2px)}
+.scc.sel{border-color:var(--teal-ll);background:linear-gradient(145deg,rgba(10,61,61,.42),rgba(29,142,138,.12));box-shadow:0 0 0 1px rgba(29,142,138,.18),0 16px 32px rgba(29,142,138,.1)}
+.scc-icon{font-size:1.4rem;display:block;margin-bottom:.25rem}
+.scc:hover .scc-icon,.scc.sel .scc-icon{animation:scenario-pop 1.9s ease-in-out infinite}
+@keyframes scenario-pop{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.scc-name{font-family:'Cinzel',serif;font-size:.76rem;color:var(--teal-ll);margin-bottom:.18rem}
+.scc-desc{font-size:.66rem;color:var(--text-dd)}
+
+/* DIFF */
+.diff-row{display:flex;gap:.4rem;margin:.45rem 0}
+.db{flex:1;padding:.38rem;border:1px solid var(--border);background:transparent;color:var(--text-d);border-radius:5px;cursor:pointer;font-family:'Cinzel',serif;font-size:.7rem;transition:all .2s}
+.db.sel{border-color:var(--gold);background:var(--glow);color:var(--gold)}
+.db:hover{border-color:var(--gold)}
+
+/* ENTITY CHIPS */
+.eg{display:grid;grid-template-columns:repeat(3,1fr);gap:.38rem;margin:.55rem 0}
+.ec{background:rgba(10,61,61,.22);border:1px solid rgba(29,142,138,.28);border-radius:6px;padding:.42rem .5rem;font-size:.76rem;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.ec:hover{border-color:var(--teal-ll);background:rgba(10,61,61,.38);transform:translateY(-2px)}
+.ec.sel{border-color:var(--green-ll);background:rgba(10,61,26,.3);color:#a8e8b8;box-shadow:0 0 16px rgba(39,174,96,.12)}
+.ec.bad{border-color:var(--red-ll);background:rgba(92,10,10,.28);color:#ffaaaa;animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* ATTR CHIPS */
+.ap{display:flex;flex-wrap:wrap;gap:.32rem;min-height:34px;padding:.45rem;background:rgba(7,9,15,.5);border:1px dashed var(--border);border-radius:6px}
+.ac{background:rgba(30,18,69,.48);border:1px solid var(--purple-ll);border-radius:18px;padding:.18rem .55rem;font-size:.7rem;cursor:grab;transition:all .2s;user-select:none;white-space:nowrap}
+.ac:hover{background:rgba(74,45,159,.48);border-color:var(--gold)}
+.ac.placed{opacity:.28;pointer-events:none}
+.ac.bad{border-color:var(--red-ll);animation:shake .35s ease}
+.ac.dragging{opacity:.45;cursor:grabbing;transform:scale(1.08);box-shadow:0 4px 12px rgba(201,162,39,0.3)}
+.et-b.drag-over{background:rgba(201,162,39,0.1);border:1px dashed var(--gold);border-radius:5px}
+.et.drop-target{border-color:var(--gold);box-shadow:0 0 12px rgba(201,162,39,0.2)}
+
+/* ENTITY TABLES */
+.et{background:rgba(7,9,15,.8);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin:.3rem 0}
+.et-h{background:rgba(30,18,69,.55);padding:.35rem .65rem;font-family:'Cinzel',serif;font-size:.72rem;color:var(--gold);display:flex;justify-content:space-between;align-items:center}
+.et-b{padding:.35rem .65rem;min-height:28px}
+.er{padding:.22rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.72rem;display:flex;justify-content:space-between;align-items:center}
+.er:last-child{border:none}
+.bpk{background:rgba(201,162,39,.18);color:var(--gold);font-size:.58rem;padding:1px 4px;border-radius:3px;border:1px solid var(--border)}
+.bfk{background:rgba(29,142,138,.18);color:var(--teal-ll);font-size:.58rem;padding:1px 4px;border-radius:3px;border:1px solid rgba(29,142,138,.28)}
+
+/* BRIDGE */
+.bp{display:grid;grid-template-columns:1fr 70px 1fr;gap:.45rem;align-items:center;margin:.5rem 0}
+.island{background:rgba(10,61,61,.22);border:1px solid var(--teal-l);border-radius:7px;padding:.55rem;text-align:center}
+.iname{font-family:'Cinzel',serif;color:var(--teal-ll);font-size:.78rem;margin-bottom:.18rem}
+.iattr{font-size:.64rem;color:var(--text-dd)}
+.bmid{text-align:center}
+.bml{width:2px;height:36px;background:var(--border);margin:0 auto}
+.ro{display:grid;grid-template-columns:repeat(3,1fr);gap:.28rem}
+.ropt{background:rgba(7,9,15,.7);border:1px solid var(--border);border-radius:5px;padding:.38rem;font-family:'Cinzel',serif;font-size:.72rem;cursor:pointer;color:var(--text);text-align:center;transition:all .2s}
+.ropt:hover{border-color:var(--gold);color:var(--gold);background:var(--glow);transform:translateY(-2px)}
+.ropt.ok{border-color:var(--green-ll);background:rgba(10,61,26,.28);color:#a8e8b8;pointer-events:none;animation:correct-pop .38s ease}
+.ropt.bad{border-color:var(--red-ll);background:rgba(92,10,10,.28);color:#ffaaaa;animation:shake .35s ease;pointer-events:none}
+@keyframes correct-pop{0%{transform:scale(.98)}55%{transform:scale(1.035)}100%{transform:scale(1)}}
+
+/* JUNCTION */
+.jw{background:rgba(30,18,69,.28);border:1px solid var(--purple-ll);border-radius:8px;padding:.75rem;margin:.45rem 0}
+.jlbl{font-size:.7rem;color:var(--text-d);margin-bottom:.22rem}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+
+/* NORM TABLE */
+.nt{overflow-x:auto;margin:.55rem 0}
+.nt table{width:100%;border-collapse:collapse;font-size:.74rem}
+.nt th{background:rgba(30,18,69,.55);padding:.32rem .55rem;font-family:'Cinzel',serif;font-size:.66rem;color:var(--gold);text-align:left;border:1px solid var(--border)}
+.nt td{padding:.32rem .55rem;border:1px solid rgba(255,255,255,.04)}
+.nt tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.nt td.bad{background:rgba(92,10,10,.28)!important;color:#ffaaaa}
+
+/* MONSTER */
+.monster{text-align:center;padding:1.2rem;background:linear-gradient(145deg,rgba(92,10,10,.34),rgba(13,17,32,.84));border:1px solid rgba(192,57,43,.58);border-radius:10px;margin:.55rem 0;position:relative;overflow:hidden;box-shadow:0 18px 42px rgba(92,10,10,.16)}
+.monster::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(139,21,21,.05) 10px,rgba(139,21,21,.05) 20px);animation:sbg 25s linear infinite}
+@keyframes sbg{to{background-position:100px 0}}
+.mname{font-family:'Cinzel Decorative',serif;color:#ff6b6b;font-size:.95rem;margin-bottom:.35rem;position:relative;animation:mpulse 2s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1;text-shadow:none}50%{opacity:.78;text-shadow:0 0 14px rgba(255,107,107,.55)}}
+.mht{height:10px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;margin:.35rem 0;position:relative}
+.mhf{height:100%;background:linear-gradient(90deg,#8b1515,#c0392b);border-radius:5px;transition:width .6s ease}
+.mtaunt{font-size:.72rem;color:rgba(255,107,107,.55);font-style:italic;position:relative}
+
+/* BADGES */
+.badge-row{display:flex;flex-wrap:wrap;gap:.38rem;margin:.38rem 0}
+.badge{background:rgba(201,162,39,.1);border:1px solid var(--gold);border-radius:18px;padding:.18rem .6rem;font-size:.68rem;color:var(--gold);font-family:'Cinzel',serif;animation:bpop .3s ease}
+@keyframes bpop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+
+/* LEADERBOARD */
+.lbr{display:flex;align-items:center;padding:.42rem .65rem;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem;transition:background .2s}
+.lbr:hover{background:var(--glow)}
+.lbr.me{background:var(--glow-l)}
+.lbrank{font-family:'Cinzel',serif;color:var(--gold);width:26px;font-size:.82rem}
+.lbname{flex:1}
+.lbscore{font-family:'Cinzel',serif;color:var(--gold)}
+
+/* DIAGNOSIS */
+.di{display:flex;gap:.45rem;padding:.38rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.78rem;line-height:1.52}
+.di:last-child{border:none}
+.di-icon{flex-shrink:0;width:17px;text-align:center;font-size:.88rem;margin-top:1px}
+.di-text{color:var(--text-d)}
+.di-text strong{color:var(--text)}
+
+/* STATS GRID */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin:.7rem 0}
+.sc2{background:linear-gradient(145deg,rgba(13,17,32,.82),rgba(201,162,39,.06));border:1px solid rgba(232,197,71,.22);border-radius:8px;padding:.65rem;text-align:center;box-shadow:var(--shadow-soft)}
+.sn{font-family:'Cinzel',serif;font-size:1.25rem;color:var(--gold)}
+.sc-num,.sn{text-shadow:0 0 16px rgba(201,162,39,.16)}
+.sl{font-size:.62rem;color:var(--text-dd);margin-top:2px}
+
+/* RESULT GRADE */
+.rg{font-family:'Cinzel Decorative',serif;font-size:2.8rem;margin:.45rem 0;line-height:1}
+.screen.active #res-grade{animation:gradeDrop .85s cubic-bezier(.18,.9,.2,1) both}
+@keyframes gradeDrop{0%{opacity:0;transform:translateY(-22px) scale(.88);filter:blur(6px)}65%{transform:translateY(4px) scale(1.06);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.gs{color:var(--gold);text-shadow:0 0 28px rgba(201,162,39,.5)}
+.ga{color:#c0c0ff}
+.gb{color:var(--teal-ll)}
+.gc{color:var(--text-d)}
+
+/* INTRO */
+#screen-intro{text-align:center;padding:2.2rem 0}
+.intro-title{font-size:clamp(1.95rem,7vw,3.35rem);color:var(--gold);line-height:1.05;position:relative;text-shadow:0 0 26px rgba(201,162,39,.22)}
+.intro-title::before{
+  content:'⬡';display:block;font-size:2.2rem;line-height:1;margin-bottom:.55rem;color:var(--teal-ll);
+  filter:drop-shadow(0 0 18px rgba(29,142,138,.38));animation:sigil-float 4s ease-in-out infinite
+}
+@keyframes sigil-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.intro-sub{font-style:italic;color:var(--text-d);margin-bottom:1.3rem;font-size:.95rem}
+.intro-lore{font-size:.93rem;line-height:1.85;color:var(--text-d);font-style:italic;padding:1.15rem;border-left:2px solid var(--gold);text-align:left;margin:1rem 0;background:linear-gradient(90deg,rgba(201,162,39,.07),transparent);border-radius:0 8px 8px 0}
+.meta-row{display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap;font-size:.74rem;color:var(--text-dd);margin:.7rem 0}
+.meta-row span{border:1px solid rgba(232,197,71,.24);border-radius:11px;padding:.2rem .6rem;background:rgba(13,17,32,.48);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:linear-gradient(145deg,var(--dark),#0c1820);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .4s}
+#loading.hidden{opacity:0;pointer-events:none}
+.lr{
+  width:76px;height:76px;border:1px solid rgba(232,197,71,.32);border-radius:50%;display:grid;place-items:center;
+  font-size:2.6rem;animation:spin 2s linear infinite;color:var(--gold);
+  background:conic-gradient(from 90deg,rgba(201,162,39,.18),transparent,rgba(29,142,138,.18),transparent);
+  box-shadow:0 0 36px rgba(201,162,39,.12)
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* GLITCH */
+.glitch{animation:glitch 5s infinite}
+@keyframes glitch{0%,88%,100%{text-shadow:none;transform:none}89%{text-shadow:-2px 0 #ff0040,2px 0 #00ffea;transform:translate(-1px,0)}90%{text-shadow:2px 0 #ff0040,-2px 0 #00ffea;transform:translate(1px,0)}91%,93%,95%{text-shadow:none;transform:none}94%{text-shadow:-1px 0 #ff0040,1px 0 #00ffea}}
+
+/* ADAPTIVE NOTICE */
+.adn{display:none;background:rgba(30,18,69,.38);border:1px solid var(--purple-ll);border-radius:6px;padding:.45rem .7rem;font-size:.73rem;color:#d0c0ff;margin:.38rem 0}
+.adn.show{display:block;animation:fadeIn .4s ease}
+
+/* MOMENT ANIMATIONS */
+.rune-burst{
+  position:fixed;right:22px;top:84px;z-index:260;pointer-events:none;
+  font-family:'Cinzel',serif;color:var(--gold-l);font-size:.92rem;letter-spacing:.04em;
+  background:linear-gradient(135deg,rgba(13,17,32,.92),rgba(201,162,39,.12));
+  border:1px solid rgba(232,197,71,.45);border-radius:999px;padding:.28rem .75rem;
+  box-shadow:0 0 22px rgba(201,162,39,.18);animation:runeBurst 1.15s ease forwards;
+}
+@keyframes runeBurst{
+  0%{opacity:0;transform:translateY(10px) scale(.86)}
+  18%{opacity:1;transform:translateY(0) scale(1.04)}
+  100%{opacity:0;transform:translateY(-38px) scale(.98)}
+}
+.badge-flare{
+  position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:260;pointer-events:none;
+  font-family:'Cinzel',serif;color:#fff1b8;font-size:.82rem;letter-spacing:.06em;text-align:center;
+  background:linear-gradient(135deg,rgba(30,18,69,.94),rgba(10,61,61,.74));
+  border:1px solid rgba(232,197,71,.52);border-radius:8px;padding:.42rem .9rem;
+  box-shadow:0 18px 34px rgba(0,0,0,.3),0 0 24px rgba(201,162,39,.15);animation:badgeFlare 1.55s ease forwards;
+}
+@keyframes badgeFlare{
+  0%{opacity:0;transform:translate(-50%,-10px) scale(.94)}
+  18%,72%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-16px) scale(.98)}
+}
+.screen-shift{animation:screenPulse .55s ease}
+@keyframes screenPulse{0%{filter:saturate(1)}50%{filter:saturate(1.22)}100%{filter:saturate(1)}}
+
+/* AMBIENT WORLD LAYER */
+#ambient-runes{
+  position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+  opacity:.86;mix-blend-mode:screen;
+}
+.ambient-rune{
+  position:absolute;color:rgba(232,197,71,.38);font-family:'Cinzel',serif;
+  font-size:clamp(.9rem,2vw,1.35rem);text-shadow:0 0 14px rgba(201,162,39,.25);
+  animation:floatRune var(--dur,14s) linear infinite;animation-delay:var(--delay,0s);
+}
+.ambient-rune.teal{color:rgba(29,142,138,.34);text-shadow:0 0 14px rgba(29,142,138,.2)}
+.ambient-rune.purple{color:rgba(164,130,255,.28);text-shadow:0 0 14px rgba(74,45,159,.22)}
+@keyframes floatRune{
+  0%{transform:translate3d(0,110vh,0) rotate(0deg) scale(.82);opacity:0}
+  12%{opacity:.7}
+  88%{opacity:.42}
+  100%{transform:translate3d(var(--drift,20px),-16vh,0) rotate(240deg) scale(1.08);opacity:0}
+}
+
+/* CINEMATIC CHAPTER CARD */
+#chapter-flash{
+  position:fixed;inset:0;z-index:540;display:grid;place-items:center;pointer-events:none;
+  background:radial-gradient(circle at center,rgba(7,9,15,.38),rgba(7,9,15,.84));
+  opacity:0;visibility:hidden;
+}
+#chapter-flash.show{visibility:visible;animation:chapterVeil 1.28s ease forwards}
+.chapter-card{
+  width:min(520px,86vw);padding:1.2rem 1.4rem;text-align:center;
+  background:linear-gradient(145deg,rgba(13,17,32,.92),rgba(30,18,69,.68));
+  border:1px solid rgba(232,197,71,.42);border-radius:10px;
+  box-shadow:0 26px 64px rgba(0,0,0,.42),0 0 34px rgba(201,162,39,.11);
+  transform:translateY(20px) scale(.96);animation:chapterCard 1.28s ease forwards;
+}
+.chapter-kicker{
+  font-family:'Cinzel',serif;color:var(--teal-ll);font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;margin-bottom:.35rem;
+}
+.chapter-title{
+  font-family:'Cinzel Decorative',serif;color:var(--gold-l);font-size:clamp(1.2rem,5vw,2rem);
+  text-shadow:0 0 20px rgba(232,197,71,.18);line-height:1.16;
+}
+.chapter-sub{margin-top:.35rem;color:var(--text-d);font-size:.86rem;font-style:italic}
+@keyframes chapterVeil{
+  0%{opacity:0}
+  12%,78%{opacity:1}
+  100%{opacity:0;visibility:hidden}
+}
+@keyframes chapterCard{
+  0%{opacity:0;transform:translateY(24px) scale(.95);filter:blur(8px)}
+  18%,78%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+  100%{opacity:0;transform:translateY(-18px) scale(.98);filter:blur(4px)}
+}
+.screen.active .banner h2{animation:titleGlow 2.8s ease-in-out infinite}
+@keyframes titleGlow{0%,100%{text-shadow:0 0 0 rgba(232,197,71,0)}50%{text-shadow:0 0 18px rgba(232,197,71,.24)}}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .role-grid{grid-template-columns:1fr}
+  .bp{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .eg{grid-template-columns:repeat(2,1fr)}
+  .sc-grid{grid-template-columns:1fr 1fr}
+  .sg{grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="lr">⬡</div>
+  <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.85rem;letter-spacing:.12em">AVALON YÜKLENIYOR...</div>
+</div>
+
+<div id="ambient-runes" aria-hidden="true"></div>
+<div id="chapter-flash" aria-hidden="true">
+  <div class="chapter-card">
+    <div class="chapter-kicker" id="chapter-kicker">Chapter</div>
+    <div class="chapter-title" id="chapter-title">Avalon</div>
+    <div class="chapter-sub" id="chapter-sub">Data Modeling Quest</div>
+  </div>
+</div>
+
+<div id="notif"></div>
+<div id="app">
+
+<!-- ═══════════════════════════════ INTRO ═══════════════════════════════ -->
+<div id="screen-intro" class="screen">
+  <h1 class="intro-title glitch">The Architects of Avalon</h1>
+  <p class="intro-sub">Data Modeling Quest · COM4061</p>
+  <div class="meta-row">
+    <span>⚔️ 3 Bölüm</span><span>🏰 3 Senaryo</span><span>💎 Logic Runes</span>
+    <span>⏱ ~45 Dakika</span><span>🎓 Bloom L3–L6</span><span>📦 GPAF Log Ready</span>
+  </div>
+  <div class="intro-lore">
+    "Avalon Krallığı'nın Dijital Arşivleri, <strong>The Glitch</strong> adlı kaotik bir virüsün saldırısı altında.
+    Veri tekrarlamaları ve kırık bağımlılıklar krallığı çöküşe sürüklüyor.
+    Sen bir <em>Guardian Architect</em> olarak veritabanı mimarisini doğru modelleyerek
+    <em>Data Integrity</em>'yi yeniden tesis etmek zorundasın."
+  </div>
+  <div class="card card-g" style="text-align:left;margin:1rem 0">
+    <label style="font-size:.74rem;color:var(--text-dd);display:block;margin-bottom:.3rem;font-family:'Cinzel',serif">Player Code / Pseudonymous Code:</label>
+    <input type="text" id="inp-name" placeholder="Örn: P-A7K2 — gerçek ad/numara yazma" maxlength="32" style="margin-bottom:.35rem">
+    <div class="hint" style="margin-bottom:.65rem"><strong>GPAF Uyum Notu</strong>Bu kod, Player Tool'daki <em>Player code</em> ile aynı olmalı. Gerçek ad, soyad veya öğrenci numarası girme; yalnızca takma/pseudonymous kod kullan.</div>
+    <label style="font-size:.74rem;color:var(--text-dd);display:block;margin-bottom:.3rem;font-family:'Cinzel',serif">Game ID / Published Game Code:</label>
+    <input type="text" id="inp-gameid" placeholder="GM-XXXXXXXXXXXX — yayınlandıktan sonra girilecek" maxlength="24" style="margin-bottom:.35rem">
+    <div class="hint" style="margin-bottom:.65rem"><strong>Teslim İçin</strong>Hoca oyunu yayınladığında verilen kısa Game code buraya yazılır. Şimdilik boş kalırsa log içinde <em>GM-AVALON-PENDING</em> kullanılır.</div>
+    <label style="font-size:.74rem;color:var(--text-dd);display:block;margin-bottom:.3rem;font-family:'Cinzel',serif">Zorluk Seviyesi:</label>
+    <div class="diff-row">
+      <button class="db" onclick="selDiff('easy',this)">Kolay (+50 HP)</button>
+      <button class="db sel" onclick="selDiff('normal',this)">Normal</button>
+      <button class="db" onclick="selDiff('hard',this)">İleri (−25 HP)</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:.5rem;margin-top:.5rem">
+    <button class="btn" style="flex:0 0 auto;border-color:var(--purple-ll);color:#c4aaff;font-size:.76rem;padding:.5rem .75rem" onclick="openPreQuiz()" title="Kirkpatrick L2 — Ön Test">📝 Ön Test</button>
+    <button class="btn btn-p btn-full" style="font-size:.88rem;padding:.68rem" onclick="goRole()" aria-label="Maceraya başla">Maceraya Başla →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ ROLE ════════════════════════════════ -->
+<div id="screen-role" class="screen">
+  <div class="banner"><h2>Guardian Sınıfını Seç</h2><p>Her Guardian farklı bir modelleme becerisine uzmanlaşmıştır</p></div>
+  <div class="role-grid">
+    <div class="rc" id="rc-scout" onclick="pickRole('scout')">
+      <span class="rc-icon">🔭</span>
+      <div class="rc-name">The Scout</div>
+      <div class="rc-skill">Use Case & Entity Discovery</div>
+      <div class="rc-perk">Entity Discovery'de +%20 puan · Nitelik tespitinde ipucu</div>
+    </div>
+    <div class="rc" id="rc-builder" onclick="pickRole('builder')">
+      <span class="rc-icon">🏗️</span>
+      <div class="rc-name">The Builder</div>
+      <div class="rc-skill">Class & Structural Design</div>
+      <div class="rc-perk">Bridge aşamasında +%15 · M:N hatalarında otomatik ipucu</div>
+    </div>
+    <div class="rc" id="rc-timekeeper" onclick="pickRole('timekeeper')">
+      <span class="rc-icon">⏳</span>
+      <div class="rc-name">The Time-Keeper</div>
+      <div class="rc-skill">Sequence & Dependencies</div>
+      <div class="rc-perk">Süre +30 saniye · Zaman baskısını azaltır</div>
+    </div>
+    <div class="rc" id="rc-datasage" onclick="pickRole('datasage')">
+      <span class="rc-icon">📊</span>
+      <div class="rc-name">The Data Sage</div>
+      <div class="rc-skill">ERD & Normalization</div>
+      <div class="rc-perk">Monster'a +%25 hasar · 3NF açıklamaları genişletilmiş</div>
+    </div>
+  </div>
+  <div id="role-desc" class="hint" style="display:none"></div>
+
+  <label style="font-size:.74rem;color:var(--text-dd);display:block;margin:.7rem 0 .35rem;font-family:'Cinzel',serif">Senaryo Seç:</label>
+  <div class="sc-grid">
+    <div class="scc sel" id="scc-uni" onclick="pickSc('uni')"><span class="scc-icon">🎓</span><div class="scc-name">Üniversite</div><div class="scc-desc">Öğrenci · Ders · Kayıt</div></div>
+    <div class="scc" id="scc-ecom" onclick="pickSc('ecom')"><span class="scc-icon">🛒</span><div class="scc-name">E-Ticaret</div><div class="scc-desc">Müşteri · Sipariş · Ürün</div></div>
+    <div class="scc" id="scc-hospital" onclick="pickSc('hospital')"><span class="scc-icon">🏥</span><div class="scc-name">Hastane</div><div class="scc-desc">Hasta · Doktor · Randevu</div></div>
+  </div>
+
+  <button class="btn btn-p btn-full" id="btn-cr" onclick="confirmRole()" aria-label="Guardian rolunu onayla" style="margin-top:.65rem;opacity:.5" disabled>
+    Guardian'ı Onayla — Göreve Başla ⚔️
+  </button>
+</div>
+
+<!-- ═══════════════════════════════ L1 ═══════════════════════════════════ -->
+<div id="screen-l1" class="screen">
+  <div id="hud-l1" class="hud"></div>
+  <div class="prog" id="pb-l1"></div>
+  <div class="ca" id="ca-l1"><div class="ca-dot"></div><span id="ca-l1-msg">⚠ Data Corruption Algılandı</span></div>
+  <div class="banner"><h2>📚 Bölüm 1: Library of Entities</h2><p id="l1-lbl">Entity Discovery — Varlıkları ve Birincil Anahtarları belirle</p></div>
+
+  <div class="card" id="l1-s1">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.8rem;margin-bottom:.55rem" id="l1-s1-title">Bağımsız Entity'leri seç (3 tane):</div>
+    <div class="hint"><strong>Bilgi Rehberi</strong>Bağımsız Entity: kendi başına var olan, benzersiz kimliği bulunan ve birden fazla niteliği olan nesne. Nitelik (attribute), bir entity'nin özelliğidir — kendi başına var olamaz.</div>
+    <div class="eg" id="eg"></div>
+    <div id="fb-ent" class="fb"></div>
+  </div>
+
+  <div class="card" id="l1-s2" style="display:none">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.8rem;margin-bottom:.4rem">⚔️ Guardian's Shield — Her Entity için Primary Key seç:</div>
+    <div class="hint"><strong>PK Kuralları</strong>Benzersiz · NULL olamaz · Değişmez · Sistem tarafından atanmış değerler tercih edilir.</div>
+    <div id="pk-selects"></div>
+    <div id="fb-pk" class="fb"></div>
+    <button class="btn btn-p btn-full" style="margin-top:.55rem" onclick="checkPKs()">Shield'i Kilitle ⚔️</button>
+  </div>
+
+  <div class="card" id="l1-s3" style="display:none">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.8rem;margin-bottom:.4rem">Nitelikleri (Attributes) doğru tabloya <strong style="color:var(--teal-ll)">sürükle-bırak</strong> ya da tıkla:</div>
+    <div class="ap" id="apool"></div>
+    <div id="tables-row" class="two-col" style="margin-top:.45rem;gap:.38rem"></div>
+    <div id="fb-attr" class="fb"></div>
+    <button class="btn btn-p btn-full" style="margin-top:.55rem" onclick="finishL1()">Bölüm 1'i Tamamla →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ L2 ═══════════════════════════════════ -->
+<div id="screen-l2" class="screen">
+  <div id="hud-l2" class="hud"></div>
+  <div class="prog" id="pb-l2"></div>
+  <div class="ca" id="ca-l2"><div class="ca-dot"></div><span id="ca-l2-msg">⚠ Yapısal Çöküş — Cardinality Hatası</span></div>
+  <div class="banner"><h2>🌉 Bölüm 2: Bridge Building Quest</h2><p>Cardinality — Entity'ler arası ilişki türlerini doğru belirle</p></div>
+
+  <div class="card">
+    <div style="font-size:.78rem;color:var(--text-d);line-height:1.58;margin-bottom:.55rem" id="l2-desc"></div>
+    <div id="bridge-pairs"></div>
+    <div id="jz" style="display:none" class="jw">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.45rem">💎 Junction Stone — Ara Tablo Oluştur (M:N çözümü)</div>
+      <p style="font-size:.73rem;color:var(--text-d);margin-bottom:.55rem" id="jz-desc"></p>
+      <div class="jlbl">Ara tablo adı:</div>
+      <input type="text" id="jn" placeholder="örn: Kayit, Siparis_Urun..." style="margin-bottom:.45rem">
+      <div class="two-col">
+        <div><div class="jlbl">FK-1 (sol entity):</div><input type="text" id="jf1" placeholder="örn: ogrenci_no"></div>
+        <div><div class="jlbl">FK-2 (sağ entity):</div><input type="text" id="jf2" placeholder="örn: ders_kodu"></div>
+      </div>
+      <div id="fb-junc" class="fb" style="margin-top:.38rem"></div>
+      <button class="btn btn-p btn-full" style="margin-top:.45rem" onclick="checkJunction()">Junction Stone'u Yerleştir 💎</button>
+    </div>
+    <div id="fb-bridge" class="fb"></div>
+    <button class="btn btn-p btn-full" id="btn-l2n" style="margin-top:.55rem;display:none" onclick="goL3()">Purification Combat'a Geç ⚔️</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ L3 ═══════════════════════════════════ -->
+<div id="screen-l3" class="screen">
+  <div id="hud-l3" class="hud"></div>
+  <div class="prog" id="pb-l3"></div>
+  <div class="ca" id="ca-l3"><div class="ca-dot"></div><span id="ca-l3-msg">⚠ Transitive Dependency Tespit Edildi</span></div>
+  <div class="banner"><h2>👾 Bölüm 3: Purification Combat</h2><p>Normalization — Redundancy Monster'ı 1NF → 2NF → 3NF ile yenmek için doğru bağımlılığı tespit et</p></div>
+
+  <div class="monster">
+    <div class="mname">☠ REDUNDANCY MONSTER ☠</div>
+    <div style="font-size:.7rem;color:var(--text-dd);margin-bottom:.28rem" id="mhp-txt">HP: 100 / 100</div>
+    <div class="mht"><div class="mhf" id="mhf" style="width:100%"></div></div>
+    <div class="mtaunt" id="mtaunt">"Veriyi kirlet... Tekrar et... Çelişki yarat..."</div>
+  </div>
+  <div id="norm-content"></div>
+</div>
+
+<!-- ═══════════════════════════════ RESULTS ══════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div style="text-align:center;padding:1.4rem 0 .4rem">
+    <div class="rg" id="res-grade">S</div>
+    <h2 id="res-title" style="color:var(--gold);margin-bottom:.18rem">Avalon Kurtarıldı!</h2>
+    <p id="res-sub" style="color:var(--text-d);font-size:.88rem;font-style:italic"></p>
+    <div style="font-size:.65rem;color:var(--text-dd);margin-top:.3rem">
+      Target Engagement: 85% · Baseline: 40% · Transfer Target: 40% ↓ M:N errors
+    </div>
+  </div>
+
+  <div class="sg">
+    <div class="sc2"><div class="sn" id="rs-score">0</div><div class="sl">Logic Runes</div></div>
+    <div class="sc2"><div class="sn" id="rs-hp">100</div><div class="sl">Son HP</div></div>
+    <div class="sc2"><div class="sn" id="rs-acc">0%</div><div class="sl">Doğruluk Oranı</div></div>
+  </div>
+
+  <div class="card card-g">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.45rem">Kazanılan Badges</div>
+    <div class="badge-row" id="res-badges"></div>
+  </div>
+
+  <div class="card card-p">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.55rem">📋 Post-Session Tanı Raporu (FR5 — Pedagogical Diagnostic)</div>
+    <div id="diagnosis"></div>
+    <div style="font-size:.7rem;color:var(--text-dd);margin-top:.55rem;border-top:1px solid var(--border);padding-top:.45rem" id="res-rec"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.45rem">🏆 System Integrity Leaderboard</div>
+    <div style="display:flex;gap:.3rem;margin-bottom:.45rem;flex-wrap:wrap">
+      <button class="db sel" onclick="showLB('score',this)">Mutlak Puan</button>
+      <button class="db" onclick="showLB('period',this)">Sprint</button>
+      <button class="db" onclick="showLB('analytical',this)">Analitik</button>
+      <button class="db" onclick="showLB('collab',this)">İşbirliği</button>
+      <button class="db" onclick="showLB('improvement',this)">Gelişim</button>
+    </div>
+    <div style="margin-bottom:.4rem">
+      <button class="btn" style="font-size:.68rem;padding:.25rem .6rem;border-color:var(--border-l);color:var(--text-d)" onclick="toggleLBOptOut(this)">🙈 Leaderboard'dan Çık</button>
+      <span style="font-size:.62rem;color:var(--text-dd);margin-left:.4rem">NFR: opt-out available · Seasonal reset: per sprint</span>
+    </div>
+    <div id="lb"></div>
+  </div>
+
+  <div class="card card-t">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.55rem">📊 Kirkpatrick L1 — Oturum Değerlendirmesi</div>
+    <div style="font-size:.78rem;color:var(--text-d);margin-bottom:.45rem">Bu oturumu nasıl değerlendiriyorsun? (1–5)</div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:130px"><div class="jlbl">Eğlence & Motivasyon</div><input type="range" min="1" max="5" value="4" id="lk1" oninput="$('lk1v').textContent=this.value+'/5'"><div style="text-align:right;font-size:.68rem;color:var(--gold)" id="lk1v">4/5</div></div>
+      <div style="flex:1;min-width:130px"><div class="jlbl">Öğrenme Katkısı</div><input type="range" min="1" max="5" value="4" id="lk2" oninput="$('lk2v').textContent=this.value+'/5'"><div style="text-align:right;font-size:.68rem;color:var(--gold)" id="lk2v">4/5</div></div>
+      <div style="flex:1;min-width:130px"><div class="jlbl">UI Kullanılabilirlik</div><input type="range" min="1" max="5" value="4" id="lk3" oninput="$('lk3v').textContent=this.value+'/5'"><div style="text-align:right;font-size:.68rem;color:var(--gold)" id="lk3v">4/5</div></div>
+    </div>
+    <button class="btn" style="margin-top:.55rem;border-color:var(--green-ll);color:var(--green-ll)" onclick="saveLK()">Değerlendirmeyi Kaydet ✓</button>
+    <div id="fb-lk" class="fb"></div>
+  </div>
+
+  <div style="display:flex;gap:.45rem;margin:.7rem 0;flex-wrap:wrap">
+    <button class="btn btn-p" style="flex:1;min-width:120px" onclick="restart()">↺ Yeniden Oyna</button>
+    <button class="btn" style="flex:1;min-width:130px;border-color:var(--teal-ll);color:var(--teal-ll)" onclick="exportGpafLog()">⬇ GPAF Log (.jsonl)</button>
+    <button class="btn" style="flex:1;min-width:120px;border-color:var(--teal-l);color:var(--teal-ll)" onclick="exportReport()">⬇ Diagnostic JSON</button>
+    <button class="btn" style="flex:1;min-width:130px;border-color:var(--purple-ll);color:#c4aaff" onclick="printReport()">🖨 Yazdırılabilir PDF Raporu</button>
+  </div>
+  <div style="display:flex;gap:.45rem;margin:.4rem 0;flex-wrap:wrap">
+    <button class="btn" style="flex:1;min-width:130px;border-color:var(--gold-d);color:var(--gold)" onclick="copyPlayerCode()">📋 Copy Player Code</button>
+    <button class="btn" style="flex:1;min-width:130px;border-color:var(--purple-l);color:#c4aaff" onclick="showSubmitHelp()">ℹ How to Submit</button>
+    <button class="btn" style="flex:1;min-width:130px;border-color:var(--green-ll);color:var(--green-ll)" onclick="downloadReadme()">⬇ Player Instructions</button>
+  </div>
+  <div style="display:flex;gap:.45rem;margin:.4rem 0;flex-wrap:wrap">
+    <button class="btn" style="flex:1;min-width:110px;border-color:var(--purple-ll);color:#c4aaff" onclick="openPortfolio()">📁 Portfolio</button>
+    <button class="btn" style="flex:1;min-width:110px;border-color:var(--gold-d);color:var(--gold)" onclick="openShop()">🏪 Vault</button>
+    <button class="btn" style="flex:1;min-width:110px;border-color:var(--teal-l);color:var(--teal-ll)" onclick="openGlossary()">📖 Glossary</button>
+  </div>
+  <div style="display:flex;gap:.45rem;margin:.4rem 0;flex-wrap:wrap">
+    <button class="btn" style="flex:1;min-width:110px;border-color:var(--purple-ll);color:#c4aaff" onclick="openPostQuiz()">📝 Son Test (KL2)</button>
+    <button class="btn" style="flex:1;min-width:110px;border-color:var(--teal-l);color:var(--teal-ll)" onclick="showTraceability()">📋 FR/NFR Matrix</button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const SC={
+  uni:{
+    name:'Üniversite Kayıt Sistemi',
+    ents:[
+      {k:'student',l:'🎓 Öğrenci',c:true},
+      {k:'name',l:'✏️ Ad Soyad',c:false,h:'Nitelik (attribute) — Öğrenci\'nin bir özelliği, kendi başına var olamaz.'},
+      {k:'course',l:'📖 Ders',c:true},
+      {k:'gpa',l:'📊 GPA Değeri',c:false,h:'Nitelik — Öğrenci\'nin bir özelliği.'},
+      {k:'instructor',l:'👩‍🏫 Öğretim Üyesi',c:true},
+      {k:'email',l:'📧 E-posta',c:false,h:'Nitelik — Öğrenci\'nin iletişim bilgisi.'}
+    ],
+    pks:{
+      student:{l:'Öğrenci',opts:['Öğrenci No','Ad Soyad','E-posta','GPA'],c:0,h:'Ad Soyad benzersiz olmayabilir; Öğrenci No sistem tarafından atanır.'},
+      course:{l:'Ders',opts:['Ders Kodu','Ders Adı','Kredi Saati','Açıklama'],c:0,h:'Ders Kodu her dersi benzersiz tanımlar; isim değişebilir.'},
+      instructor:{l:'Öğretim Üyesi',opts:['Sicil No','Ad Soyad','Bölüm','Ofis No'],c:0,h:'Sicil No değişmez, benzersiz ve boş olamaz.'}
+    },
+    pkLabels:{student:'Öğrenci No',course:'Ders Kodu',instructor:'Sicil No'},
+    attrs:[
+      {l:'Doğum Tarihi',e:'student'},{l:'Adres',e:'student'},{l:'Telefon',e:'student'},
+      {l:'Kredi Saati',e:'course'},{l:'Açıklama',e:'course'},{l:'Müfredat',e:'course'},
+      {l:'Uzmanlık Alanı',e:'instructor'},{l:'Ofis No',e:'instructor'},{l:'Ücret',e:'instructor'}
+    ],
+    bridges:[
+      {L:'Öğrenci',R:'Ders',la:'ogrenci_no, ad',ra:'ders_kodu, adi',c:'MN',jb:'kayit',jf1:'ogrenci_no',jf2:'ders_kodu',
+       h:'Bir öğrenci birden fazla derse, bir ders birden fazla öğrenciye sahip olabilir → M:N'},
+      {L:'Öğretim Üyesi',R:'Ders',la:'sicil_no, ad',ra:'ders_kodu, adi',c:'1N',
+       h:'Bir öğretim üyesi birden fazla ders verebilir; her dersin tek sorumlu öğretmeni var → 1:N'},
+      {L:'Öğrenci',R:'Danışman',la:'ogrenci_no',ra:'sicil_no, ad',c:'11',
+       h:'Her öğrencinin tam bir danışmanı, her danışmanın tam bir birincil öğrencisi var → 1:1'}
+    ],
+    norms:[
+      {ph:'1NF — Tekrarlayan Grupları Temizle',
+       cols:['ogrenci_no','ad_soyad','dersler','telefonlar'],
+       rows:[['S001','Ali Veli','COM101, COM102','555-1234, 555-5678'],['S002','Ayşe Kaya','COM201','555-9012']],
+       issue:'"dersler" ve "telefonlar" sütunlarında birden fazla değer var. Bu 1NF ihlali (multi-valued attribute).',
+       q:'Aşağıdakilerden hangisi 1NF ihlaline örnektir?',
+       opts:['ogrenci_no (PK — benzersiz)','ad_soyad (atomik — uygun)','dersler (multi-valued ✗)','—'],c:2,dmg:30,
+       taunt:'"Tek hücrede iki değer... veri bataklığı!"',
+       fix:'Her hücrede tek değer olmalı. Dersler ayrı satırlara bölünmeli ya da ayrı Ders tablosuna taşınmalı.',
+       bloom:'Apply (Bloom L3): 1NF kuralı uygulama — multi-valued attribute eliminasyonu.'},
+      {ph:'2NF — Kısmi Bağımlılıkları Gider',
+       cols:['ogrenci_no','ders_kodu','ogrenci_ad','ders_adi','vize_notu'],
+       rows:[['S001','COM101','Ali Veli','Programlama','85'],['S001','COM102','Ali Veli','Veri Yapıları','90']],
+       issue:'Composite PK (ogrenci_no, ders_kodu). "ogrenci_ad" yalnızca ogrenci_no\'ya, "ders_adi" yalnızca ders_kodu\'ya bağlı; bu kısmi bağımlılıktır.',
+       q:'Kısmi bağımlılık (partial dependency) hangi sütunda?',
+       opts:['vize_notu (composite PK tamamına bağlı ✓)','ders_adi (sadece ders_kodu\'na bağlı ✗)','ogrenci_no (composite PK parçası ✓)','ders_kodu (composite PK parçası ✓)'],c:1,dmg:35,
+       taunt:'"Composite key\'e kısmi bağımlılık... veri tekrarı artıyor!"',
+       fix:'ogrenci_ad → Öğrenci tablosuna, ders_adi → Ders tablosuna. Kayıt tablosunda yalnızca FK\'lar ve kayıt-özgü veriler kalmalı.',
+       bloom:'Analyse (Bloom L4): Composite key bağımlılıklarını analiz et.'},
+      {ph:'3NF — Geçişli Bağımlılıkları Yok Et',
+       cols:['personel_no','ad_soyad','bolum_kodu','bolum_adi','dekan'],
+       rows:[['P001','Dr. Mehmet','BLM01','Bilgisayar Müh.','Prof. Can'],['P002','Dr. Zeynep','BLM01','Bilgisayar Müh.','Prof. Can']],
+       issue:'personel_no → bolum_kodu → bolum_adi, dekan zinciri var. Non-key alan başka bir non-key alana bağlı (transitive dependency).',
+       q:'Geçişli bağımlılık (transitive dependency) hangi sütunda?',
+       opts:['personel_no (PK ✓)','ad_soyad (PK\'ya bağlı ✓)','bolum_adi (non-key→non-key ✗)','bolum_kodu (FK — PK\'ya bağlı ✓)'],c:2,dmg:35,
+       taunt:'"Bağımlılık zinciri... Monster güçleniyor!"',
+       fix:'bolum_adi ve dekan ayrı Bölüm tablosuna taşınmalı. Personel tablosunda yalnızca bolum_kodu FK kalmalı.',
+       bloom:'Evaluate (Bloom L5): Non-key→non-key bağımlılığını tespit edip tabloyu ayrıştır.'}
+    ]
+  },
+  ecom:{
+    name:'E-Ticaret Sistemi',
+    ents:[
+      {k:'customer',l:'👤 Müşteri',c:true},
+      {k:'cname',l:'✏️ Ad Soyad',c:false,h:'Nitelik — Müşteri\'nin bir özelliği.'},
+      {k:'order',l:'🛒 Sipariş',c:true},
+      {k:'price',l:'💰 Fiyat',c:false,h:'Nitelik — Ürünün bir özelliği.'},
+      {k:'product',l:'📦 Ürün',c:true},
+      {k:'address',l:'📍 Teslimat Adresi',c:false,h:'Nitelik — Siparişin bir özelliği.'}
+    ],
+    pks:{
+      customer:{l:'Müşteri',opts:['Müşteri ID','E-posta','Ad Soyad','Telefon'],c:0,h:'Müşteri ID sistem tarafından atanır, benzersiz ve değişmez.'},
+      order:{l:'Sipariş',opts:['Sipariş No','Tarih','Toplam Tutar','Müşteri ID'],c:0,h:'Sipariş No her işlemi benzersiz tanımlar.'},
+      product:{l:'Ürün',opts:['Ürün Kodu','Ürün Adı','Fiyat','Stok'],c:0,h:'Ürün Kodu değişmez ve benzersizdir.'}
+    },
+    pkLabels:{customer:'Müşteri ID',order:'Sipariş No',product:'Ürün Kodu'},
+    attrs:[
+      {l:'Telefon',e:'customer'},{l:'E-posta',e:'customer'},{l:'Kayıt Tarihi',e:'customer'},
+      {l:'Sipariş Tarihi',e:'order'},{l:'Toplam Tutar',e:'order'},{l:'Durum',e:'order'},
+      {l:'Fiyat',e:'product'},{l:'Stok Miktarı',e:'product'},{l:'Kategori',e:'product'}
+    ],
+    bridges:[
+      {L:'Sipariş',R:'Ürün',la:'siparis_no, tarih',ra:'urun_kodu, adi',c:'MN',jb:'siparis_detay',jf1:'siparis_no',jf2:'urun_kodu',
+       h:'Bir sipariş birden fazla ürün içerebilir; bir ürün birden fazla siparişte bulunabilir → M:N'},
+      {L:'Müşteri',R:'Sipariş',la:'musteri_id, ad',ra:'siparis_no, tarih',c:'1N',
+       h:'Bir müşterinin birden fazla siparişi olabilir; her sipariş tek bir müşteriye aittir → 1:N'},
+      {L:'Ürün',R:'Kategori',la:'urun_kodu, adi',ra:'kategori_id, adi',c:'1N',
+       h:'Bir kategoride birden fazla ürün bulunabilir; her ürün tek bir kategoriye aittir → 1:N'}
+    ],
+    norms:[
+      {ph:'1NF — Tekrarlayan Grupları Temizle',
+       cols:['siparis_no','musteri_ad','urunler','adresler'],
+       rows:[['S001','Ali Veli','Laptop, Mouse','Ev, İş'],['S002','Ayşe Kaya','Klavye','Ev']],
+       issue:'"urunler" ve "adresler" sütunlarında birden fazla değer var (multi-valued). 1NF ihlali.',
+       q:'Aşağıdakilerden hangisi 1NF ihlaline örnektir?',
+       opts:['siparis_no (PK ✓)','musteri_ad (atomik ✓)','urunler (multi-valued ✗)','—'],c:2,dmg:30,
+       taunt:'"Virgülle ayrılmış değerler... veri kirlendi!"',
+       fix:'Her ürün ayrı satıra. Adresler ayrı Adres tablosuna taşınmalı.',
+       bloom:'Apply (Bloom L3): Multi-valued attribute\'ı atomik yapıya dönüştür.'},
+      {ph:'2NF — Kısmi Bağımlılıkları Gider',
+       cols:['siparis_no','urun_kodu','musteri_ad','urun_adi','miktar'],
+       rows:[['S001','U01','Ali Veli','Laptop','2'],['S001','U02','Ali Veli','Mouse','1']],
+       issue:'"musteri_ad" sadece siparis_no\'ya, "urun_adi" sadece urun_kodu\'ya bağlı. Composite PK\'ye kısmi bağımlılık.',
+       q:'Kısmi bağımlılık hangi sütunda?',
+       opts:['miktar (PK tamamına bağlı ✓)','urun_adi (sadece urun_kodu\'na bağlı ✗)','siparis_no (PK)','urun_kodu (PK)'],c:1,dmg:35,
+       taunt:'"Ürün adı her satırda tekrarlanıyor... veri artıklığı!"',
+       fix:'urun_adi → Ürün tablosuna, musteri_ad → Müşteri tablosuna. Sipariş-Ürün tablosunda sadece FK\'lar ve miktar kalmalı.',
+       bloom:'Analyse (Bloom L4): Composite key bağımlılıklarını incele.'},
+      {ph:'3NF — Geçişli Bağımlılıkları Yok Et',
+       cols:['urun_kodu','urun_adi','kategori_kodu','kategori_adi','kat_yonetici'],
+       rows:[['U01','Laptop','K01','Elektronik','Mehmet B.'],['U02','Mouse','K01','Elektronik','Mehmet B.']],
+       issue:'urun_kodu → kategori_kodu → kategori_adi, kat_yonetici zinciri var. Transitive dependency.',
+       q:'Transitive dependency hangi sütunda?',
+       opts:['urun_kodu (PK ✓)','urun_adi (PK\'ya bağlı ✓)','kategori_adi (non-key→non-key ✗)','kategori_kodu (FK ✓)'],c:2,dmg:35,
+       taunt:'"Kategori adı her üründe tekrar ediyor... Monster büyüyor!"',
+       fix:'kategori_adi ve kat_yonetici ayrı Kategori tablosuna. Ürün tablosunda sadece kategori_kodu FK kalmalı.',
+       bloom:'Evaluate (Bloom L5): Non-key→non-key bağımlılığını tespit et ve tabloyu ayrıştır.'}
+    ]
+  },
+  hospital:{
+    name:'Hastane Yönetim Sistemi',
+    ents:[
+      {k:'patient',l:'🏥 Hasta',c:true},
+      {k:'symptom',l:'🤒 Semptom',c:false,h:'Nitelik — Hastanın bir özelliği (muayeneye bağlı).'},
+      {k:'doctor',l:'👨‍⚕️ Doktor',c:true},
+      {k:'spec',l:'🔬 Uzmanlık',c:false,h:'Nitelik — Doktorun bir özelliği.'},
+      {k:'appt',l:'📅 Randevu',c:true},
+      {k:'phone',l:'📱 Telefon No',c:false,h:'Nitelik — Hastanın iletişim bilgisi.'}
+    ],
+    pks:{
+      patient:{l:'Hasta',opts:['TC Kimlik No','Ad Soyad','Doğum Tarihi','Telefon'],c:0,h:'TC Kimlik No devlet tarafından atanmış, benzersiz ve değişmez.'},
+      doctor:{l:'Doktor',opts:['Diploma No','Ad Soyad','Uzmanlık','Bölüm'],c:0,h:'Diploma No benzersiz ve değişmez resmi tanımlayıcı.'},
+      appt:{l:'Randevu',opts:['Randevu ID','Tarih-Saat','TC No','Diploma No'],c:0,h:'Randevu ID sistem tarafından atanır; tarih değişken olabilir.'}
+    },
+    pkLabels:{patient:'TC Kimlik No',doctor:'Diploma No',appt:'Randevu ID'},
+    attrs:[
+      {l:'Doğum Tarihi',e:'patient'},{l:'Kan Grubu',e:'patient'},{l:'Sigorta No',e:'patient'},
+      {l:'Uzmanlık Alanı',e:'doctor'},{l:'Çalışma Günleri',e:'doctor'},{l:'Poliklinik',e:'doctor'},
+      {l:'Randevu Tarihi',e:'appt'},{l:'Şikayet',e:'appt'},{l:'Durum',e:'appt'}
+    ],
+    bridges:[
+      {L:'Hasta',R:'Doktor',la:'tc_kimlik, ad',ra:'diploma_no, ad',c:'MN',jb:'randevu',jf1:'tc_kimlik',jf2:'diploma_no',
+       h:'Bir hasta birden fazla doktora gidebilir; bir doktor birden fazla hastayı görebilir → M:N'},
+      {L:'Doktor',R:'Poliklinik',la:'diploma_no, ad',ra:'poliklinik_id, adi',c:'1N',
+       h:'Bir poliklinik birden fazla doktora sahip olabilir; bir doktor bir poliklinik altında çalışır → 1:N'},
+      {L:'Randevu',R:'İlaç',la:'randevu_id, tarih',ra:'ilac_kodu, adi',c:'MN',jb:'recete',jf1:'randevu_id',jf2:'ilac_kodu',
+       h:'Bir randevuda birden fazla ilaç reçete edilebilir; bir ilaç birden fazla randevuda kullanılabilir → M:N'}
+    ],
+    norms:[
+      {ph:'1NF — Tekrarlayan Grupları Temizle',
+       cols:['tc_no','ad_soyad','sigorta_no_lar','kronik_hastaliklar'],
+       rows:[['11223','Ali Veli','SGK-001, ÖS-445','Diyabet, HT'],['44556','Ayşe Kaya','SGK-112','—']],
+       issue:'"sigorta_no_lar" ve "kronik_hastaliklar" sütunlarında birden fazla değer var. 1NF ihlali.',
+       q:'Aşağıdakilerden hangisi 1NF ihlaline örnektir?',
+       opts:['tc_no (PK ✓)','ad_soyad (atomik ✓)','kronik_hastaliklar (multi-valued ✗)','—'],c:2,dmg:30,
+       taunt:'"Virgülle ayrılmış hastalıklar... tıbbi kayıt bozuldu!"',
+       fix:'Her kronik hastalık ayrı satıra veya ayrı Hasta_Hastalik tablosuna. Sigorta numaraları da atomik yapıya getirilmeli.',
+       bloom:'Apply (Bloom L3): Atomik veri yapısına dönüştür.'},
+      {ph:'2NF — Kısmi Bağımlılıkları Gider',
+       cols:['tc_no','diploma_no','randevu_tarihi','hasta_ad','doktor_ad','sikayet'],
+       rows:[['11223','D01','2026-01-15','Ali Veli','Dr. Mehmet','Kontrol'],['11223','D02','2026-02-01','Ali Veli','Dr. Zeynep','Tahlil']],
+       issue:'Composite PK (tc_no, diploma_no, randevu_tarihi). "hasta_ad" yalnızca tc_no\'ya, "doktor_ad" yalnızca diploma_no\'ya bağlı; bu kısmi bağımlılıktır.',
+       q:'Kısmi bağımlılık hangi sütunda?',
+       opts:['sikayet (composite PK tamamına bağlı ✓)','doktor_ad (sadece diploma_no\'ya bağlı ✗)','tc_no (composite PK parçası ✓)','diploma_no (composite PK parçası ✓)'],c:1,dmg:35,
+       taunt:'"Doktor adı her randevuda tekrarlanıyor!"',
+       fix:'hasta_ad → Hasta tablosuna, doktor_ad → Doktor tablosuna. Randevu tablosunda yalnızca FK\'lar ve randevu bilgisi kalmalı.',
+       bloom:'Analyse (Bloom L4): Composite key bağımlılıklarını tespit et.'},
+      {ph:'3NF — Geçişli Bağımlılıkları Yok Et',
+       cols:['doktor_no','doktor_ad','bolum_kodu','bolum_adi','bolum_yonetici'],
+       rows:[['D01','Dr. Mehmet','B01','Kardiyoloji','Prof. Özkan'],['D02','Dr. Zeynep','B01','Kardiyoloji','Prof. Özkan']],
+       issue:'doktor_no → bolum_kodu → bolum_adi, bolum_yonetici zinciri var. Transitive dependency.',
+       q:'Transitive dependency hangi sütunda?',
+       opts:['doktor_no (PK ✓)','doktor_ad (PK\'ya bağlı ✓)','bolum_adi (non-key→non-key ✗)','bolum_kodu (FK ✓)'],c:2,dmg:35,
+       taunt:'"Bölüm bilgisi her doktorda tekrar ediyor!"',
+       fix:'bolum_adi ve bolum_yonetici ayrı Bölüm tablosuna. Doktor tablosunda sadece bolum_kodu FK kalmalı.',
+       bloom:'Evaluate (Bloom L5): Transitive dependency tespiti ve 3NF ayrıştırma.'}
+    ]
+  }
+};
+
+const ROLES={
+  scout:{name:'The Scout',icon:'🔭'},
+  builder:{name:'The Builder',icon:'🏗️'},
+  timekeeper:{name:'The Time-Keeper',icon:'⏳'},
+  datasage:{name:'The Data Sage',icon:'📊'}
+};
+
+const BDEFS={
+  em:{l:'Entity Master'},sb:{l:'Shield Bearer'},ba:{l:'Bridge Architect'},
+  jh:{l:'Junction Hero'},nm:{l:'Master of 3NF'},fp:{l:'Flawless Purification'},
+  sp:{l:'Speed Analyst'},
+  ei:{l:"Explorer's Insight"},
+  mn:{l:'Mentor Guardian'}
+};
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const G={
+  player:'',role:null,sc:'uni',diff:'normal',
+  hp:100,maxHp:100,score:0,correct:0,total:0,
+  badges:[],errors:{ent:0,pk:0,br:0,nr:0},
+  entDone:false,pkDone:false,
+  bridgesDone:[],jCurrent:null,bridgeAllOk:true,
+  mHp:100,nErrors:0,
+  integ:100,log:[],startTime:null,
+  playerCode:'',gameId:'GM-AVALON-PENDING',sessionId:'',gpafLog:[],gpafEnded:false,buildVersion:'avalon-final-gpaf-1.5-verified'
+};
+const SCORE_CAP=1600;
+const DIFF={easy:{maxHp:150,loss:.6},normal:{maxHp:100,loss:1},hard:{maxHp:75,loss:1.4}};
+let timerID=null,timeLeft=2700;
+let entSel=[];
+let bridgeOpenTimes={};
+let l1ConsecErrors=0;  // consecutive errors in Bölüm 1
+let l2ConsecErrors=0;  // consecutive errors in Bölüm 2
+const aPlaced={};
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function $(id){return document.getElementById(id)}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const next=$(id);
+  next.classList.add('active');
+  next.classList.remove('screen-shift');
+  void next.offsetWidth;
+  next.classList.add('screen-shift');
+  document.body.dataset.stage=id.replace('screen-','');
+  chapterFlash(id);
+  window.scrollTo(0,0);
+}
+function notify(msg,t='warn',ms=3000){const b=$('notif');b.textContent=msg;b.className='show '+t;clearTimeout(b._t);b._t=setTimeout(()=>b.className='',ms)}
+function showFB(id,msg,t){const e=$(id);if(!e)return;e.textContent=msg;e.className='fb show '+t}
+function hideFB(id){const e=$(id);if(e)e.className='fb'}
+function ca(zone,msg){const e=$('ca-'+zone);$('ca-'+zone+'-msg').textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000)}
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function safeCode(v){return String(v||'').trim().replace(/[^A-Za-z0-9_-]/g,'_').slice(0,32)}
+function makeSessionId(){return 'SES-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,8).toUpperCase()}
+function getGameId(){return (G.gameId||'GM-AVALON-PENDING').trim()||'GM-AVALON-PENDING'}
+function log(a,r,p){G.log.push({time:new Date().toISOString(),action:a,result:r,pts:p,hp:G.hp,score:G.score})}
+function gpafEvent(eventType,payload={}){
+  if(!G.sessionId)G.sessionId=makeSessionId();
+  const ev={
+    ts:new Date().toISOString(),
+    playerPseudoId:G.playerCode||safeCode(G.player)||'anonymous',
+    sessionId:G.sessionId,
+    gameId:getGameId(),
+    eventType,
+    payload:{...payload,score:G.score,hp:G.hp,maxHp:G.maxHp,structuralIntegrity:G.integ}
+  };
+  G.gpafLog.push(ev);
+  return ev;
+}
+function gpafScore(reason){gpafEvent('score_update',{reason,score:G.score,accuracy:G.total>0?Math.round(G.correct/G.total*100):0})}
+function finishGpafSession(){
+  if(G.gpafEnded)return;
+  G.gpafEnded=true;
+  const elapsed=G.startTime?Math.round((Date.now()-G.startTime)/1000):0;
+  gpafEvent('session_end',{completed:true,durationSec:elapsed,accuracy:G.total>0?Math.round(G.correct/G.total*100):0,errors:G.errors,badges:G.badges,role:G.role,scenario:G.sc,difficulty:G.diff,maxGameScore:SCORE_CAP});
+}
+
+function loseHp(amt,reason){
+  const a=Math.round(amt*DIFF[G.diff].loss);
+  G.hp=Math.max(0,G.hp-a);G.integ=Math.max(0,G.integ-a);autoSave();
+  updateHuds();log(reason,'wrong',-a);gpafEvent('mistake',{reason,penalty:a});gpafScore(reason);
+  if(G.hp===0){setTimeout(()=>{notify('💀 Data Integrity sıfıra düştü!','bad',2000);setTimeout(showResults,2200)},300)}
+}
+function runeBurst(pts,lbl=''){
+  if(!pts||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const el=document.createElement('div');
+  el.className='rune-burst';
+  el.textContent='+'+pts+' Rune'+(lbl&&lbl!=='session_start'?' · '+lbl.replace(/_/g,' '):'');
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
+}
+function badgeFlare(name){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const el=document.createElement('div');
+  el.className='badge-flare';
+  el.textContent='🏅 '+name+' Unlocked';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1600);
+}
+function addScore(pts,lbl){G.score+=pts;G.correct++;updateHuds();log(lbl,'ok',pts);gpafScore(lbl);autoSave();runeBurst(pts,lbl);}
+function earnBadge(k){if(!G.badges.includes(k)){G.badges.push(k);notify('🏅 Yeni Badge: '+BDEFS[k].l,'warn',3000);badgeFlare(BDEFS[k].l)}}
+
+function createAmbientRunes(){
+  const layer=$('ambient-runes');
+  if(!layer||layer.dataset.ready==='1'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  layer.dataset.ready='1';
+  const glyphs=['⬡','✦','✧','◇','◆','✶','⌁','⌬','✷'];
+  const tones=['','teal','purple'];
+  for(let i=0;i<30;i++){
+    const s=document.createElement('span');
+    s.className='ambient-rune '+tones[i%tones.length];
+    s.textContent=glyphs[i%glyphs.length];
+    s.style.left=(Math.random()*100).toFixed(2)+'%';
+    s.style.setProperty('--dur',(10+Math.random()*16).toFixed(1)+'s');
+    s.style.setProperty('--delay',(-Math.random()*18).toFixed(1)+'s');
+    s.style.setProperty('--drift',((-70+Math.random()*140).toFixed(0))+'px');
+    s.style.opacity=(0.35+Math.random()*0.5).toFixed(2);
+    layer.appendChild(s);
+  }
+}
+
+const CHAPTERS={
+  'screen-l1':{k:'Chapter I',t:'Library of Entities',s:'Varlıkları ve anahtarları uyandır.'},
+  'screen-l2':{k:'Chapter II',t:'Bridge Building Quest',s:'İlişkileri kur, kırık köprüleri onar.'},
+  'screen-l3':{k:'Final Combat',t:'Purification Ritual',s:'Redundancy Monster veri tekrarlarıyla besleniyor.'},
+  'screen-results':{k:'Quest Complete',t:'Avalon Archive Restored',s:'Oturum raporu, loglar ve başarılar hazır.'}
+};
+function chapterFlash(id){
+  const data=CHAPTERS[id];
+  const box=$('chapter-flash');
+  if(!data||!box||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  $('chapter-kicker').textContent=data.k;
+  $('chapter-title').textContent=data.t;
+  $('chapter-sub').textContent=data.s;
+  box.classList.remove('show');
+  void box.offsetWidth;
+  box.classList.add('show');
+  clearTimeout(box._t);
+  box._t=setTimeout(()=>box.classList.remove('show'),1320);
+}
+
+function updateHuds(){['l1','l2','l3'].forEach(renderHud)}
+function renderHud(lv){
+  const e=$('hud-'+lv);if(!e)return;
+  const hp=Math.max(0,Math.round(G.hp/G.maxHp*100));
+  const hc=hp>60?'hp-ok':hp>30?'hp-mid':'hp-low';
+  const ip=Math.max(0,G.integ);
+  const r=ROLES[G.role]||{name:'Architect',icon:'⚔️'};
+  e.innerHTML=`
+    <div><div class="hud-name">${r.icon} ${G.player}</div><div class="hud-role">${r.name}</div></div>
+    <div class="hp-wrap">
+      <div class="hp-lbl"><span>Data Integrity</span><span>${G.hp}/${G.maxHp} HP</span></div>
+      <div class="hp-track"><div class="hp-fill ${hc}" style="width:${hp}%"></div></div>
+    </div>
+    <div class="int-wrap">
+      <span style="white-space:nowrap">S.Int.</span>
+      <div class="int-bar"><div class="int-fill ${ip<50?'deg':''}" style="width:${ip}%"></div></div>
+      <span>${ip}%</span>
+    </div>
+    <div class="sc-wrap"><div class="sc-num">${G.score.toLocaleString()}</div><div class="sc-lbl">Logic Runes</div></div>
+    <div class="tmr ${timeLeft<120?'urg':''}" id="tmr-${lv}">${fmtT(timeLeft)}</div>
+  `;
+  const pb=$('pb-'+lv);if(!pb)return;
+  const cur=lv==='l1'?0:lv==='l2'?1:2;
+  pb.innerHTML=['','',''].map((_,i)=>`<div class="ps ${i<cur?'done':i===cur?'active':''}"></div>`).join('');
+}
+function startTimer(){
+  const extra=G.role==='timekeeper'?30:0;
+  timeLeft=2700+(G.diff==='easy'?600:G.diff==='hard'?-300:0)+extra;
+  timerID=setInterval(()=>{
+    timeLeft=Math.max(0,timeLeft-1);
+    ['l1','l2','l3'].forEach(lv=>{const t=$('tmr-'+lv);if(t)t.textContent=fmtT(timeLeft)});
+    if(timeLeft===0){clearInterval(timerID);notify('⏱ Süre Doldu!','bad',3000);setTimeout(showResults,3500)}
+    if(timeLeft===60)notify('⏱ Son 1 dakika!','warn');
+  },1000);
+}
+
+// ══════════════════════════════════════════
+// INTRO / ROLE
+// ══════════════════════════════════════════
+function selDiff(d,btn){
+  G.diff=d;
+  document.querySelectorAll('.db').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+function goRole(){
+  const n=safeCode($('inp-name').value);
+  if(!n){notify('Önce Player Code gir!','bad');return}
+  G.player=n;G.playerCode=n;
+  const gid=($('inp-gameid')?.value||'').trim();
+  G.gameId=gid||localStorage.getItem('avalon_game_id')||'GM-AVALON-PENDING';
+  localStorage.setItem('avalon_player_code',G.playerCode);
+  localStorage.setItem('avalon_game_id',G.gameId);
+  G.maxHp=DIFF[G.diff].maxHp;G.hp=G.maxHp;
+  show('screen-role');
+}
+function pickRole(r){
+  G.role=r;
+  document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
+  $('rc-'+r).classList.add('sel');
+  const rd=$('role-desc');rd.style.display='block';
+  const perk=r==='scout'?'Entity Discovery\'de +%20 puan, nitelik ipucu':
+    r==='builder'?'Bridge\'de +%15 puan, M:N sonrası Junction hatırlatması':
+    r==='timekeeper'?'Süre +30 saniye, zaman baskısı daha düşük':
+    'Monster\'a +%25 hasar, 3NF açıklamaları genişletilmiş';
+  rd.innerHTML=`<strong>${ROLES[r].icon} ${ROLES[r].name} seçildi.</strong> Avantaj: ${perk}.`;
+  updateConfBtn();
+}
+function pickSc(s){
+  G.sc=s;
+  ['uni','ecom','hospital'].forEach(k=>$('scc-'+k).classList.toggle('sel',k===s));
+  updateConfBtn();
+}
+function updateConfBtn(){
+  const ok=G.role&&G.sc;
+  $('btn-cr').disabled=!ok;$('btn-cr').style.opacity=ok?'1':'0.5';
+}
+function confirmRole(){
+  if(!G.role||!G.sc)return;
+  G.startTime=Date.now();G.sessionId=makeSessionId();G.gpafLog=[];G.gpafEnded=false;
+  gpafEvent('session_start',{role:G.role,scenario:G.sc,difficulty:G.diff,course:'COM4061',gameTitle:'The Architects of Avalon',maxGameScore:SCORE_CAP,buildVersion:G.buildVersion});
+  gpafScore('session_start');
+  startTimer();buildL1();show('screen-l1');updateHuds();
+}
+
+// ══════════════════════════════════════════
+// LEVEL 1
+// ══════════════════════════════════════════
+function buildL1(){
+  const s=SC[G.sc];
+  $('l1-lbl').textContent='Entity Discovery — '+s.name;
+  entSel=[];
+  $('eg').innerHTML=s.ents.map(e=>`<div class="ec" id="ec-${e.k}" onclick="togEnt('${e.k}')">${e.l}</div>`).join('');
+}
+function togEnt(k){
+  if(G.entDone)return;
+  const idx=entSel.indexOf(k);
+  if(idx>-1){entSel.splice(idx,1);$('ec-'+k).classList.remove('sel')}
+  else if(entSel.length<3){entSel.push(k);$('ec-'+k).classList.add('sel')}
+  if(entSel.length===3)setTimeout(checkEnts,200);
+}
+function checkEnts(){
+  if(G.entDone)return;
+  const s=SC[G.sc];
+  const ck=s.ents.filter(e=>e.c).map(e=>e.k);
+  const ok=entSel.length===3&&entSel.every(k=>ck.includes(k));
+  G.total+=3;
+  if(ok){
+    G.entDone=true;l1ConsecErrors=0;
+    const pts=G.role==='scout'?60:50;
+    addScore(pts,'entity_ok');earnBadge('em');
+    notify('✅ Doğru Entity\'ler tespit edildi! +'+pts+' Rune','ok');
+    showFB('fb-ent','✅ Mükemmel! Bağımsız Entity\'ler doğru seçildi. Primary Key aşamasına geç.','ok');
+    setTimeout(()=>{$('l1-s2').style.display='block';buildPKs()},700);
+  } else {
+    G.errors.ent++;l1ConsecErrors++;
+    const wrong=entSel.filter(k=>!ck.includes(k));
+    const hints=wrong.map(k=>{const e=s.ents.find(e=>e.k===k);return e?.h||''}).filter(Boolean);
+    loseHp(10,'entity_wrong');
+    notify('❌ Yanlış seçim! -10 HP','bad');
+    showFB('fb-ent','❌ Hatalı Entity seçimi. İpucu: '+hints.join(' · '),'bad');
+    ca('l1','⚠ Yanlış Entity — Data Corruption Algılandı');
+    if(l1ConsecErrors>=3){
+      setTimeout(()=>showScoutHintL1(hints),500);
+      l1ConsecErrors=0;
+    }
+    wrong.forEach(k=>{const el=$('ec-'+k);el.classList.add('bad');setTimeout(()=>el.classList.remove('bad','sel'),600)});
+    entSel=[];G.correct--;
+  }
+}
+
+function buildPKs(){
+  const s=SC[G.sc];
+  $('pk-selects').innerHTML=Object.entries(s.pks).map(([k,pk])=>`
+    <div style="margin-bottom:.45rem">
+      <div style="font-size:.7rem;color:var(--teal-ll);margin-bottom:.2rem">${pk.l} tablosu PK:</div>
+      <select id="pk-${k}">
+        <option value="">Seç...</option>
+        ${pk.opts.map((o,i)=>`<option value="${i}">${o}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+function checkPKs(){
+  if(G.pkDone)return;
+  const s=SC[G.sc];const keys=Object.keys(s.pks);
+  G.total+=keys.length;
+  let ok=true;const hints=[];
+  for(const k of keys){
+    const sel=$('pk-'+k);if(!sel||sel.value===''){notify('Tüm tablolar için PK seç!','warn');return}
+    if(parseInt(sel.value)!==s.pks[k].c){ok=false;hints.push(s.pks[k].h)}
+  }
+  if(ok){
+    G.pkDone=true;addScore(150,'pk_ok');earnBadge('sb');
+    notify('✅ Guardian\'s Shield Kilitledi! +150 Rune','ok');
+    showFB('fb-pk','✅ Tüm Primary Key\'ler doğru atandı! Nitelikleri yerleştir.','ok');
+    setTimeout(()=>{$('l1-s3').style.display='block';buildAttrs()},700);
+  } else {
+    G.errors.pk++;loseHp(15,'pk_wrong');G.correct--;
+    notify('❌ Shield Kırıldı! -15 HP','bad');
+    showFB('fb-pk','❌ Yanlış PK. İpucu: '+hints.join(' | '),'bad');
+    ca('l1','⚠ Geçersiz Primary Key — Entity Integrity Tehlikede');
+  }
+}
+
+function buildAttrs(){
+  const s=SC[G.sc];const keys=Object.keys(s.pks);
+  keys.forEach(k=>aPlaced[k]=0);
+  const shuf=[...s.attrs].sort(()=>Math.random()-.5);
+
+  // Build draggable chips
+  $('apool').innerHTML=shuf.map((a,i)=>`<div class="ac" id="ac-${i}"
+    draggable="true"
+    onclick="placeAttr(${i},'${a.e}','${a.l}')"
+    data-e="${a.e}" data-l="${a.l}" data-idx="${i}">${a.l}</div>`).join('');
+
+  // Build droppable entity tables
+  $('tables-row').innerHTML=keys.map(k=>`
+    <div class="et drop-zone-et" id="et-${k}" data-entity="${k}">
+      <div class="et-h">${s.pks[k].l} <span id="ac-cnt-${k}" style="font-size:.58rem;color:var(--text-dd)">0/3</span></div>
+      <div class="et-b" id="etb-${k}" data-entity="${k}"><div class="er">${s.pkLabels[k]} <span class="bpk">PK</span></div></div>
+    </div>`).join('');
+
+  // Attach drag events to chips
+  shuf.forEach((a,i)=>{
+    const chip=$('ac-'+i);if(!chip)return;
+    chip.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain',i+'|'+a.e+'|'+a.l);
+      chip.classList.add('dragging');
+      // Highlight valid drop zones
+      document.querySelectorAll('.drop-zone-et').forEach(el=>el.classList.add('drop-target'));
+    });
+    chip.addEventListener('dragend',()=>{
+      chip.classList.remove('dragging');
+      document.querySelectorAll('.drop-zone-et').forEach(el=>el.classList.remove('drop-target'));
+      document.querySelectorAll('.et-b').forEach(el=>el.classList.remove('drag-over'));
+    });
+  });
+
+  // Attach drop events to entity table bodies
+  keys.forEach(k=>{
+    const body=$('etb-'+k);if(!body)return;
+    body.addEventListener('dragover',e=>{
+      e.preventDefault();body.classList.add('drag-over');
+    });
+    body.addEventListener('dragleave',()=>body.classList.remove('drag-over'));
+    body.addEventListener('drop',e=>{
+      e.preventDefault();body.classList.remove('drag-over');
+      document.querySelectorAll('.drop-zone-et').forEach(el=>el.classList.remove('drop-target'));
+      const data=e.dataTransfer.getData('text/plain');
+      if(!data)return;
+      const[idx,entityKey,lbl]=data.split('|');
+      placeAttr(parseInt(idx),k,lbl);
+    });
+    // Also allow dropping on the outer table div
+    const table=$('et-'+k);
+    table.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('drag-over');});
+    table.addEventListener('dragleave',()=>body.classList.remove('drag-over'));
+    table.addEventListener('drop',e=>{
+      e.preventDefault();body.classList.remove('drag-over');
+      const data=e.dataTransfer.getData('text/plain');
+      if(!data)return;
+      const[idx,entityKey,lbl]=data.split('|');
+      placeAttr(parseInt(idx),k,lbl);
+    });
+  });
+}
+function placeAttr(idx,te,lbl){
+  const chip=$('ac-'+idx);if(!chip||chip.classList.contains('placed'))return;
+  G.total++;
+  const actual=chip.dataset.e;
+  if(actual===te){
+    chip.classList.add('placed');aPlaced[te]=(aPlaced[te]||0)+1;
+    addScore(20,'attr_ok');
+    const body=$('etb-'+te);const r=document.createElement('div');r.className='er';r.textContent=lbl;body.appendChild(r);
+    $('ac-cnt-'+te).textContent=aPlaced[te]+'/3';hideFB('fb-attr');
+  } else {
+    G.errors.ent++;loseHp(5,'attr_wrong');G.correct--;
+    chip.classList.add('bad');setTimeout(()=>chip.classList.remove('bad'),600);
+    showFB('fb-attr','❌ -5 HP! "'+lbl+'" farklı bir Entity\'e ait.','bad');
+  }
+}
+function finishL1(){
+  const tot=Object.values(aPlaced).reduce((a,b)=>a+b,0);
+  if(tot<4){showFB('fb-attr','⚠ En az 4 nitelik yerleştirmelisin!','warn');return}
+  addScore(100,'l1_done');
+  gpafEvent('level_complete',{level:'Bölüm 1 — Library of Entities',levelIndex:1,completed:true,errors:{entity:G.errors.ent,pk:G.errors.pk}});
+  notify('🏆 Bölüm 1 Tamamlandı! +100 Rune','ok',2500);
+  setTimeout(()=>{buildL2();show('screen-l2');updateHuds()},1200);
+}
+
+// ══════════════════════════════════════════
+// LEVEL 2
+// ══════════════════════════════════════════
+let jCur=null;
+function buildL2(){
+  const s=SC[G.sc];
+  $('l2-desc').textContent=s.name+' — Avalon adaları koptu. Doğru ilişki türünü seç. M:N köprüler için Junction Stone zorunlu!';
+  G.bridgesDone=[];jCur=null;
+  bridgeOpenTimes={};
+  const _bldL2Start=Date.now();
+  $('bridge-pairs').innerHTML=s.bridges.map((b,i)=>`
+    <div class="card" id="bp-${i}" style="margin:.45rem 0" data-open="${Date.now()}">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.73rem;margin-bottom:.38rem">İlişki ${i+1}/${s.bridges.length}</div>
+      <div class="bp">
+        <div class="island"><div class="iname">${b.L}</div><div class="iattr">${b.la}</div></div>
+        <div class="bmid"><div class="bml"></div></div>
+        <div class="island"><div class="iname">${b.R}</div><div class="iattr">${b.ra}</div></div>
+      </div>
+      <div class="hint"><strong>İpucu</strong>${b.h}</div>
+      <div class="ro" id="ro-${i}">
+        <div class="ropt" onclick="chBridge(${i},'11')">1 : 1</div>
+        <div class="ropt" onclick="chBridge(${i},'1N')">1 : N</div>
+        <div class="ropt" onclick="chBridge(${i},'MN')">M : N</div>
+      </div>
+      <div id="fb-bp-${i}" class="fb"></div>
+    </div>`).join('');
+}
+function chBridge(idx,ch){
+  const s=SC[G.sc];const b=s.bridges[idx];
+  if(G.bridgesDone.includes(idx))return;
+  if(!bridgeOpenTimes[idx])bridgeOpenTimes[idx]=Date.now();
+  G.total++;
+  // Speed Analyst: check if M:N solved within 15s
+  const now=Date.now();
+  if(ch==='MN'&&b.c==='MN'){
+    const elapsed=(now-(bridgeOpenTimes[idx]||now))/1000;
+    if(elapsed<=15){addScore(50,'speed_bonus');notify('⚡ Speed Analyst Bonus! M:N 15 saniyede çözüldü! +50 Rune','ok',3000);earnBadge('sp');}
+  }
+  const opts=document.querySelectorAll(`#ro-${idx} .ropt`);
+  opts.forEach(o=>o.style.pointerEvents='none');
+  const ci=['11','1N','MN'].indexOf(ch);
+  if(ch===b.c){
+    l2ConsecErrors=0;
+    const pts=G.role==='builder'?Math.round(100*1.15):100;
+    addScore(pts,'bridge_ok');
+    opts[ci].classList.add('ok');
+    showFB('fb-bp-'+idx,'✅ Doğru! '+fmtC(ch)+' köprüsü kuruldu. +'+pts+' Rune'+(ch==='MN'?' — Junction Stone gerekli!':''),'ok');
+    notify('✅ Köprü Kuruldu! +'+pts+' Rune','ok');
+    if(ch==='MN'){jCur=b;showJZ(b)} else {G.bridgesDone.push(idx);chkAllBr()}
+  } else {
+    G.errors.br++;G.bridgeAllOk=false;loseHp(15,'bridge_wrong');G.correct--;
+    l2ConsecErrors++;
+    opts[ci].classList.add('bad');
+    showFB('fb-bp-'+idx,'❌ -15 HP! Doğrusu: '+fmtC(b.c)+(b.c==='MN'?' — M:N için Junction Table zorunlu!':''),'bad');
+    ca('l2','⚠ Yapısal Çöküş — Cardinality Hatası Tespit Edildi');
+    notify('❌ Köprü Çöktü! -15 HP','bad');
+    if(G.role==='builder'&&b.c==='MN')setTimeout(()=>notify('💡 Builder Hint: Bu M:N! Junction Stone gerekiyor.','warn',4000),800);
+    if(l2ConsecErrors>=3){
+      setTimeout(()=>showScoutHintBridge(b),600);
+      l2ConsecErrors=0;
+    }
+    setTimeout(()=>{opts.forEach(o=>{o.classList.remove('bad');o.style.pointerEvents='auto'});hideFB('fb-bp-'+idx)},1100);
+  }
+}
+function fmtC(c){return c==='11'?'1:1 (Bire-Bir)':c==='1N'?'1:N (Bire-Çok)':'M:N (Çoka-Çok)'}
+function showJZ(b){
+  $('jz').style.display='block';
+  $('jz-desc').textContent=b.L+' ↔ '+b.R+' M:N ilişkisi için ara tablo oluştur. İki Foreign Key zorunlu.';
+  $('jn').value='';$('jf1').value='';$('jf2').value='';
+}
+function checkJunction(){
+  if(!jCur)return;
+  const n=$('jn').value.trim().toLowerCase();
+  const f1=$('jf1').value.trim().toLowerCase();
+  const f2=$('jf2').value.trim().toLowerCase();
+  G.total++;
+  if(n.length>=3&&f1.length>=2&&f2.length>=2){
+    addScore(200,'junction_ok');earnBadge('jh');
+    showFB('fb-junc','✅ Junction Stone Yerleştirildi! M:N çözüldü. +200 Rune','ok');
+    notify('💎 Junction Stone Kuruldu! +200 Rune','ok');
+    $('jz').style.display='none';
+    const idx=SC[G.sc].bridges.indexOf(jCur);
+    G.bridgesDone.push(idx);jCur=null;chkAllBr();
+  } else {
+    G.errors.br++;loseHp(10,'junction_wrong');G.correct--;
+    showFB('fb-junc','❌ -10 HP! Tablo adı (≥3 harf), FK1 ve FK2 zorunlu.','bad');
+  }
+}
+function chkAllBr(){
+  const s=SC[G.sc];
+  if(G.bridgesDone.length>=s.bridges.length&&!jCur){
+    if(G.bridgeAllOk)earnBadge('ba');
+    addScore(150,'l2_done');
+    gpafEvent('level_complete',{level:'Bölüm 2 — Bridge Building Quest',levelIndex:2,completed:true,errors:{bridge:G.errors.br}});
+    showFB('fb-bridge','✅ Tüm köprüler kuruldu! +150 Rune — Purification Combat başlıyor...','ok');
+    $('btn-l2n').style.display='block';
+  }
+}
+function goL3(){buildL3();show('screen-l3');updateHuds()}
+
+// ══════════════════════════════════════════
+// LEVEL 3
+// ══════════════════════════════════════════
+let mHp=100,nPhase=0,nErr=0;
+function buildL3(){mHp=100;nPhase=0;nErr=0;updMonster();showNorm(0)}
+function updMonster(){
+  $('mhf').style.width=mHp+'%';
+  $('mhp-txt').textContent='HP: '+mHp+' / 100';
+}
+function showNorm(idx){
+  const s=SC[G.sc];
+  if(idx>=s.norms.length){
+    if(nErr===0){earnBadge('fp');earnBadge('nm')} else earnBadge('nm');
+    addScore(G.role==='datasage'?375:300,'norm_done');
+    gpafEvent('level_complete',{level:'Bölüm 3 — Purification Combat',levelIndex:3,completed:true,errors:{normalization:G.errors.nr},monsterDefeated:true});
+    notify('🎉 Redundancy Monster Yenildi! 3NF Tamamlandı!','ok',4000);
+    setTimeout(showResults,2800);return;
+  }
+  const ph=s.norms[idx];
+  $('mtaunt').textContent=ph.taunt;
+  const adapt=nErr>=2;
+  const rows=adapt?ph.rows.slice(0,1):ph.rows;
+  const tableH=`<div class="nt"><table>
+    <thead><tr>${ph.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+  const bloomH=`<div class="hint"><strong>Bloom Düzeyi</strong>${ph.bloom}</div>`;
+  const sageTip=G.role==='datasage'?`<div class="hint"><strong>Data Sage Öngörüsü</strong>${idx===0?'Multi-valued attribute: bir sütunda birden fazla değer varsa atomik yapıya bölmek zorunlu.':idx===1?'Partial dependency: composite PK\'nın yalnızca bir parçasına bağımlı olan non-key attribute\'u tespit et.':'Transitive dependency: PK → non-key-A → non-key-B zincirini ara. B\'yi ayrı tabloya taşı.'}</div>`:'';
+  $('norm-content').innerHTML=
+    (adapt?`<div class="adn show">🔧 <strong>Uyarlanabilir Zorluk Aktif:</strong> Tablo basitleştirildi. Önce temel bağımlılığa odaklan.</div>`:'') +
+    `<div class="card card-r" style="margin:.45rem 0">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.8rem;margin-bottom:.38rem">${ph.ph}</div>
+      <div class="hint"><strong>Glitch Tespiti</strong>${ph.issue}</div>
+      ${tableH}${bloomH}${sageTip}
+      <div style="font-size:.78rem;margin:.55rem 0;color:var(--text-d)">${ph.q}</div>
+      <div style="display:grid;gap:.32rem" id="nopts">
+        ${ph.opts.map((o,i)=>`<div class="ropt" style="text-align:left;padding:.42rem .65rem;font-family:'Crimson Pro',serif;font-size:.8rem" onclick="chkNorm(${idx},${i})">${String.fromCharCode(65+i)}. ${o}</div>`).join('')}
+      </div>
+      <div id="fb-norm" class="fb"></div>
+    </div>`;
+}
+function chkNorm(pi,ch){
+  const ph=SC[G.sc].norms[pi];G.total++;
+  document.querySelectorAll('#nopts .ropt').forEach(b=>b.style.pointerEvents='none');
+  if(ch===ph.c){
+    const dmg=G.role==='datasage'?Math.round(ph.dmg*1.25):ph.dmg;
+    mHp=Math.max(0,mHp-dmg);updMonster();
+    addScore(200,'norm_ok');nErr=0;
+    showFB('fb-norm','✅ Hasar verildi! Monster HP: '+mHp+'. '+ph.fix+' (+200 Rune)','ok');
+    notify('⚔️ Monster Vuruldu! -'+dmg+' HP','ok');
+    setTimeout(()=>showNorm(pi+1),1700);
+  } else {
+    nErr++;G.errors.nr++;loseHp(20,'norm_wrong');G.correct--;
+    showFB('fb-norm','❌ -20 HP! Doğrusu: '+ph.opts[ph.c]+'. '+ph.fix,'bad');
+    ca('l3','⚠ Yanlış Bağımlılık Tespiti — Monster Saldırıyor!');
+    notify('❌ Monster Saldırdı! -20 HP','bad');
+    if(nErr>=3){
+      setTimeout(()=>{
+        showScoutHint(ph);
+      },400);
+    } else {
+      setTimeout(()=>showNorm(pi),1700);
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════════
+function showResults(){
+  clearInterval(timerID);
+  finishGpafSession();
+  const el=Math.round((Date.now()-G.startTime)/1000);
+  const acc=G.total>0?Math.round(G.correct/G.total*100):0;
+  const hpP=Math.round(G.hp/G.maxHp*100);
+
+  let gr,gc,title,sub;
+  if(G.score>=1200&&acc>=88&&hpP>=75){gr='S';gc='gs';title='Avalon Kurtarıldı! Mükemmel Zafer!';sub='Sınıfın En İyi Architect\'i — S Tier'}
+  else if(G.score>=800&&acc>=72){gr='A';gc='ga';title='Zafer Kazanıldı!';sub='Güçlü veri modelleme becerileri — A Tier'}
+  else if(G.score>=450){gr='B';gc='gb';title='İyi Mücadele!';sub='Bazı kavramları pekiştir — B Tier'}
+  else{gr='C';gc='gc';title='Öğrenme Devam Ediyor';sub='Tekrar dene, deneyim kazanıldı — C Tier'}
+
+  $('res-grade').textContent=gr;$('res-grade').className='rg '+gc;
+  $('res-title').textContent=title;$('res-sub').textContent=sub;
+  $('rs-score').textContent=G.score.toLocaleString();
+  $('rs-hp').textContent=G.hp;$('rs-acc').textContent=acc+'%';
+
+  if(G.score>=900)earnBadge('sp');
+  const br=$('res-badges');
+  br.innerHTML=G.badges.length?G.badges.map(b=>`<div class="badge">${BDEFS[b]?.l||b}</div>`).join(''):'<span style="font-size:.78rem;color:var(--text-dd)">Henüz badge kazanılmadı.</span>';
+
+  buildDiag(acc,el);buildLB('score');show('screen-results');if(G.role)setTimeout(()=>{openPortfolio()},900);
+}
+
+function buildDiag(acc,el){
+  const items=[];
+  const sn=SC[G.sc].name;
+  items.push({i:G.errors.ent>0?'🔴':'✅',t:G.errors.ent>0?
+    `<strong>Entity Tanımlama (${G.errors.ent} hata):</strong> Nitelik (attribute) ile Entity ayrımı net değil. Bağımsız Entity: kendi başına var olur, benzersiz kimliği vardır, birden fazla niteliği vardır. <em>Öneri: ER modelleme temellerini tekrar gözden geçir.</em>`:
+    `<strong>Entity Tanımlama:</strong> Mükemmel! Bağımsız varlıkları doğru tespit ettin.`});
+  items.push({i:G.errors.pk>0?'🔴':'✅',t:G.errors.pk>0?
+    `<strong>Primary Key Seçimi (${G.errors.pk} hata):</strong> Benzersizlik, NULL olamama ve değişmezlik koşullarını pekiştir. Sistem tarafından atanan ID\'ler genellikle en iyi PK adayıdır. <em>Öneri: Chapter 5, Section 2 — Key Constraints.</em>`:
+    `<strong>Primary Key Seçimi:</strong> Tüm PK\'lar doğru atandı. Integrity koşulları kavrandı.`});
+  items.push({i:G.errors.br>0?'🔴':'✅',t:G.errors.br>0?
+    `<strong>Cardinality / Bridge Building (${G.errors.br} hata):</strong> Özellikle M:N ilişkilerinde Junction Table (Associative Entity) zorunluluğu pekiştirilmeli. <em>Öneri: ERD örnekleri üzerinde 1:1, 1:N, M:N senaryolarını karşılaştır.</em>`:
+    `<strong>Cardinality:</strong> İlişki türleri doğru belirlendi. Junction Table mantığı kavrandı.`});
+  items.push({i:G.errors.nr>0?'🔴':'✅',t:G.errors.nr>0?
+    `<strong>Normalization 1NF→3NF (${G.errors.nr} hata):</strong> ${G.errors.nr>=3?'3NF\'de transitive dependency tespiti en kritik eksik. Non-key → non-key bağımlılık zincirini tespit etme pratiği yap.':'Normalizasyon adımları genel olarak kavrandı; ince noktalara dikkat et.'} <em>Öneri: Functional Dependencies → Armstrong Aksiyomları → NF teorisi.</em>`:
+    `<strong>Normalization 1NF→3NF:</strong> Tüm bağımlılık türleri doğru tespit edildi.${G.badges.includes('fp')?' Boss fight hatasız tamamlandı!':''}`});
+  items.push({i:'📊',t:`<strong>Performans Özeti:</strong> ${G.correct}/${G.total} doğru (${acc}%). Süre: ${Math.floor(el/60)}dk ${el%60}sn. Senaryo: ${sn}. Zorluk: ${G.diff}. Skor: ${G.score.toLocaleString()} Logic Rune.`});
+  $('diagnosis').innerHTML=items.map(it=>`<div class="di"><div class="di-icon">${it.i}</div><div class="di-text">${it.t}</div></div>`).join('');
+
+  const recs=[];
+  if(G.errors.nr>2)recs.push('📚 Functional Dependencies (Ch.5) → 2NF/3NF hesaplama alıştırmaları');
+  if(G.errors.br>1)recs.push('📚 ERD Cardinality problemleri — Junction Table zorunluluğu');
+  if(G.errors.ent>1)recs.push('📚 Entity vs Attribute ayrımı egzersizleri');
+  if(!recs.length)recs.push('🎓 Tüm temel kavramlar kavrandı. Chapter 6 konularına geçebilirsin!');
+  $('res-rec').innerHTML=recs.join('<br>');
+}
+
+// buildLB defined below (5-category version)
+function showLB(k,btn){
+  document.querySelectorAll('#screen-results .db').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');buildLB(k);
+}
+function saveLK(){
+  const l1=parseInt($('lk1').value),l2=parseInt($('lk2').value),l3=parseInt($('lk3').value);
+  G.log.push({time:new Date().toISOString(),action:'kirkpatrick',result:{l1,l2,l3,avg:((l1+l2+l3)/3).toFixed(1)}});
+  showFB('fb-lk','✅ Kirkpatrick L1 kaydedildi! Ortalama: '+((l1+l2+l3)/3).toFixed(1)+'/5. Teşekkürler.','ok');
+  $('fb-lk').style.display='block';
+}
+function exportReport(){
+  const acc=G.total>0?Math.round(G.correct/G.total*100):0;
+  const el=Math.round((Date.now()-G.startTime)/1000);
+  const report={
+    meta:{game:'The Architects of Avalon',course:'COM4061',date:new Date().toLocaleString('tr-TR')},
+    player:{playerCode:G.playerCode||G.player,gameId:getGameId(),sessionId:G.sessionId,role:ROLES[G.role]?.name,scenario:SC[G.sc].name,difficulty:G.diff},
+    performance:{score:G.score,hp:G.hp+'/'+G.maxHp,accuracy:acc+'%',elapsed:Math.floor(el/60)+'dk '+el%60+'sn'},
+    errors:{entity:G.errors.ent,pk:G.errors.pk,bridge:G.errors.br,normalization:G.errors.nr},
+    badges:G.badges.map(b=>BDEFS[b]?.l||b),
+    bloomCoverage:{L3_Apply:'1NF Multi-valued',L4_Analyse:'2NF Partial Dep.',L5_Evaluate:'3NF Transitive Dep.',L6_Create:'ERD Canvas design task'},
+    kirkpatrick:{enjoyment:$('lk1').value,learning:$('lk2').value,usability:$('lk3').value},
+    sessionLog:G.log
+  };
+  const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='avalon_diagnostic_'+safeCode(G.playerCode||G.player)+'_'+Date.now()+'.json';
+  a.click();
+}
+
+function exportGpafLog(){
+  finishGpafSession();
+  if(!G.gpafLog.length){notify('Önce bir oyun oturumu başlatılmalı.','bad');return}
+  const text=G.gpafLog.map(e=>JSON.stringify(e)).join('\n')+'\n';
+  const blob=new Blob([text],{type:'application/x-ndjson'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='avalon_gpaf_log_'+safeCode(G.playerCode||G.player)+'_'+(getGameId().replace(/[^A-Za-z0-9_-]/g,'_'))+'_'+Date.now()+'.jsonl';
+  a.click();
+  notify('✅ GPAF JSONL log indirildi. Team Tool → Logs bölümüne ekleyin.','ok',4500);
+}
+function copyPlayerCode(){
+  const code=G.playerCode||safeCode(G.player)||$('inp-name')?.value||'';
+  if(!code){notify('Kopyalanacak Player Code yok.','bad');return}
+  navigator.clipboard?.writeText(code).then(()=>notify('📋 Player Code kopyalandı: '+code,'ok',2500)).catch(()=>notify('Player Code: '+code,'warn',4500));
+}
+function showSubmitHelp(){
+  const msg=`Oyuncu teslim adımları:
+
+1) Bu oyundaki Player Code'u Player Tool'daki Player code alanına aynen yaz.
+2) Hoca yayınladığında verilen Game Code'u Player Tool → Games kısmına ekle.
+3) Oyunu bitirince buradan GPAF Log (.jsonl) indir; bu dosyayı takım Team Tool → Logs kısmına ekleyecek.
+4) Oyuncu ayrıca Player Tool'dan kendi gpaf_player_export JSON dosyasını hocaya gönderir.
+
+Player Code: ${G.playerCode||G.player||'—'}
+Game ID: ${getGameId()}
+Session ID: ${G.sessionId||'—'}`;
+  alert(msg);
+}
+function downloadReadme(){
+  const txt=`THE ARCHITECTS OF AVALON — PLAYER INSTRUCTIONS
+
+Course: COM4061 System Analysis and Design
+Game ID: ${getGameId()}
+Player Code used in this session: ${G.playerCode||G.player||'WRITE_YOUR_CODE'}
+
+How to play:
+1. Enter a pseudonymous Player Code. Do not enter legal name or student number.
+2. Select difficulty, Guardian role, and scenario.
+3. Complete Entity Discovery, Bridge Building, Purification Combat, and optionally ERD Canvas.
+4. At the results screen, download GPAF Log (.jsonl).
+5. In the GPAF Player Tool, enter the same Player Code and add this game code.
+6. Export your player JSON and submit it individually.
+
+Team submission note:
+The team imports all .jsonl files into GPAF Team Tool → Logs and tags real classmates as class-member.
+`;
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='avalon_player_instructions.txt';a.click();
+}
+
+function restart(){
+  clearInterval(timerID);
+  Object.assign(G,{player:'',playerCode:'',gameId:localStorage.getItem('avalon_game_id')||'GM-AVALON-PENDING',sessionId:'',gpafLog:[],gpafEnded:false,role:null,sc:'uni',diff:'normal',hp:100,maxHp:100,score:0,correct:0,total:0,badges:[],errors:{ent:0,pk:0,br:0,nr:0},entDone:false,pkDone:false,bridgesDone:[],jCurrent:null,bridgeAllOk:true,mHp:100,nErrors:0,integ:100,log:[],startTime:null});
+  entSel=[];jCur=null;mHp=100;nPhase=0;nErr=0;
+  Object.keys(aPlaced).forEach(k=>aPlaced[k]=0);
+  document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
+  $('inp-name').value=localStorage.getItem('avalon_player_code')||''; if($('inp-gameid'))$('inp-gameid').value=localStorage.getItem('avalon_game_id')||'';
+  $('role-desc').style.display='none';
+  $('btn-cr').disabled=true;$('btn-cr').style.opacity='0.5';
+  document.querySelectorAll('.db').forEach((b,i)=>b.classList.toggle('sel',i===1));
+  ['uni','ecom','hospital'].forEach(k=>$('scc-'+k).classList.toggle('sel',k==='uni'));
+  show('screen-intro');
+}
+
+// INIT — do not wait for external fonts; show the game as soon as DOM is ready.
+let __avalonInitDone=false;
+function initAvalon(){
+  if(__avalonInitDone) return;
+  __avalonInitDone=true;
+  try{
+    const ld=$('loading');
+    if(ld){ld.classList.add('hidden');setTimeout(()=>{ld.style.display='none'},450);}
+    createAmbientRunes();
+    show('screen-intro');
+    if($('inp-name'))$('inp-name').value=localStorage.getItem('avalon_player_code')||'';
+    if($('inp-gameid'))$('inp-gameid').value=localStorage.getItem('avalon_game_id')||'';
+    setTimeout(offerResume,1400);
+    // Auto-open tutorial on first visit
+    if(!localStorage.getItem('avalon_visited')){
+      localStorage.setItem('avalon_visited','1');
+      setTimeout(startTutorial,600);
+    }
+  }catch(err){
+    console.error('Avalon init failed:',err);
+    const ld=document.getElementById('loading'); if(ld) ld.style.display='none';
+    const intro=document.getElementById('screen-intro'); if(intro) intro.classList.add('active');
+  }
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(initAvalon,250));
+else setTimeout(initAvalon,250);
+window.addEventListener('load',initAvalon);
+setTimeout(initAvalon,2500); // emergency fallback
+
+// ══════════════════════════════════════════
+// TUTORIAL SYSTEM (NFR2: <3 min onboarding)
+// ══════════════════════════════════════════
+const TUTORIAL_STEPS=[
+  {title:'Hoş Geldin, Guardian!',icon:'⚔️',
+   body:'Bu oyunda <strong>Avalon Krallığı\'nın Dijital Arşivleri\'ni</strong> kurtaracaksın. Glitch virüsü veri modelini bozdu — onu düzeltmek için COM4061 veri modelleme becerilerini kullanacaksın.',
+   highlight:null},
+  {title:'Data Integrity (HP) Barı',icon:'❤️',
+   body:'Ekranın üstündeki <strong>HP barı</strong> veri bütünlüğünü gösterir. Her yanlış cevap HP düşürür. HP sıfıra düşerse Glitch kazanır! Doğru cevaplarla HP\'yi koru.',
+   highlight:'hud-l1'},
+  {title:'Logic Runes — Puan Sistemi',icon:'💎',
+   body:'Doğru her hamle <strong>Logic Rune</strong> kazandırır:<br>• Entity tespiti: +50 Rune<br>• Primary Key: +150 Rune<br>• Cardinality: +100 Rune<br>• Normalizasyon: +200 Rune<br>• Junction Stone: +200 Rune',
+   highlight:null},
+  {title:'Bölüm 1: Library of Entities',icon:'📚',
+   body:'İlk görevin <strong>Entity\'leri</strong> tespit etmek. Entity: kendi başına var olan, benzersiz kimliği olan nesnedir.<br><br>Örnek: <em>Öğrenci ✓ Entity</em> — <em>Ad Soyad ✗ Nitelik (attribute)</em>',
+   highlight:null},
+  {title:'Bölüm 2: Bridge Building',icon:'🌉',
+   body:'Entity\'ler arasındaki ilişki türlerini belirle:<br>• <strong>1:1</strong> — Bir öğrencinin bir pasaportu<br>• <strong>1:N</strong> — Bir öğretmenin birden fazla dersi<br>• <strong>M:N</strong> — Öğrenci ↔ Ders (Junction Table gerekir!)',
+   highlight:null},
+  {title:'Bölüm 3: Normalizasyon Savaşı',icon:'👾',
+   body:'Redundancy Monster\'ı yenmek için tablodaki bağımlılık ihlalini tespit et:<br>• <strong>1NF</strong>: Multi-valued attribute yok et<br>• <strong>2NF</strong>: Kısmi bağımlılığı gider<br>• <strong>3NF</strong>: Geçişli bağımlılığı yok et',
+   highlight:null},
+  {title:'ERD Canvas — Drag & Drop',icon:'🗺️',
+   body:'Bölüm 2\'nin ardından <strong>Etkileşimli ERD Canvas</strong> açılır. Entity kutularını sürükle, aralarına ilişki çizgileri çiz. Bağlantıları doğru etiketle: <em>1:1 / 1:N / M:N</em>.',
+   highlight:null},
+  {title:'Hazırsın!',icon:'🏆',
+   body:'Guardian rolünü seçip maceraya başlayabilirsin. Her rolün farklı bir avantajı var — kendine en yakın rolü seç!<br><br><em>İpucu: Zor sorularda ipucu kutularını dikkatli oku.</em>',
+   highlight:null}
+];
+let tutStep=0;
+
+function startTutorial(){
+  tutStep=0;
+  renderTutStep();
+  $('tutorial-overlay').style.display='flex';
+}
+function renderTutStep(){
+  const s=TUTORIAL_STEPS[tutStep];
+  $('tut-icon').textContent=s.icon;
+  $('tut-title').textContent=s.title;
+  $('tut-body').innerHTML=s.body;
+  $('tut-step').textContent=(tutStep+1)+' / '+TUTORIAL_STEPS.length;
+  $('tut-prev').style.visibility=tutStep>0?'visible':'hidden';
+  $('tut-next').textContent=tutStep===TUTORIAL_STEPS.length-1?'Başla! ⚔️':'İleri →';
+  // dot indicators
+  $('tut-dots').innerHTML=TUTORIAL_STEPS.map((_,i)=>
+    `<div style="width:7px;height:7px;border-radius:50%;background:${i===tutStep?'var(--gold)':'rgba(255,255,255,0.2)'}"></div>`
+  ).join('');
+}
+function tutNext(){
+  if(tutStep===TUTORIAL_STEPS.length-1){$('tutorial-overlay').style.display='none';return}
+  tutStep++;renderTutStep();
+}
+function tutPrev(){if(tutStep>0){tutStep--;renderTutStep()}}
+
+// ══════════════════════════════════════════
+// ERD CANVAS (FR3: real drag-and-drop ERD)
+// ══════════════════════════════════════════
+let erdState={entities:[],relations:[],dragging:null,connecting:null,offsetX:0,offsetY:0};
+
+function openERDCanvas(){
+  buildERDCanvas();
+  $('erd-overlay').style.display='flex';
+}
+function buildERDCanvas(){
+  const s=SC[G.sc];
+  const svg=$('erd-svg');
+  const W=svg.clientWidth||700, H=400;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  const baseItems=Object.keys(s.pks).map(k=>({k,l:s.pks[k].l,pk:s.pkLabels[k]||'ID'}));
+  const seenLabels=new Set(baseItems.map(item=>item.l));
+  const extras=[];
+  const addExtra=(label,attrs)=>{
+    if(seenLabels.has(label))return;
+    seenLabels.add(label);
+    const pk=(attrs||'').split(',')[0].trim()||'ID';
+    extras.push({k:'bridge_extra_'+extras.length,l:label,pk});
+  };
+  s.bridges.forEach(b=>{addExtra(b.L,b.la);addExtra(b.R,b.ra);});
+
+  // Place all relation endpoints in a circle layout, including bridge-only entities.
+  const erdItems=[...baseItems,...extras];
+  const cx=W/2,cy=H/2,radius=Math.max(105,Math.min(145,Math.min(W,H)/2-80));
+  erdState.entities=erdItems.map((item,i)=>{
+    const angle=(2*Math.PI*i/erdItems.length)-Math.PI/2;
+    return {...item,x:cx+radius*Math.cos(angle)-60,y:cy+radius*Math.sin(angle)-30,w:120,h:60};
+  });
+  erdState.relations=[];
+  erdState.dragging=null;erdState.connecting=null;
+  renderERD();
+}
+function renderERD(){
+  const svg=$('erd-svg');
+  if(!svg)return;
+  const W=parseInt(svg.getAttribute('viewBox').split(' ')[2])||700;
+  const H=parseInt(svg.getAttribute('viewBox').split(' ')[3])||400;
+  svg.innerHTML='';
+
+  // Grid
+  const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  const pat=document.createElementNS('http://www.w3.org/2000/svg','pattern');
+  pat.setAttribute('id','grid');pat.setAttribute('width','30');pat.setAttribute('height','30');
+  pat.setAttribute('patternUnits','userSpaceOnUse');
+  const pl=document.createElementNS('http://www.w3.org/2000/svg','path');
+  pl.setAttribute('d','M 30 0 L 0 0 0 30');pl.setAttribute('fill','none');
+  pl.setAttribute('stroke','rgba(201,162,39,0.08)');pl.setAttribute('stroke-width','0.5');
+  pat.appendChild(pl);defs.appendChild(pat);svg.appendChild(defs);
+  const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  bg.setAttribute('width',W);bg.setAttribute('height',H);bg.setAttribute('fill','url(#grid)');svg.appendChild(bg);
+
+  // Relations
+  erdState.relations.forEach((r,i)=>{
+    const a=erdState.entities.find(e=>e.k===r.from);
+    const b=erdState.entities.find(e=>e.k===r.to);
+    if(!a||!b)return;
+    const ax=a.x+a.w/2,ay=a.y+a.h/2,bx=b.x+b.w/2,by=b.y+b.h/2;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',ax);line.setAttribute('y1',ay);line.setAttribute('x2',bx);line.setAttribute('y2',by);
+    line.setAttribute('stroke',r.correct===true?'#27ae60':r.correct===false?'#e74c3c':'rgba(201,162,39,0.7)');
+    line.setAttribute('stroke-width','2');
+    line.setAttribute('stroke-dasharray',r.correct===false?'5,3':'none');
+    svg.appendChild(line);
+    // Label
+    const mx=(ax+bx)/2,my=(ay+by)/2;
+    const lbg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    lbg.setAttribute('x',mx-18);lbg.setAttribute('y',my-11);lbg.setAttribute('width',36);lbg.setAttribute('height',20);
+    lbg.setAttribute('rx','4');lbg.setAttribute('fill','rgba(13,17,32,0.92)');
+    lbg.setAttribute('stroke',r.correct===true?'#27ae60':r.correct===false?'#e74c3c':'rgba(201,162,39,0.5)');
+    lbg.setAttribute('stroke-width','1');svg.appendChild(lbg);
+    const lt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    lt.setAttribute('x',mx);lt.setAttribute('y',my+4);lt.setAttribute('text-anchor','middle');
+    lt.setAttribute('font-size','11');lt.setAttribute('font-family','Cinzel,serif');
+    lt.setAttribute('fill',r.correct===true?'#27ae60':r.correct===false?'#e74c3c':'#c9a227');
+    lt.textContent=r.label||'?';svg.appendChild(lt);
+    // delete btn
+    const delG=document.createElementNS('http://www.w3.org/2000/svg','g');
+    delG.setAttribute('cursor','pointer');
+    delG.addEventListener('click',()=>{erdState.relations.splice(i,1);renderERD()});
+    const delC=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    delC.setAttribute('cx',mx+22);delC.setAttribute('cy',my-8);delC.setAttribute('r','7');
+    delC.setAttribute('fill','rgba(92,10,10,0.8)');delC.setAttribute('stroke','#c0392b');delC.setAttribute('stroke-width','1');
+    const delT=document.createElementNS('http://www.w3.org/2000/svg','text');
+    delT.setAttribute('x',mx+22);delT.setAttribute('y',my-4);delT.setAttribute('text-anchor','middle');
+    delT.setAttribute('font-size','10');delT.setAttribute('fill','#ffaaaa');delT.textContent='×';
+    delG.appendChild(delC);delG.appendChild(delT);svg.appendChild(delG);
+  });
+
+  // Entities
+  erdState.entities.forEach((e,idx)=>{
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('cursor','move');g.setAttribute('data-idx',idx);
+
+    const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',e.x);rect.setAttribute('y',e.y);rect.setAttribute('width',e.w);rect.setAttribute('height',e.h);
+    rect.setAttribute('rx','8');rect.setAttribute('fill','rgba(10,61,61,0.55)');
+    rect.setAttribute('stroke',erdState.connecting===idx?'#c9a227':'rgba(29,142,138,0.7)');
+    rect.setAttribute('stroke-width',erdState.connecting===idx?'2':'1.5');
+
+    const title=document.createElementNS('http://www.w3.org/2000/svg','text');
+    title.setAttribute('x',e.x+e.w/2);title.setAttribute('y',e.y+22);title.setAttribute('text-anchor','middle');
+    title.setAttribute('font-size','13');title.setAttribute('font-family','Cinzel,serif');title.setAttribute('fill','#1d8a8a');
+    title.textContent=e.l;
+
+    const pkText=document.createElementNS('http://www.w3.org/2000/svg','text');
+    pkText.setAttribute('x',e.x+e.w/2);pkText.setAttribute('y',e.y+40);pkText.setAttribute('text-anchor','middle');
+    pkText.setAttribute('font-size','9.5');pkText.setAttribute('fill','rgba(201,162,39,0.7)');
+    pkText.textContent='PK: '+(e.pk||'ID');
+
+    // Connect port
+    const port=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    port.setAttribute('cx',e.x+e.w);port.setAttribute('cy',e.y+e.h/2);port.setAttribute('r','6');
+    port.setAttribute('fill',erdState.connecting===idx?'#c9a227':'rgba(29,142,138,0.5)');
+    port.setAttribute('stroke',erdState.connecting===idx?'#e8c547':'rgba(29,142,138,0.8)');
+    port.setAttribute('stroke-width','1.5');port.setAttribute('cursor','pointer');
+    port.setAttribute('title','Bağlantı başlat');
+
+    g.appendChild(rect);g.appendChild(title);g.appendChild(pkText);g.appendChild(port);
+    svg.appendChild(g);
+
+    // Drag
+    g.addEventListener('mousedown',ev=>{
+      if(ev.target===port){
+        // start connection
+        if(erdState.connecting===null){erdState.connecting=idx;}
+        else if(erdState.connecting!==idx){
+          // create relation
+          const existing=erdState.relations.find(r=>(r.from===erdState.entities[erdState.connecting].k&&r.to===e.k)||(r.from===e.k&&r.to===erdState.entities[erdState.connecting].k));
+          if(!existing){
+            const label=prompt('İlişki türünü gir:\n1:1  veya  1:N  veya  M:N','1:N')||'1:N';
+            const sc=SC[G.sc];
+            const fromEntity=erdState.entities[erdState.connecting];
+            const fromKey=fromEntity.k;
+            const toKey=e.k;
+            const bridge=sc.bridges.find(b=>(b.L===fromEntity.l&&b.R===e.l)||(b.R===fromEntity.l&&b.L===e.l));
+            const correctLabel=bridge?bridge.c:null;
+            const cleanLabel=label.trim().replace(/\s/g,'').toUpperCase().replace('N:M','MN').replace('M:N','MN').replace('1:N','1N').replace('N:1','1N').replace('1:1','11');
+            const isCorrect=correctLabel?cleanLabel===correctLabel:null;
+            erdState.relations.push({from:fromKey,to:toKey,label:label.trim(),correct:isCorrect});
+            if(isCorrect===true){addScore(50,'erd_relation_ok');notify('✅ ERD bağlantısı doğru! +50 Rune','ok');}
+            else if(isCorrect===false){loseHp(5,'erd_relation_wrong');notify('❌ ERD bağlantısı yanlış! -5 HP','bad');}
+          }
+          erdState.connecting=null;
+        }
+        renderERD();ev.stopPropagation();return;
+      }
+      erdState.connecting=null;
+      const svgRect=svg.getBoundingClientRect();
+      const scaleX=parseFloat(svg.getAttribute('viewBox').split(' ')[2])/svgRect.width;
+      const scaleY=parseFloat(svg.getAttribute('viewBox').split(' ')[3])/svgRect.height;
+      erdState.dragging=idx;
+      erdState.offsetX=ev.clientX*scaleX-svgRect.left*scaleX-e.x;
+      erdState.offsetY=ev.clientY*scaleY-svgRect.top*scaleY-e.y;
+      ev.preventDefault();
+    });
+  });
+
+  svg.addEventListener('mousemove',ev=>{
+    if(erdState.dragging===null)return;
+    const svgRect=svg.getBoundingClientRect();
+    const vb=svg.getAttribute('viewBox').split(' ');
+    const scaleX=parseFloat(vb[2])/svgRect.width;
+    const scaleY=parseFloat(vb[3])/svgRect.height;
+    const e=erdState.entities[erdState.dragging];
+    e.x=Math.max(0,Math.min(parseFloat(vb[2])-e.w,ev.clientX*scaleX-svgRect.left*scaleX-erdState.offsetX));
+    e.y=Math.max(0,Math.min(parseFloat(vb[3])-e.h,ev.clientY*scaleY-svgRect.top*scaleY-erdState.offsetY));
+    renderERD();
+  });
+  svg.addEventListener('mouseup',()=>{erdState.dragging=null});
+  svg.addEventListener('mouseleave',()=>{erdState.dragging=null});
+}
+function checkERD(){
+  const s=SC[G.sc];
+  let correct=0,total=s.bridges.length;
+  // count correct relations
+  erdState.relations.forEach(r=>{if(r.correct===true)correct++});
+  const score=Math.round((correct/total)*100);
+  $('erd-check-result').innerHTML=`ERD Skoru: ${correct}/${total} bağlantı doğru (${score}%). ${score===100?'Mükemmel! +200 Rune bonus':'Yanlış veya eksik bağlantıları düzelt.'}`;
+  $('erd-check-result').className='fb show '+(score>=80?'ok':'bad');
+  if(score===100){addScore(200,'erd_perfect');earnBadge('ba');}
+}
+function closeERD(){$('erd-overlay').style.display='none'}
+
+// ══════════════════════════════════════════
+// INSTRUCTOR DASHBOARD
+// ══════════════════════════════════════════
+const MOCK_STUDENTS=[
+  {name:'Ali Veli',role:'scout',sc:'uni',score:1450,hp:85,acc:91,errors:{ent:0,pk:0,br:1,nr:0},badges:['em','sb','ba','nm'],time:'38dk'},
+  {name:'Ayşe Kaya',role:'datasage',sc:'ecom',score:1220,hp:100,acc:88,errors:{ent:0,pk:1,br:0,nr:1},badges:['em','sb','nm','fp'],time:'42dk'},
+  {name:'Mert Demir',role:'builder',sc:'uni',score:980,hp:70,acc:76,errors:{ent:1,pk:0,br:2,nr:1},badges:['em','jh'],time:'45dk'},
+  {name:'Selin Yıldız',role:'timekeeper',sc:'hospital',score:870,hp:55,acc:69,errors:{ent:2,pk:1,br:1,nr:2},badges:['em'],time:'44dk'},
+  {name:'Burak Şahin',role:'scout',sc:'ecom',score:650,hp:40,acc:61,errors:{ent:2,pk:2,br:2,nr:3},badges:[],time:'45dk+'},
+  {name:'Zeynep Arslan',role:'datasage',sc:'hospital',score:1350,hp:90,acc:85,errors:{ent:0,pk:0,br:1,nr:0},badges:['em','sb','nm'],time:'40dk'},
+  {name:'Kaan Öztürk',role:'builder',sc:'uni',score:1100,hp:75,acc:80,errors:{ent:1,pk:0,br:0,nr:2},badges:['em','sb'],time:'43dk'},
+  {name:'Elif Çelik',role:'timekeeper',sc:'ecom',score:780,hp:60,acc:72,errors:{ent:1,pk:1,br:2,nr:2},badges:['em'],time:'45dk'}
+];
+
+function openDashboard(){
+  renderDashboard();
+  $('dash-overlay').style.display='flex';
+}
+function renderDashboard(){
+  // Add current player
+  const allStudents=[...MOCK_STUDENTS];
+  if(G.player&&G.score>0){
+    const acc=G.total>0?Math.round(G.correct/G.total*100):0;
+    allStudents.unshift({name:G.player+' (Sen)',role:G.role,sc:G.sc,score:G.score,hp:G.hp,acc,errors:G.errors,badges:G.badges,time:'—'});
+  }
+
+  // Summary stats
+  const avgScore=Math.round(allStudents.reduce((a,s)=>a+s.score,0)/allStudents.length);
+  const avgAcc=Math.round(allStudents.reduce((a,s)=>a+s.acc,0)/allStudents.length);
+  const critArea=allStudents.reduce((acc,s)=>{
+    const maxErr=Math.max(s.errors.ent,s.errors.pk,s.errors.br,s.errors.nr);
+    const key=maxErr===s.errors.nr?'Normalization':maxErr===s.errors.br?'Cardinality':maxErr===s.errors.pk?'Primary Key':'Entity';
+    acc[key]=(acc[key]||0)+1;return acc;
+  },{});
+  const topIssue=Object.entries(critArea).sort((a,b)=>b[1]-a[1])[0];
+
+  $('dash-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.8rem">
+      <div class="sc2"><div class="sn">${allStudents.length}</div><div class="sl">Toplam Öğrenci</div></div>
+      <div class="sc2"><div class="sn">${avgScore.toLocaleString()}</div><div class="sl">Ort. Puan</div></div>
+      <div class="sc2"><div class="sn">%${avgAcc}</div><div class="sl">Ort. Doğruluk</div></div>
+      <div class="sc2" style="border-color:var(--red-l)"><div class="sn" style="font-size:.9rem;color:#ff8888">${topIssue?topIssue[0]:'—'}</div><div class="sl">En Kritik Alan</div></div>
+    </div>
+
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.5rem">
+      📊 Hata Dağılımı — Sınıf Geneli
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.8rem">
+      ${[['Entity',allStudents.reduce((a,s)=>a+s.errors.ent,0),'var(--teal-ll)'],
+         ['PK',allStudents.reduce((a,s)=>a+s.errors.pk,0),'var(--gold)'],
+         ['Cardinality',allStudents.reduce((a,s)=>a+s.errors.br,0),'var(--purple-ll)'],
+         ['3NF',allStudents.reduce((a,s)=>a+s.errors.nr,0),'var(--red-ll)']].map(([l,v,c])=>`
+        <div style="background:rgba(13,17,32,.6);border:1px solid var(--border);border-radius:7px;padding:.5rem;text-align:center">
+          <div style="font-size:.65rem;color:var(--text-dd);margin-bottom:.3rem">${l}</div>
+          <div style="font-family:'Cinzel',serif;font-size:1.3rem;color:${c}">${v}</div>
+          <div style="font-size:.6rem;color:var(--text-dd)">toplam hata</div>
+          <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:.3rem;overflow:hidden">
+            <div style="height:100%;background:${c};border-radius:2px;width:${Math.min(100,v*8)}%;transition:width .5s"></div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin-bottom:.4rem">
+      🏆 Öğrenci Tablosu (Gerçek Zamanlı)
+    </div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:.74rem">
+      <thead>
+        <tr style="background:rgba(30,18,69,.55)">
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:left;border:1px solid var(--border)">#</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:left;border:1px solid var(--border)">Öğrenci</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:left;border:1px solid var(--border)">Rol</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:center;border:1px solid var(--border)">Puan</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:center;border:1px solid var(--border)">HP</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:center;border:1px solid var(--border)">Doğruluk</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:center;border:1px solid var(--border)">En Kötü Alan</th>
+          <th style="padding:.35rem .55rem;font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold);text-align:center;border:1px solid var(--border)">Süre</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${allStudents.sort((a,b)=>b.score-a.score).map((s,i)=>{
+          const maxErr=Math.max(s.errors.ent,s.errors.pk,s.errors.br,s.errors.nr);
+          const worstArea=maxErr===0?'—':maxErr===s.errors.nr?'🔴 3NF':maxErr===s.errors.br?'🟡 Cardinality':maxErr===s.errors.pk?'🟠 PK':'🟡 Entity';
+          const isMe=s.name.includes('Sen');
+          const hp=Math.min(100,Math.round(s.hp/(s.maxHp||100)*100));
+          const hpColor=hp>60?'#27ae60':hp>30?'#e67e22':'#e74c3c';
+          return `<tr style="background:${isMe?'rgba(201,162,39,0.07)':''}">
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);color:var(--gold);font-family:'Cinzel',serif">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);${isMe?'color:var(--gold);font-weight:600':''}">${s.name}</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);font-size:.68rem;color:var(--text-dd)">${s.role?ROLES[s.role]?.name||s.role:'—'}</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);text-align:center;font-family:'Cinzel',serif;color:var(--gold)">${s.score.toLocaleString()}</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);text-align:center;color:${hpColor}">${s.hp}</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);text-align:center">${s.acc}%</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);text-align:center;font-size:.7rem">${worstArea}</td>
+            <td style="padding:.3rem .55rem;border:1px solid rgba(255,255,255,.04);text-align:center;color:var(--text-dd);font-size:.7rem">${s.time}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    </div>
+
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;margin:.8rem 0 .4rem">
+      📋 Kirkpatrick L2 — Bilgi Öncesi/Sonrası Karşılaştırma
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem">
+      ${[['Entity Tespiti','62%','89%'],['Cardinality','55%','81%'],['3NF Normalizasyon','41%','78%']].map(([t,pre,post])=>`
+        <div style="background:rgba(13,17,32,.6);border:1px solid var(--border);border-radius:7px;padding:.55rem">
+          <div style="font-size:.7rem;color:var(--text-d);margin-bottom:.4rem">${t}</div>
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--text-dd);margin-bottom:.25rem"><span>Öncesi</span><span>${pre}</span></div>
+          <div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:.3rem">
+            <div style="height:100%;background:var(--red-ll);border-radius:3px;width:${pre}"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--text-dd);margin-bottom:.25rem"><span>Sonrası</span><span style="color:#a8e8b8">${post}</span></div>
+          <div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+            <div style="height:100%;background:var(--green-ll);border-radius:3px;width:${post}"></div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <div style="font-size:.7rem;color:var(--text-dd);margin-top:.7rem;border-top:1px solid var(--border);padding-top:.5rem">
+      ⚠ Bu dashboard demo verileri içermektedir. Gerçek deployment'ta öğrenci verileri sunucu tarafında saklanır. NFR5: 0% PII toplanmaz — yalnızca hata tipleri ve puan verileri kaydedilir.
+    </div>
+  `;
+}
+function closeDashboard(){$('dash-overlay').style.display='none'}
+
+// ══════════════════════════════════════════
+// PORTFOLIO + RADAR (wf_portfolio spec)
+// ══════════════════════════════════════════
+function openPortfolio(){
+  if(!G.role)return;
+  renderPortfolioStats();renderRadar();renderHeroJourney();renderOctalysis();renderChallenge();
+  $('portfolio-overlay').style.display='flex';
+}
+function renderPortfolioStats(){
+  const dims=[
+    {l:'Entity',v:G.errors.ent===0?100:Math.max(10,100-G.errors.ent*25),c:'var(--teal-ll)'},
+    {l:'PK',v:G.errors.pk===0?100:Math.max(10,100-G.errors.pk*30),c:'var(--gold)'},
+    {l:'Cardinality',v:G.errors.br===0?100:Math.max(10,100-G.errors.br*20),c:'var(--purple-ll)'},
+    {l:'2NF',v:G.errors.nr<=1?100:Math.max(10,100-G.errors.nr*15),c:'#c4aaff'},
+    {l:'3NF',v:G.errors.nr===0?100:Math.max(10,100-G.errors.nr*20),c:'var(--red-ll)'}
+  ];
+  $('portfolio-stats').innerHTML=dims.map(d=>`<div style="background:rgba(13,17,32,.6);border:1px solid var(--border);border-radius:7px;padding:.45rem;text-align:center"><div style="font-size:.6rem;color:var(--text-dd);margin-bottom:.2rem">${d.l}</div><div style="font-family:'Cinzel',serif;font-size:.95rem;color:${d.c}">${d.v}%</div></div>`).join('');
+}
+function renderRadar(){
+  const svg=$('radar-svg');if(!svg)return;svg.innerHTML='';
+  const cx=170,cy=155,r=100;
+  const dims=[
+    {l:'Entity',v:G.errors.ent===0?1:Math.max(0.1,1-G.errors.ent*0.25)},
+    {l:'PK',v:G.errors.pk===0?1:Math.max(0.1,1-G.errors.pk*0.3)},
+    {l:'Cardinality',v:G.errors.br===0?1:Math.max(0.1,1-G.errors.br*0.2)},
+    {l:'2NF',v:G.errors.nr<=1?1:Math.max(0.1,1-G.errors.nr*0.15)},
+    {l:'3NF',v:G.errors.nr===0?1:Math.max(0.1,1-G.errors.nr*0.2)}
+  ];
+  const n=dims.length;
+  function pt(frac,i){const a=(2*Math.PI*i/n)-Math.PI/2;return {x:cx+r*frac*Math.cos(a),y:cy+r*frac*Math.sin(a)};}
+  // grid
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const pts=dims.map((_,i)=>pt(f,i));
+    const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    poly.setAttribute('points',pts.map(p=>p.x+','+p.y).join(' '));
+    poly.setAttribute('fill','none');poly.setAttribute('stroke','rgba(201,162,39,0.1)');poly.setAttribute('stroke-width','1');svg.appendChild(poly);
+  });
+  // axes
+  dims.forEach((_,i)=>{
+    const op=pt(1,i);const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',cx);line.setAttribute('y1',cy);line.setAttribute('x2',op.x);line.setAttribute('y2',op.y);
+    line.setAttribute('stroke','rgba(201,162,39,0.13)');line.setAttribute('stroke-width','1');svg.appendChild(line);
+  });
+  // filled
+  const dataPts=dims.map((d,i)=>pt(d.v,i));
+  const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  poly.setAttribute('points',dataPts.map(p=>p.x+','+p.y).join(' '));
+  poly.setAttribute('fill','rgba(29,142,138,0.22)');poly.setAttribute('stroke','rgba(29,142,138,0.8)');poly.setAttribute('stroke-width','2');svg.appendChild(poly);
+  // dots + labels
+  dims.forEach((d,i)=>{
+    const dp=dataPts[i];const lp=pt(1.22,i);
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',dp.x);c.setAttribute('cy',dp.y);c.setAttribute('r','5');
+    c.setAttribute('fill','var(--teal-ll)');c.setAttribute('stroke','rgba(13,17,32,.8)');c.setAttribute('stroke-width','1.5');svg.appendChild(c);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',lp.x);t.setAttribute('y',lp.y+4);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','11');t.setAttribute('font-family','Cinzel,serif');t.setAttribute('fill','rgba(201,162,39,.8)');
+    t.textContent=d.l;svg.appendChild(t);
+  });
+}
+function renderHeroJourney(){
+  const phases=[
+    {l:'Departure',icon:'🏰',desc:'Avalon tehlikede',done:G.score>0},
+    {l:'Library',icon:'📚',desc:'Entity keşfi',done:G.entDone&&G.pkDone},
+    {l:'Bridge',icon:'🌉',desc:'Köprüler',done:G.bridgesDone&&G.bridgesDone.length>0},
+    {l:'Combat',icon:'⚔️',desc:'3NF savaşı',done:G.score>700},
+    {l:'Return',icon:'🏆',desc:'Kurtarıldı',done:G.score>=1000}
+  ];
+  $('hero-journey').innerHTML=phases.map((p,i)=>`<div style="display:flex;align-items:center;flex-shrink:0"><div style="text-align:center;padding:.35rem .5rem"><div style="font-size:1.2rem;opacity:${p.done?'1':'0.25'}">${p.icon}</div><div style="font-size:.58rem;font-family:'Cinzel',serif;color:${p.done?'var(--gold)':'var(--text-dd)'};margin-top:.1rem">${p.l}</div><div style="font-size:.52rem;color:var(--text-dd)">${p.desc}</div></div>${i<phases.length-1?`<div style="width:22px;height:2px;background:${p.done?'var(--gold)':'rgba(255,255,255,.08)'};flex-shrink:0"></div>`:''}</div>`).join('');
+}
+function renderOctalysis(){
+  const items=[
+    {l:'Epic Meaning',v:82,c:'var(--gold)'},
+    {l:'Development',v:78,c:'var(--teal-ll)'},
+    {l:'Empowerment',v:70,c:'var(--purple-ll)'},
+    {l:'Ownership',v:65,c:'#c4aaff'},
+    {l:'Social Influence',v:40,c:'#7ec8e3'},
+    {l:'Scarcity',v:55,c:'#ffaaaa'},
+    {l:'Unpredictability',v:35,c:'var(--text-d)'},
+    {l:'Loss Avoidance',v:60,c:'var(--red-ll)'}
+  ];
+  $('octalysis-bars').innerHTML=items.map(it=>`<div style="font-size:.67rem"><div style="display:flex;justify-content:space-between;margin-bottom:.15rem"><span style="color:var(--text-dd)">${it.l}</span><span style="color:${it.c};font-family:'Cinzel',serif">${it.v}</span></div><div style="height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden"><div style="height:100%;width:${it.v}%;background:${it.c};border-radius:2px"></div></div></div>`).join('');
+}
+function renderChallenge(){
+  const url=window.location.href.split('?')[0];
+  const link=`${url}?challenge=${encodeURIComponent(G.player||'Architect')}&score=${G.score}&sc=${G.sc}`;
+  const el=$('challenge-link');if(el)el.textContent=link;
+}
+function copyChallenge(){
+  const el=$('challenge-link');if(!el)return;
+  navigator.clipboard.writeText(el.textContent).then(()=>notify('🔗 Link kopyalandı! Arkadaşına gönder.','ok',2500)).catch(()=>notify('Linki manuel kopyala.','warn'));
+}
+
+// ══════════════════════════════════════════
+// REWARD SHOP (Elite Reward Tiers — döküman spec)
+// ══════════════════════════════════════════
+const SHOP_ITEMS=[
+  {id:'hp',name:'Potion of Integrity',desc:'HP +5 yenile (Access Tier)',cost:100,icon:'❤️',stock:5},
+  {id:'cloak',name:"Scout's Glowing Cloak",desc:'Guardian avatarın için kozmetik yükseltme (Access Tier)',cost:100,icon:'🧥',stock:3},
+  {id:'cert',name:"'Master of 3NF' Sertifikası",desc:'Demo başarı rozeti; resmi belge değildir (Professional Tier)',cost:2000,icon:'📜',stock:3},
+  {id:'ch6',name:'Chapter 6 Preview Pack',desc:'Demo kaynak paketi; paylaşım için instructor onayı gerekir (Professional Tier)',cost:2000,icon:'📚',stock:3},
+  {id:'quiz',name:'Quiz Exemption Token',desc:'Demo muafiyet tokenı — yalnızca instructor onayıyla geçerli (Elite Tier)',cost:5000,icon:'🏆',stock:3},
+  {id:'review',name:"Grandmaster 1:1 Review",desc:'Demo review ödülü — TOP 3 ve instructor onayı gerekir (Elite Tier)',cost:5000,icon:'👑',stock:3}
+];
+const shopBought={};
+function openShop(){$('shop-balance').textContent=G.score.toLocaleString();renderShop();$('shop-overlay').style.display='flex';}
+function renderShop(){
+  $('shop-items').innerHTML=SHOP_ITEMS.map(it=>{
+    const b=shopBought[it.id]||0,can=G.score>=it.cost&&b<it.stock;
+    return `<div style="display:flex;align-items:center;gap:.8rem;background:rgba(7,9,15,.6);border:1px solid ${can?'var(--border-l)':'var(--border)'};border-radius:8px;padding:.6rem .85rem"><div style="font-size:1.5rem;flex-shrink:0">${it.icon}</div><div style="flex:1"><div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.76rem">${it.name}</div><div style="font-size:.68rem;color:var(--text-dd);margin-top:.1rem">${it.desc}</div><div style="font-size:.62rem;color:var(--text-dd);margin-top:.1rem">Stok: ${it.stock-b}/${it.stock}</div></div><button onclick="buyItem('${it.id}')" class="btn ${can?'btn-p':''}" style="white-space:nowrap;font-size:.68rem;padding:.3rem .6rem;${!can?'opacity:.38;cursor:not-allowed':''}" ${!can?'disabled':''}>💎 ${it.cost.toLocaleString()}</button></div>`;
+  }).join('');
+}
+function buyItem(id){
+  const it=SHOP_ITEMS.find(i=>i.id===id);if(!it||G.score<it.cost||(shopBought[id]||0)>=it.stock)return;
+  shopBought[id]=(shopBought[id]||0)+1;G.score-=it.cost;
+  $('shop-balance').textContent=G.score.toLocaleString();
+  if(id==='hp'){G.hp=Math.min(G.maxHp,G.hp+5);updateHuds();notify('❤️ +5 HP kazanıldı!','ok');}
+  else if(id==='cloak')notify('🧥 Scout Cloak aktif! Avatar güncellendi.','ok');
+  else if(id==='cert')notify('📜 Demo başarı rozeti kazanıldı! Resmi belge değildir; ekran görüntüsünü instructora iletebilirsin.','warn',6000);
+  else if(id==='ch6')notify('📚 Demo Chapter 6 kaynak paketi açıldı! Paylaşım için instructor onayı gerekir.','warn',6000);
+  else if(id==='quiz')notify('🏆 Demo muafiyet tokenı kazanıldı! Yalnızca instructor onayıyla geçerlidir.','warn',6000);
+  else if(id==='review')notify('👑 Demo review ödülü kazanıldı! TOP 3 ve instructor onayı gerekir.','warn',7000);
+  showFB('fb-shop','✅ '+it.name+' satın alındı! Yeni bakiye: '+G.score.toLocaleString()+' Rune','ok');
+  $('fb-shop').style.display='block';
+  renderShop();updateHuds();
+  G.log.push({time:new Date().toISOString(),action:'shop_purchase',item:id,cost:it.cost});
+}
+
+// ══════════════════════════════════════════
+// GLOSSARY (Appendix — Glossary of Terms)
+// ══════════════════════════════════════════
+const GLOSSARY_TERMS=[
+  {t:'Entity',d:'Gerçek dünyada bağımsız olarak var olan, benzersiz kimliği bulunan ve niteliklere sahip nesne veya kavram. Örn: Öğrenci, Ders, Müşteri.'},
+  {t:'Attribute',d:'Bir entity\'nin özelliği. Kendi başına var olamaz, her zaman bir entity\'e aittir. Örn: Ad Soyad, GPA, Fiyat.'},
+  {t:'Primary Key (PK)',d:'Bir tablodaki her satırı benzersiz olarak tanımlayan alan. NULL olamaz, değişmez ve benzersiz olmalıdır. Sistem tarafından atanan ID\'ler en iyi PK adayıdır.'},
+  {t:'Foreign Key (FK)',d:'Başka bir tablonun Primary Key\'ine referans veren alan. Referential Integrity\'yi sağlar.'},
+  {t:'Cardinality',d:'İki entity arasındaki ilişkinin sayısal doğası. 1:1 (Bire-Bir), 1:N (Bire-Çok), M:N (Çoka-Çok) olmak üzere üç türü vardır.'},
+  {t:'Junction Table',d:'M:N ilişkisini çözmek için oluşturulan ara tablo. Her iki entity\'nin PK\'larını FK olarak içerir. Associative Entity olarak da bilinir. Örn: Kayıt (Öğrenci↔Ders).'},
+  {t:'1NF (First Normal Form)',d:'Her hücrede yalnızca atomik (tekil) değer bulunur. Multi-valued ve tekrarlayan gruplar yoktur.'},
+  {t:'2NF (Second Normal Form)',d:'1NF\'yi karşılar ve composite PK\'ye kısmi bağımlılık yoktur. Tüm non-key attribute\'lar PK\'nın tamamına bağımlıdır.'},
+  {t:'3NF (Third Normal Form)',d:'2NF\'yi karşılar ve geçişli bağımlılık yoktur. Non-key attribute\'lar yalnızca PK\'ya bağımlıdır, başka non-key alanlara değil. PK → A → B zinciri yasaktır.'},
+  {t:'Partial Dependency',d:'Composite bir PK\'nın yalnızca bir parçasına bağımlı olan attribute. 2NF ihlali oluşturur. Çözüm: ilgili attribute\'u ayrı tabloya taşı.'},
+  {t:'Transitive Dependency',d:'PK → Non-key-A → Non-key-B zinciri. Non-key bir alan başka bir non-key alana bağımlıdır. 3NF ihlali. Çözüm: Non-key-B\'yi ayrı tabloya taşı.'},
+  {t:'ERD',d:'Entity-Relationship Diagram. Entity\'leri, nitelikleri ve aralarındaki ilişkileri görsel olarak gösteren diyagram. Veritabanı tasarımının temel belgesidir.'},
+  {t:'Data Integrity',d:'Verinin doğruluğunu ve tutarlılığını ifade eder. Entity Integrity (PK kuralları), Referential Integrity (FK kuralları) ve Domain Integrity\'yi kapsar.'},
+  {t:'Normalization',d:'Veri tekrarını (redundancy) azaltmak ve anomalileri gidermek için tabloları yapılandırma süreci. 1NF → 2NF → 3NF → BCNF adımlarını izler.'},
+  {t:'Redundancy',d:'Aynı verinin birden fazla yerde tekrarlanması. Güncelleme anomalisi, ekleme anomalisi ve silme anomalisine yol açar.'},
+  {t:'Logic Rune',d:'Oyundaki para birimi. Doğru modelleme hamlelerinden kazanılır, Grandmaster\'s Vault\'ta harcanabilir.'},
+  {t:'Guardian Role',d:'Oyuncunun seçtiği uzmanlaşma sınıfı: Scout (UC), Builder (CL), Time-Keeper (SQ), Data Sage (ER). Her rol farklı avantaj sağlar.'},
+  {t:'Bloom Taxonomy',d:'Bilişsel öğrenme hedeflerini sınıflandıran hiyerarşi: Hatırla → Anla → Uygula (1NF) → Analiz Et (2NF) → Değerlendir (3NF) → Yarat.'},
+  {t:'Kirkpatrick Model',d:'Eğitim etkinliğini 4 düzeyde ölçer: L1 Reaction (memnuniyet anketi), L2 Learning (bilgi testi), L3 Behavior (transfer), L4 Results (sınav ortalaması).'},
+  {t:'Octalysis Framework',d:'Yu-kai Chou\'nun 8 oyunlaştırma boyutu: Epic Meaning, Development, Empowerment, Ownership, Social Influence, Scarcity, Unpredictability, Loss Avoidance.'}
+];
+function openGlossary(){
+  $('glossary-content').innerHTML=GLOSSARY_TERMS.map(g=>`<div style="padding:.48rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.76rem;margin-bottom:.18rem">${g.t}</div><div style="font-size:.77rem;color:var(--text-d);line-height:1.6">${g.d}</div></div>`).join('');
+  $('glossary-overlay').style.display='flex';
+}
+
+// ══════════════════════════════════════════
+// ANTI-CHEAT: 3s delay (Tusler Risk Mitigation)
+// ══════════════════════════════════════════
+let answerLocked=false;
+function lockAnswers(ms=3000){
+  if(answerLocked)return;
+  answerLocked=true;
+  const all=document.querySelectorAll('.ropt,.ec,.rel-opt,.ropt');
+  all.forEach(el=>{el.style.pointerEvents='none';el.style.opacity='.45'});
+  const bar=document.createElement('div');bar.id='acbar';
+  bar.style.cssText='position:fixed;bottom:0;left:0;height:3px;background:var(--red-ll);z-index:999;width:100%;transition:width '+ms+'ms linear';
+  document.body.appendChild(bar);
+  requestAnimationFrame(()=>{bar.style.width='0%'});
+  setTimeout(()=>{
+    answerLocked=false;bar.remove();
+    all.forEach(el=>{el.style.pointerEvents='auto';el.style.opacity='1'});
+  },ms);
+}
+
+// ══════════════════════════════════════════
+// 5-CATEGORY LEADERBOARD override
+// ══════════════════════════════════════════
+function buildLB(sk){
+  const acc2=G.total>0?Math.round(G.correct/G.total*100):0;
+  const me={n:G.player+' (Sen)',score:G.score,acc:acc2,hp:G.hp,collab:G.badges.length*10,improvement:Math.max(0,acc2-60),me:true};
+  const others=[
+    {n:'Ahmet K.',score:G.score+130,acc:89,hp:85,collab:30,improvement:29,me:false},
+    {n:'Mert D.',score:G.score+260,acc:95,hp:100,collab:50,improvement:35,me:false},
+    {n:'Zeynep A.',score:G.score-70,acc:74,hp:90,collab:20,improvement:14,me:false},
+    {n:'Selin Y.',score:G.score-200,acc:62,hp:65,collab:10,improvement:2,me:false}
+  ];
+  const all=[me,...others];
+  const CATS={
+    score:{fn:(a,b)=>b.score-a.score,val:p=>p.score.toLocaleString()+' Rune'},
+    period:{fn:(a,b)=>b.score-a.score,val:p=>'+'+Math.round(p.score*.3).toLocaleString()},
+    analytical:{fn:(a,b)=>b.acc-a.acc,val:p=>p.acc+'% doğruluk'},
+    collab:{fn:(a,b)=>b.collab-a.collab,val:p=>p.collab+' pt'},
+    improvement:{fn:(a,b)=>b.improvement-a.improvement,val:p=>'+'+p.improvement+'%'}
+  };
+  const cat=CATS[sk]||CATS.score;
+  all.sort(cat.fn);
+  const medals=['🥇','🥈','🥉','',''];
+  $('lb').innerHTML=all.map((p,i)=>`<div class="lbr ${p.me?'me':''}"><div class="lbrank">${medals[i]||'#'+(i+1)}</div><div class="lbname">${p.n}</div><div style="font-size:.7rem;color:var(--text-dd);flex:1;text-align:center">${cat.val(p)}</div><div class="lbscore">${p.score.toLocaleString()}</div></div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// LEADERBOARD OPT-OUT (NFR)
+// ══════════════════════════════════════════
+let lbOptOut=false;
+function toggleLBOptOut(btn){
+  lbOptOut=!lbOptOut;
+  btn.textContent=lbOptOut?'👁 Leaderboard\'a Katıl':'🙈 Leaderboard\'dan Çık';
+  btn.style.borderColor=lbOptOut?'var(--red-ll)':'var(--border-l)';
+  btn.style.color=lbOptOut?'var(--red-ll)':'var(--text-d)';
+  notify(lbOptOut?'Leaderboard\'dan çıkıldı (NFR opt-out ✓)':'Leaderboard\'a geri döndün.','warn',2000);
+}
+
+// ══════════════════════════════════════════
+// PATCH: anti-cheat on wrong answers
+// ══════════════════════════════════════════
+const _origChkNorm=chkNorm;
+chkNorm=function(pi,ch){
+  if(answerLocked)return;
+  const ph=SC[G.sc].norms[pi];
+  if(ch!==ph.c)lockAnswers(10000);
+  _origChkNorm(pi,ch);
+};
+const _origChBridge=chBridge;
+chBridge=function(idx,ch){
+  if(answerLocked)return;
+  const b=SC[G.sc].bridges[idx];
+  if(ch!==b.c)lockAnswers(10000);
+  _origChBridge(idx,ch);
+};
+
+
+
+// ══════════════════════════════════════════
+// SCOUT'S HINT — Bölüm 1 (Entity Discovery)
+// ══════════════════════════════════════════
+function showScoutHintL1(hints){
+  const s=SC[G.sc];
+  const correctEnts=s.ents.filter(e=>e.c).map(e=>e.l).join(', ');
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;z-index:600;background:rgba(7,9,15,0.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)';
+  overlay.innerHTML=`
+    <div style="max-width:480px;width:90%;background:rgba(13,17,32,0.99);border:2px solid var(--gold);border-radius:14px;padding:1.6rem;text-align:center">
+      <div style="font-size:2rem;margin-bottom:.5rem">🔭</div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;margin-bottom:.4rem">Scout's Emergency Hint</h2>
+      <p style="font-size:.72rem;color:var(--text-dd);margin-bottom:.8rem;font-style:italic">3 üst üste hata — Scout devreye girdi! (Compassion Model ✓)</p>
+      <div style="background:rgba(10,61,61,0.3);border:1px solid var(--teal-ll);border-radius:8px;padding:.85rem;margin-bottom:.8rem;text-align:left">
+        <div style="font-family:'Cinzel',serif;color:var(--teal-ll);font-size:.72rem;margin-bottom:.4rem">📋 Entity Nedir?</div>
+        <div style="font-size:.78rem;color:var(--text-d);line-height:1.65;margin-bottom:.5rem">
+          <strong style="color:var(--text)">Entity:</strong> Kendi başına var olan, benzersiz kimliği bulunan ve birden fazla niteliği olan nesne.<br><br>
+          <strong style="color:var(--text)">Attribute:</strong> Bir entity'nin özelliği — kendi başına var olamaz.<br><br>
+          Bu senaryoda doğru Entity'ler: <strong style="color:#a8e8b8">${correctEnts}</strong>
+        </div>
+        <div style="font-size:.73rem;color:#9de8e8">${hints.length?'Seçtiğin yanlışlar: '+hints.join(' · '):''}</div>
+      </div>
+      <div style="font-size:.7rem;color:var(--text-dd);margin-bottom:.8rem">Bloom L2 Understand: Entity vs Attribute ayrımını açıklayabilmek</div>
+      <button onclick="this.closest('[style*=fixed]').remove()"
+        style="font-family:'Cinzel',serif;padding:.55rem 1.2rem;background:rgba(201,162,39,0.15);border:1px solid var(--gold);color:var(--gold);border-radius:6px;cursor:pointer;font-size:.8rem">
+        Anladım — Tekrar Dene ⚔️
+      </button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+// ══════════════════════════════════════════
+// SCOUT'S HINT — Bölüm 2 (Bridge Building)
+// ══════════════════════════════════════════
+function showScoutHintBridge(b){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;z-index:600;background:rgba(7,9,15,0.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)';
+  const explanations={
+    '11':'<strong>1:1 (Bire-Bir):</strong> Her instance tam olarak bir diğer instance ile eşleşir. Örn: Her öğrencinin tam bir öğrenci kartı.',
+    '1N':'<strong>1:N (Bire-Çok):</strong> Bir instance birden fazla diğer instance ile ilişkilidir. Örn: Bir öğretmen birden fazla ders verebilir.',
+    'MN':'<strong>M:N (Çoka-Çok):</strong> Her iki taraftan birden fazla instance ilişkilidir. Örn: Öğrenci ↔ Ders. Bu ilişki için Junction Table (Ara Tablo) zorunludur!'
+  };
+  overlay.innerHTML=`
+    <div style="max-width:480px;width:90%;background:rgba(13,17,32,0.99);border:2px solid var(--gold);border-radius:14px;padding:1.6rem;text-align:center">
+      <div style="font-size:2rem;margin-bottom:.5rem">🔭</div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;margin-bottom:.4rem">Scout's Emergency Hint</h2>
+      <p style="font-size:.72rem;color:var(--text-dd);margin-bottom:.8rem;font-style:italic">3 üst üste hata — Scout devreye girdi! (Compassion Model ✓)</p>
+      <div style="background:rgba(10,61,61,0.3);border:1px solid var(--teal-ll);border-radius:8px;padding:.85rem;margin-bottom:.8rem;text-align:left">
+        <div style="font-family:'Cinzel',serif;color:var(--teal-ll);font-size:.72rem;margin-bottom:.4rem">📋 Cardinality Rehberi</div>
+        <div style="font-size:.78rem;color:var(--text-d);line-height:1.75">
+          ${Object.values(explanations).join('<br><br>')}
+        </div>
+        <div style="margin-top:.6rem;padding:.5rem;background:rgba(201,162,39,0.08);border-radius:5px">
+          <div style="font-size:.72rem;color:var(--gold);margin-bottom:.2rem">Bu ilişki için ipucu:</div>
+          <div style="font-size:.78rem;color:#a8e8b8">${b.h}</div>
+          <div style="font-size:.72rem;color:var(--gold);margin-top:.3rem">Doğru cevap: <strong>${fmtC(b.c)}</strong></div>
+        </div>
+      </div>
+      <div style="font-size:.7rem;color:var(--text-dd);margin-bottom:.8rem">Bloom L3 Apply: Cardinality kuralını doğru ilişkiye uygulayabilmek</div>
+      <button onclick="this.closest('[style*=fixed]').remove()"
+        style="font-family:'Cinzel',serif;padding:.55rem 1.2rem;background:rgba(201,162,39,0.15);border:1px solid var(--gold);color:var(--gold);border-radius:6px;cursor:pointer;font-size:.8rem">
+        Anladım — Tekrar Dene ⚔️
+      </button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+// ══════════════════════════════════════════
+// MANDATORY SCOUT'S HINT (Tusler Responsive Risk)
+// Triggered after 3 consecutive wrong answers
+// ══════════════════════════════════════════
+function showScoutHint(ph){
+  const overlay=document.createElement('div');
+  overlay.id='scout-hint-overlay';
+  overlay.style.cssText='position:fixed;inset:0;z-index:600;background:rgba(7,9,15,0.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)';
+  overlay.innerHTML=`
+    <div style="max-width:480px;width:90%;background:rgba(13,17,32,0.99);border:2px solid var(--gold);border-radius:14px;padding:1.6rem;text-align:center">
+      <div style="font-size:2rem;margin-bottom:.5rem">🔭</div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;margin-bottom:.5rem">Scout's Emergency Hint</h2>
+      <p style="font-size:.75rem;color:var(--text-dd);margin-bottom:.8rem;font-style:italic">3 üst üste hata — The Scout devreye girdi!</p>
+      <div style="background:rgba(10,61,61,0.3);border:1px solid var(--teal-ll);border-radius:8px;padding:.85rem;margin-bottom:.8rem;text-align:left">
+        <div style="font-family:'Cinzel',serif;color:var(--teal-ll);font-size:.72rem;margin-bottom:.4rem">📋 ${ph.ph}</div>
+        <div style="font-size:.78rem;color:var(--text-d);line-height:1.65;margin-bottom:.5rem">${ph.issue}</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.7rem;margin-bottom:.3rem">Doğru Cevap İpucu:</div>
+        <div style="font-size:.8rem;color:#a8e8b8;line-height:1.6">${ph.fix}</div>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-dd);margin-bottom:.8rem">${ph.bloom}</div>
+      <button onclick="document.getElementById('scout-hint-overlay').remove();showNorm(${SC[G.sc].norms.indexOf(ph)})" 
+        style="font-family:'Cinzel',serif;padding:.55rem 1.2rem;background:rgba(201,162,39,0.15);border:1px solid var(--gold);color:var(--gold);border-radius:6px;cursor:pointer;font-size:.8rem">
+        Anladım — Tekrar Dene ⚔️
+      </button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  nErr=0;
+}
+
+// ══════════════════════════════════════════
+// AUTO-SAVE / LOCAL CACHE (Tusler Wi-Fi Risk)
+// ══════════════════════════════════════════
+function autoSave(){
+  try{
+  if(!G.startTime)return;
+    const save={
+      player:G.player,role:G.role,sc:G.sc,diff:G.diff,
+      hp:G.hp,maxHp:G.maxHp,score:G.score,
+      correct:G.correct,total:G.total,badges:G.badges,
+      errors:G.errors,entDone:G.entDone,pkDone:G.pkDone,
+      bridgesDone:G.bridgesDone,integ:G.integ,
+      timeLeft:timeLeft,ts:Date.now()
+    };
+    localStorage.setItem('avalon_autosave',JSON.stringify(save));
+  }catch(e){}
+}
+function loadSave(){
+  try{
+    const raw=localStorage.getItem('avalon_autosave');
+    if(!raw)return false;
+    const save=JSON.parse(raw);
+    const age=(Date.now()-save.ts)/1000/60;
+    if(age>120)return false; // discard saves older than 2 hours
+    return save;
+  }catch(e){return false;}
+}
+function offerResume(){
+  try{
+  const save=loadSave();
+  if(!save||!save.player||save.score===0)return;
+  const age=Math.round((Date.now()-save.ts)/1000/60);
+  const banner=document.createElement('div');
+  banner.style.cssText='position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:500;background:rgba(13,17,32,0.98);border:1px solid var(--gold);border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:.8rem;backdrop-filter:blur(6px);max-width:420px;width:92%';
+  banner.innerHTML=`
+    <div style="flex:1">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem">💾 Kayıt Bulundu</div>
+      <div style="font-size:.7rem;color:var(--text-dd);margin-top:.1rem">${save.player} · ${save.score} Rune · ${age}dk önce</div>
+    </div>
+    <button onclick="resumeGame()" style="font-family:'Cinzel',serif;padding:.38rem .7rem;background:rgba(201,162,39,0.15);border:1px solid var(--gold);color:var(--gold);border-radius:5px;cursor:pointer;font-size:.72rem;white-space:nowrap">Devam Et</button>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--text-dd);cursor:pointer;font-size:1rem;padding:.2rem">×</button>
+  `;
+  document.body.appendChild(banner);
+  setTimeout(()=>{if(banner.parentElement)banner.remove()},8000);
+  }catch(e){}
+}
+function resumeGame(){
+  const save=loadSave();if(!save)return;
+  Object.assign(G,{
+    player:save.player,role:save.role,sc:save.sc||'uni',diff:save.diff||'normal',
+    hp:save.hp,maxHp:save.maxHp,score:save.score,
+    correct:save.correct,total:save.total,badges:save.badges||[],
+    errors:save.errors||{ent:0,pk:0,br:0,nr:0},
+    entDone:save.entDone,pkDone:save.pkDone,
+    bridgesDone:save.bridgesDone||[],integ:save.integ||100,
+    startTime:Date.now()
+  });
+  timeLeft=save.timeLeft||2700;
+  document.querySelectorAll('.avalon-resume-banner').forEach(b=>b.remove());
+  startTimer();buildL2();show('screen-l2');updateHuds();
+  notify('✅ Oyun kaldığı yerden devam ediyor! HP: '+G.hp,'ok',3000);
+  localStorage.removeItem('avalon_autosave');
+}
+
+// ══════════════════════════════════════════
+// PRE/POST GAME QUIZ (Kirkpatrick L2)
+// ══════════════════════════════════════════
+const KL2_QUESTIONS=[
+  {q:'Hangi iliski turu Junction Table gerektirir?',opts:['1:1','1:N','M:N','Hicbiri'],c:2},
+  {q:'3NF\'de hangi bagimlilik turu ihlal olusturur?',opts:['Tam bagimlilik','Kismi bagimlilik','Gecisli bagimlilik','Fonksiyonel bagimlilik'],c:2},
+  {q:'Primary Key icin hangi ozellik zorunludur?',opts:['NULL olabilir','Degisebilir','Benzersiz ve NULL olamaz','Birden fazla olabilir'],c:2},
+  {q:'2NF ihlali hangisidir?',opts:['Multi-valued attribute','Kismi bagimlilik','Transitive dependency','Composite key'],c:1},
+  {q:'M:N iliskisinde Junction Table icin minimum gereksinim:',opts:['Sadece kendi PK\'si','Her iki entity PK\'lari (FK olarak)','Sadece attribute\'lar','Alan gerekmez'],c:1}
+];
+let kl2Answers=[];
+let kl2Mode='pre';
+let kl2Score=0;
+
+function openPreQuiz(){
+  kl2Mode='pre';kl2Answers=[];kl2Score=0;
+  renderKL2Quiz(0);
+  $('kl2-overlay').style.display='flex';
+}
+function openPostQuiz(){
+  kl2Mode='post';kl2Answers=[];kl2Score=0;
+  renderKL2Quiz(0);
+  $('kl2-overlay').style.display='flex';
+}
+function renderKL2Quiz(idx){
+  const overlay=$('kl2-overlay');if(!overlay)return;
+  if(idx>=KL2_QUESTIONS.length){
+    // Show results
+    const pct=Math.round(kl2Score/KL2_QUESTIONS.length*100);
+    const preScore=parseInt(localStorage.getItem('avalon_kl2_pre')||'0');
+    overlay.querySelector('#kl2-content').innerHTML=`
+      <div style="text-align:center;padding:1rem 0">
+        <div style="font-size:2.2rem;font-family:'Cinzel',serif;color:var(--gold)">${pct}%</div>
+        <div style="font-size:.8rem;color:var(--text-d);margin:.3rem 0">${kl2Score}/${KL2_QUESTIONS.length} doğru · ${kl2Mode==='pre'?'Ön Test':'Son Test'}</div>
+        ${kl2Mode==='post'&&preScore>0?`<div style="margin:.6rem 0;padding:.5rem;background:rgba(10,61,26,.2);border:1px solid var(--green-ll);border-radius:6px;font-size:.78rem;color:#a8e8b8">📈 Gelişim: ${preScore}% → ${pct}% (+${pct-preScore} puan) — Kirkpatrick L2 ✓</div>`:''}
+        <button onclick="$('kl2-overlay').style.display='none'" class="btn btn-p" style="margin-top:.8rem">Kapat</button>
+      </div>`;
+    if(kl2Mode==='pre')localStorage.setItem('avalon_kl2_pre',pct);
+    return;
+  }
+  const q=KL2_QUESTIONS[idx];
+  overlay.querySelector('#kl2-content').innerHTML=`
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.72rem;margin-bottom:.4rem">Soru ${idx+1} / ${KL2_QUESTIONS.length}</div>
+    <div style="font-size:.82rem;color:var(--text);line-height:1.6;margin-bottom:.8rem">${q.q}</div>
+    <div style="display:grid;gap:.35rem">
+      ${q.opts.map((o,i)=>`<div class="ropt" style="text-align:left;padding:.45rem .7rem;font-family:'Crimson Pro',serif;font-size:.8rem" onclick="answerKL2(${idx},${i})">${String.fromCharCode(65+i)}. ${o}</div>`).join('')}
+    </div>`;
+}
+function answerKL2(idx,chosen){
+  const q=KL2_QUESTIONS[idx];
+  kl2Answers.push(chosen);
+  if(chosen===q.c)kl2Score++;
+  renderKL2Quiz(idx+1);
+}
+
+// ══════════════════════════════════════════
+// FR/NFR TRACEABILITY MATRIX
+// ══════════════════════════════════════════
+function showTraceability(){
+  const matrix=[
+    {id:'FR-01',desc:'4 Guardian rolü seçimi',status:'✅',impl:'Role select screen — scout/builder/timekeeper/datasage'},
+    {id:'FR-02',desc:'HP barı azalır — yanlış cardinality/dependency',status:'✅',impl:'loseHp() → hp-fill animasyonu'},
+    {id:'FR-03',desc:'Drag-and-drop ERD arayüzü',status:'✅',impl:'ERD Canvas overlay — SVG drag, port bağlantı'},
+    {id:'FR-04',desc:'Gerçek zamanlı Structural Integrity + Data Corruption Alert',status:'✅',impl:'int-fill bar + .ca corruption alert div'},
+    {id:'FR-05',desc:'Post-session tanı raporu',status:'✅',impl:'buildDiag() — kişiselleştirilmiş hata analizi'},
+    {id:'NFR-01',desc:'Feedback render latency <16ms hedefi',status:'✅',impl:'Target/expected — lightweight DOM updates'},
+    {id:'NFR-02',desc:'Tutorial < 3 dakika',status:'✅',impl:'8 adımlı tutorial overlay — ~2dk'},
+    {id:'NFR-03',desc:'Uptime > 99% — static HTML hedefi',status:'✅',impl:'Static HTML deployment target'},
+    {id:'NFR-04',desc:'WCAG AA renk kontrast',status:'⚠️',impl:'--gold #c9a227 on dark bg: ratio ~7.2:1 ✓'},
+    {id:'NFR-05',desc:'Privacy — gerçek kimlik loglanmaz',status:'✅',impl:'Player Code pseudonymous; GPAF JSONL sadece playerPseudoId taşır'},
+    {id:'GPAF-LOG',desc:'Team Tool uyumlu JSONL game logs',status:'✅',impl:'exportGpafLog() — session_start / score_update / mistake / level_complete / session_end'},
+    {id:'Tusler-1',desc:'10s cooldown sonrası yanlış cevap',status:'✅',impl:'lockAnswers(10000) — kırmızı progress bar'},
+    {id:'Tusler-2',desc:'3 üst üste hata → Scout Hint pop-up',status:'✅',impl:'showScoutHint() — nErr>=3 tetikleme'},
+    {id:'Tusler-3',desc:'Wi-Fi kesintisinde otomatik cache',status:'✅',impl:'autoSave() → localStorage her hamle'},
+    {id:'Speed',desc:'+50 Rune — M:N 15sn altında çözme',status:'✅',impl:'bridgeOpenTimes — Date.now() farkı'},
+    {id:'Flawless',desc:'Flawless badge — 3NF hatasız tamamlama',status:'✅',impl:'nErr===0 → earnBadge("fp")'},
+    {id:'KL2',desc:'Ön/Son test karşılaştırması',status:'✅',impl:'openPreQuiz / openPostQuiz — localStorage kayıt'},
+    {id:'LB-OPT',desc:'Leaderboard opt-out',status:'✅',impl:'toggleLBOptOut() — lbOptOut flag'},
+    {id:'LB-5',desc:'5 kategori leaderboard',status:'✅',impl:'buildLB(score|period|analytical|collab|improvement)'},
+    {id:'Shop',desc:'Elite/Professional/Access reward tiers',status:'✅',impl:'Grandmaster Vault — 6 item, döküman maliyetleri'},
+    {id:'Radar',desc:'5 boyutlu mastery radar chart',status:'✅',impl:'renderRadar() — SVG polygon, hata oranı'},
+    {id:'Hero',desc:'Hero Journey görseli',status:'✅',impl:'renderHeroJourney() — 5 aşama progress'},
+    {id:'Octalysis',desc:'8 boyut Octalysis skoru',status:'✅',impl:'renderOctalysis() — döküman değerleri'},
+  ];
+  const win=window.open('','_blank','width=700,height=600');
+  win.document.write(`<html><head><title>FR/NFR Traceability Matrix</title>
+  <style>body{background:#07090f;color:#e8dcc8;font-family:Arial,sans-serif;padding:1rem}
+  table{width:100%;border-collapse:collapse;font-size:.78rem}
+  th{background:#1e1245;padding:.4rem .6rem;color:#c9a227;text-align:left;border:1px solid rgba(201,162,39,.2)}
+  td{padding:.35rem .6rem;border:1px solid rgba(255,255,255,.05)}
+  tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+  h2{color:#c9a227;font-family:'Georgia',serif;margin-bottom:.8rem}
+  </style></head><body>
+  <h2>The Architects of Avalon — FR/NFR Traceability Matrix</h2>
+  <table><thead><tr><th>ID</th><th>Gereksinim</th><th>Durum</th><th>Uygulama Notu</th></tr></thead><tbody>
+  ${matrix.map(r=>`<tr><td><strong>${r.id}</strong></td><td>${r.desc}</td><td style="text-align:center">${r.status}</td><td style="color:#9de8e8;font-size:.72rem">${r.impl}</td></tr>`).join('')}
+  </tbody></table>
+  <p style="font-size:.7rem;color:#7a6a50;margin-top:1rem">COM4061 · Istanbul Kültür University · The Architects of Avalon</p>
+  </body></html>`);
+  win.document.close();
+}
+
+
+// ══════════════════════════════════════════
+// SOUND FX (Web Audio API — no external deps)
+// ══════════════════════════════════════════
+let audioCtx = null;
+function getAudio(){
+  if(!audioCtx) try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  return audioCtx;
+}
+function playTone(freq, type='sine', dur=0.12, vol=0.18, delay=0){
+  try{
+    const ctx = getAudio(); if(!ctx) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+    g.gain.setValueAtTime(vol, ctx.currentTime + delay);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+    o.start(ctx.currentTime + delay);
+    o.stop(ctx.currentTime + delay + dur + 0.01);
+  }catch(e){}
+}
+function sfxCorrect(){ playTone(523,'sine',0.08,0.15); playTone(659,'sine',0.08,0.15,0.09); playTone(784,'sine',0.12,0.15,0.18); }
+function sfxWrong(){ playTone(200,'sawtooth',0.15,0.2); playTone(150,'sawtooth',0.12,0.15,0.1); }
+function sfxBadge(){ [523,659,784,1047].forEach((f,i)=>playTone(f,'sine',0.1,0.18,i*0.08)); }
+function sfxClick(){ playTone(440,'sine',0.05,0.08); }
+function sfxMonsterHit(){ playTone(100,'square',0.2,0.25); playTone(80,'sawtooth',0.15,0.2,0.15); }
+
+// Patch addScore and loseHp for sound
+const _origAddScore = addScore;
+addScore = function(pts, lbl){
+  _origAddScore(pts, lbl);
+  if(pts >= 100) sfxBadge();
+  else sfxCorrect();
+};
+const _origLoseHpSnd = loseHp;
+loseHp = function(amt, reason){
+  _origLoseHpSnd(amt, reason);
+  sfxWrong();
+};
+
+// ══════════════════════════════════════════
+// CONFETTI on S-rank / win
+// ══════════════════════════════════════════
+function launchConfetti(){
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999';
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx2 = canvas.getContext('2d');
+  const pieces = Array.from({length:120}, () => ({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height - canvas.height,
+    w: 8+Math.random()*8, h: 4+Math.random()*4,
+    r: Math.random()*Math.PI*2,
+    vx: (Math.random()-0.5)*4,
+    vy: 2+Math.random()*4,
+    vr: (Math.random()-0.5)*0.2,
+    color: ['#c9a227','#e8c547','#27ae60','#1d8a8a','#4a2d9f','#ffffff'][Math.floor(Math.random()*6)]
+  }));
+  let frame = 0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.vy+=0.06;
+      ctx2.save(); ctx2.translate(p.x,p.y); ctx2.rotate(p.r);
+      ctx2.fillStyle=p.color; ctx2.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx2.restore();
+    });
+    frame++;
+    if(frame < 180) requestAnimationFrame(draw);
+    else canvas.remove();
+  }
+  draw();
+}
+
+// ══════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if(e.altKey){
+    if(e.key==='t'||e.key==='T'){ e.preventDefault(); startTutorial(); }
+    if(e.key==='e'||e.key==='E'){ e.preventDefault(); openERDCanvas(); }
+    if(e.key==='g'||e.key==='G'){ e.preventDefault(); openGlossary(); }
+    if(e.key==='s'||e.key==='S'){ e.preventDefault(); openShop(); }
+    if(e.key==='d'||e.key==='D'){ e.preventDefault(); openDashboard(); }
+  }
+  // Escape closes any open overlay
+  if(e.key==='Escape'){
+    ['portfolio-overlay','shop-overlay','glossary-overlay',
+     'tutorial-overlay','erd-overlay','dash-overlay','kl2-overlay'].forEach(id=>{
+      const el=$(id); if(el) el.style.display='none';
+    });
+    const sh=$('scout-hint-overlay'); if(sh) sh.remove();
+  }
+});
+
+// ══════════════════════════════════════════
+// PRINT / PDF REPORT
+// ══════════════════════════════════════════
+function printReport(){
+  const acc = G.total>0 ? Math.round(G.correct/G.total*100) : 0;
+  const elapsed = G.startTime ? Math.round((Date.now()-G.startTime)/1000) : 0;
+  const win = window.open('','_blank','width=700,height=900');
+  win.document.write(`<!DOCTYPE html><html><head><title>Avalon Report — ${G.player}</title>
+  <style>
+    body{font-family:Georgia,serif;color:#1a1a2e;padding:2rem;max-width:700px;margin:auto}
+    h1{font-size:1.6rem;color:#8a6e1a;border-bottom:2px solid #c9a227;padding-bottom:.5rem}
+    h2{font-size:1.1rem;color:#1e1245;margin-top:1.5rem}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.5rem 0}
+    th{background:#1e1245;color:#c9a227;padding:.4rem .6rem;text-align:left}
+    td{padding:.35rem .6rem;border-bottom:1px solid #eee}
+    .badge{display:inline-block;background:#fff8e1;border:1px solid #c9a227;border-radius:12px;padding:.15rem .55rem;font-size:.78rem;margin:.15rem}
+    .grade{font-size:3rem;font-weight:bold;color:#8a6e1a}
+    .ok{color:#27ae60} .bad{color:#c0392b}
+    @media print{button{display:none}}
+  </style></head><body>
+  <h1>The Architects of Avalon — Post-Session Report</h1>
+  <p style="color:#666;font-size:.85rem">COM4061 · Istanbul Kültür University · ${new Date().toLocaleDateString('tr-TR')}</p>
+  
+  <table>
+    <tr><th colspan="2">Oyuncu Bilgileri</th></tr>
+    <tr><td>Player Code</td><td>${G.playerCode||G.player}</td></tr><tr><td>Game ID</td><td>${getGameId()}</td></tr><tr><td>Session ID</td><td>${G.sessionId||'—'}</td></tr>
+    <tr><td>Guardian Rolü</td><td>${G.role ? (G.role==='scout'?'The Scout 🔭':G.role==='builder'?'The Builder 🏗️':G.role==='timekeeper'?'The Time-Keeper ⏳':'The Data Sage 📊') : '—'}</td></tr>
+    <tr><td>Senaryo</td><td>${G.sc ? {uni:'Üniversite Kayıt Sistemi',ecom:'E-Ticaret Sistemi',hospital:'Hastane Yönetim Sistemi'}[G.sc] : '—'}</td></tr>
+    <tr><td>Zorluk</td><td>${G.diff}</td></tr>
+  </table>
+
+  <table>
+    <tr><th colspan="2">Performans</th></tr>
+    <tr><td>Logic Runes</td><td class="ok"><strong>${G.score.toLocaleString()}</strong></td></tr>
+    <tr><td>Son HP</td><td>${G.hp} / ${G.maxHp}</td></tr>
+    <tr><td>Doğruluk Oranı</td><td>${acc}%</td></tr>
+    <tr><td>Süre</td><td>${Math.floor(elapsed/60)}dk ${elapsed%60}sn</td></tr>
+  </table>
+
+  <table>
+    <tr><th>Hata Analizi</th><th>Hata Sayısı</th><th>Durum</th></tr>
+    <tr><td>Entity Tanımlama</td><td>${G.errors.ent}</td><td class="${G.errors.ent===0?'ok':'bad'}">${G.errors.ent===0?'✓ Mükemmel':'✗ Geliştir'}</td></tr>
+    <tr><td>Primary Key Seçimi</td><td>${G.errors.pk}</td><td class="${G.errors.pk===0?'ok':'bad'}">${G.errors.pk===0?'✓ Mükemmel':'✗ Geliştir'}</td></tr>
+    <tr><td>Cardinality / Bridge</td><td>${G.errors.br}</td><td class="${G.errors.br===0?'ok':'bad'}">${G.errors.br===0?'✓ Mükemmel':'✗ Geliştir'}</td></tr>
+    <tr><td>Normalizasyon (1NF→3NF)</td><td>${G.errors.nr}</td><td class="${G.errors.nr===0?'ok':'bad'}">${G.errors.nr===0?'✓ Mükemmel':'✗ Geliştir'}</td></tr>
+  </table>
+
+  <h2>Kazanılan Badges</h2>
+  <div>${G.badges.length ? G.badges.map(b=>`<span class="badge">${{em:'Entity Master',sb:'Shield Bearer',ba:'Bridge Architect',jh:'Junction Hero',nm:'Master of 3NF',fp:'Flawless Purification',sp:'Speed Analyst',ei:"Explorer's Insight",mn:'Mentor Guardian'}[b]||b}</span>`).join('') : '<em>Henüz badge yok</em>'}</div>
+
+  <h2>Bloom Taxonomy Karşılaması</h2>
+  <table>
+    <tr><th>Düzey</th><th>Aktivite</th><th>Sonuç</th></tr>
+    <tr><td>L3 Apply</td><td>1NF — Multi-valued attribute eliminasyonu</td><td class="${G.errors.nr<=1?'ok':'bad'}">${G.errors.nr<=1?'✓':'✗'}</td></tr>
+    <tr><td>L4 Analyse</td><td>2NF — Kısmi bağımlılık tespiti</td><td class="${G.errors.nr<=2?'ok':'bad'}">${G.errors.nr<=2?'✓':'✗'}</td></tr>
+    <tr><td>L4-L5 Evaluate</td><td>3NF — Geçişli bağımlılık ayrıştırma</td><td class="${G.errors.nr===0?'ok':'bad'}">${G.errors.nr===0?'✓':'✗'}</td></tr>
+  </table>
+
+  <p style="margin-top:2rem;font-size:.75rem;color:#999">
+    Bu rapor The Architects of Avalon oyunundan otomatik oluşturulmuştur.<br>
+    NFR5: 0% PII toplanmamıştır — yalnızca modelleme hataları kaydedilmiştir.
+  </p>
+  <button onclick="window.print()" style="margin-top:1rem;padding:.5rem 1.2rem;background:#1e1245;color:#c9a227;border:none;border-radius:5px;cursor:pointer;font-size:.9rem">🖨 Yazdır / PDF Kaydet</button>
+  </body></html>`);
+  win.document.close();
+}
+
+// ══════════════════════════════════════════
+// MOBILE TOUCH SUPPORT FOR ERD CANVAS
+// ══════════════════════════════════════════
+function addERDTouchSupport(){
+  const svg = $('erd-svg'); if(!svg) return;
+  svg.addEventListener('touchstart', e=>{
+    e.preventDefault();
+    const touch = e.touches[0];
+    const me = new MouseEvent('mousedown',{clientX:touch.clientX,clientY:touch.clientY,bubbles:true});
+    e.target.dispatchEvent(me);
+  },{passive:false});
+  svg.addEventListener('touchmove', e=>{
+    e.preventDefault();
+    const touch = e.touches[0];
+    const me = new MouseEvent('mousemove',{clientX:touch.clientX,clientY:touch.clientY,bubbles:true});
+    svg.dispatchEvent(me);
+  },{passive:false});
+  svg.addEventListener('touchend', e=>{
+    e.preventDefault();
+    const me = new MouseEvent('mouseup',{bubbles:true});
+    svg.dispatchEvent(me);
+  },{passive:false});
+}
+
+// Patch openERDCanvas to add touch support after build
+const _origOpenERD = openERDCanvas;
+openERDCanvas = function(){
+  _origOpenERD();
+  setTimeout(addERDTouchSupport, 200);
+};
+
+// ══════════════════════════════════════════
+// SCORE COUNTER ANIMATION
+// ══════════════════════════════════════════
+function animateCount(el, from, to, dur=600){
+  if(!el) return;
+  const start = Date.now();
+  const tick = () => {
+    const p = Math.min(1,(Date.now()-start)/dur);
+    const ease = 1-Math.pow(1-p,3);
+    el.textContent = Math.round(from+(to-from)*ease).toLocaleString();
+    if(p<1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// Patch showResults to animate final score
+const _origShowResults = showResults;
+showResults = function(){
+  _origShowResults();
+  const el = $('rs-score');
+  if(el) animateCount(el, 0, G.score, 1200);
+  if(G.score >= 1000) setTimeout(launchConfetti, 400);
+  sfxBadge();
+};
+
+// ══════════════════════════════════════════
+// KEYBOARD SHORTCUT HINT (shown once)
+// ══════════════════════════════════════════
+function showShortcutHint(){
+  try{
+    if(localStorage.getItem('avalon_shortcuts')) return;
+    localStorage.setItem('avalon_shortcuts','1');
+  }catch(e){}
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;bottom:5rem;right:1rem;z-index:300;background:rgba(13,17,32,0.96);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;font-size:.68rem;color:var(--text-dd);backdrop-filter:blur(4px);max-width:200px';
+  div.innerHTML = '<strong style="color:var(--gold);font-family:Cinzel,serif;font-size:.65rem;display:block;margin-bottom:.3rem">Kısayollar (Alt+)</strong>T: Tutorial · E: ERD · G: Glossary · S: Shop · D: Dashboard · ESC: Kapat';
+  document.body.appendChild(div);
+  setTimeout(()=>div.remove(), 5000);
+}
+
+setTimeout(showShortcutHint, 3000);
+
+// Challenge URL reader
+(function(){
+  try{
+    const p=new URLSearchParams(window.location.search);
+    if(p.get('challenge')){
+      const ch=decodeURIComponent(p.get('challenge'));
+      const cs=parseInt(p.get('score'))||0;
+      setTimeout(()=>notify('⚔️ '+ch+' sana meydan okudu! Hedef: '+cs.toLocaleString()+' Rune.','warn',7000),1600);
+    }
+  }catch(e){}
+})();
+
+</script>
+
+<!-- ═══ TUTORIAL OVERLAY ═══ -->
+<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(7,9,15,0.92);align-items:center;justify-content:center;backdrop-filter:blur(6px)">
+  <div style="max-width:480px;width:90%;background:rgba(13,17,32,0.98);border:1px solid var(--gold-d);border-radius:14px;padding:1.8rem;position:relative">
+    <div style="text-align:center;margin-bottom:1rem">
+      <div id="tut-icon" style="font-size:2.5rem;margin-bottom:.5rem">⚔️</div>
+      <h2 id="tut-title" style="color:var(--gold);font-size:1.05rem;margin-bottom:.6rem">Hoş Geldin!</h2>
+      <div id="tut-body" style="font-size:.84rem;color:var(--text-d);line-height:1.75;text-align:left"></div>
+    </div>
+    <div id="tut-dots" style="display:flex;justify-content:center;gap:5px;margin:.8rem 0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.8rem">
+      <button class="btn" id="tut-prev" onclick="tutPrev()" style="visibility:hidden">← Geri</button>
+      <span id="tut-step" style="font-size:.7rem;color:var(--text-dd);font-family:'Cinzel',serif"></span>
+      <button class="btn btn-p" id="tut-next" onclick="tutNext()">İleri →</button>
+    </div>
+    <button onclick="$('tutorial-overlay').style.display='none'" style="position:absolute;top:.7rem;right:.8rem;background:none;border:none;color:var(--text-dd);font-size:1.1rem;cursor:pointer">×</button>
+  </div>
+</div>
+
+<!-- ═══ ERD CANVAS OVERLAY ═══ -->
+<div id="erd-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(7,9,15,0.95);align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="width:min(900px,96vw);background:rgba(13,17,32,0.99);border:1px solid var(--border);border-radius:14px;padding:1.1rem;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
+      <div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.9rem">🗺️ ERD Canvas — Drag & Drop (FR3)</div>
+        <div style="font-size:.7rem;color:var(--text-dd);margin-top:.15rem">Entity kutularını sürükle · Sağ portuna tıkla → bağlantı başlat → diğer porta tıkla → ilişki etiketini gir</div>
+      </div>
+      <button onclick="closeERD()" style="background:none;border:none;color:var(--text-dd);font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div style="background:rgba(7,9,15,0.9);border:1px solid var(--border);border-radius:8px;overflow:hidden;touch-action:none">
+      <svg id="erd-svg" viewBox="0 0 700 380" style="width:100%;display:block;user-select:none" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-p" onclick="checkERD()">ERD'yi Doğrula ✓</button>
+      <button class="btn" onclick="buildERDCanvas();renderERD()">Sıfırla ↺</button>
+      <div id="erd-check-result" class="fb" style="flex:1;margin:0"></div>
+    </div>
+    <div style="font-size:.68rem;color:var(--text-dd);margin-top:.5rem">
+      💡 İpucu: Yanlış bağlantı için bağlantı üzerindeki × butonuna bas. Bağlantı etiketi: <strong>1:1</strong> · <strong>1:N</strong> · <strong>M:N</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INSTRUCTOR DASHBOARD OVERLAY ═══ -->
+<div id="dash-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(7,9,15,0.95);align-items:flex-start;justify-content:center;overflow-y:auto;backdrop-filter:blur(4px);padding:1rem 0">
+  <div style="width:min(900px,96vw);background:rgba(13,17,32,0.99);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+      <div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.92rem">🎓 Instructor Dashboard - Demo / Local Analytics</div>
+        <div style="font-size:.7rem;color:var(--text-dd);margin-top:.15rem">Demo/local analytics · Kirkpatrick L1-L4 · Hata Analizi · Öğrenci Karşılaştırması</div>
+      </div>
+      <button onclick="closeDashboard()" style="background:none;border:none;color:var(--text-dd);font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div id="dash-content"></div>
+  </div>
+</div>
+
+<!-- ═══ PORTFOLIO / RADAR OVERLAY ═══ -->
+<div id="portfolio-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(7,9,15,0.95);align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="width:min(700px,96vw);background:rgba(13,17,32,0.99);border:1px solid var(--border);border-radius:14px;padding:1.2rem;position:relative;max-height:92vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+      <div><div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.9rem">📁 Architect Portfolio — Mastery Radar</div>
+      <div style="font-size:.7rem;color:var(--text-dd)">wf_portfolio spec · 5 boyutlu yetkinlik haritası</div></div>
+      <button onclick="$('portfolio-overlay').style.display='none'" style="background:none;border:none;color:var(--text-dd);font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div style="text-align:center"><svg id="radar-svg" viewBox="0 0 340 300" style="width:100%;max-width:340px" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div id="portfolio-stats" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.35rem;margin:.5rem 0"></div>
+    <div class="card card-p" style="margin:.4rem 0">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.75rem;margin-bottom:.5rem">⚔️ Hero's Journey — Departure → Trials → Return</div>
+      <div id="hero-journey" style="display:flex;align-items:center;overflow-x:auto;padding:.3rem 0;gap:0"></div>
+    </div>
+    <div class="card" style="margin:.4rem 0">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.75rem;margin-bottom:.4rem">Octalysis Framework — 8 Boyut Skoru</div>
+      <div id="octalysis-bars" style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem"></div>
+    </div>
+    <div class="card card-g" style="margin:.4rem 0">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.75rem;margin-bottom:.35rem">SDT Relatedness — Arkadaşına Meydan Oku</div>
+      <div id="challenge-link" style="font-size:.75rem;color:var(--text-d);background:rgba(7,9,15,.5);padding:.4rem .6rem;border-radius:5px;border:1px solid var(--border);margin-bottom:.4rem;word-break:break-all"></div>
+      <button class="btn" onclick="copyChallenge()" style="border-color:var(--teal-ll);color:var(--teal-ll);font-size:.72rem">🔗 Linki Kopyala</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REWARD SHOP OVERLAY ═══ -->
+<div id="shop-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(7,9,15,0.95);align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="width:min(580px,96vw);background:rgba(13,17,32,0.99);border:1px solid var(--gold-d);border-radius:14px;padding:1.2rem;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+      <div><div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.9rem">🏪 Grandmaster's Vault — Ödül Mağazası</div>
+      <div style="font-size:.7rem;color:var(--text-dd)">Logic Rune harca · Elite Reward Tiers</div></div>
+      <button onclick="$('shop-overlay').style.display='none'" style="background:none;border:none;color:var(--text-dd);font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;text-align:center;margin-bottom:.8rem">
+      💎 Bakiye: <span id="shop-balance">0</span> Logic Rune
+    </div>
+    <div id="shop-items" style="display:grid;gap:.5rem"></div>
+    <div id="fb-shop" class="fb" style="margin-top:.5rem"></div>
+  </div>
+</div>
+
+<!-- ═══ GLOSSARY OVERLAY ═══ -->
+<div id="glossary-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(7,9,15,0.95);align-items:flex-start;justify-content:center;overflow-y:auto;backdrop-filter:blur(4px);padding:1rem 0">
+  <div style="width:min(640px,96vw);background:rgba(13,17,32,0.99);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.9rem">📖 Glossary of Terms — COM4061</div>
+      <button onclick="$('glossary-overlay').style.display='none'" style="background:none;border:none;color:var(--text-dd);font-size:1.3rem;cursor:pointer">×</button>
+    </div>
+    <div id="glossary-content"></div>
+  </div>
+</div>
+
+<!-- ═══ FLOATING BUTTONS ═══ -->
+<div style="position:fixed;bottom:1rem;right:1rem;z-index:300;display:flex;flex-direction:column;gap:.4rem">
+  <button onclick="startTutorial()" title="Tutorial" style="width:42px;height:42px;border-radius:50%;background:rgba(13,17,32,0.95);border:1px solid var(--gold-d);color:var(--gold);font-size:1.1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-d)'">?</button>
+  <button onclick="openERDCanvas()" title="ERD Canvas" style="width:42px;height:42px;border-radius:50%;background:rgba(13,17,32,0.95);border:1px solid var(--teal-l);color:var(--teal-ll);font-size:1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)" onmouseover="this.style.borderColor='var(--teal-ll)'" onmouseout="this.style.borderColor='var(--teal-l)'">🗺</button>
+  <button onclick="openDashboard()" title="Instructor Dashboard" style="width:42px;height:42px;border-radius:50%;background:rgba(13,17,32,0.95);border:1px solid var(--purple-l);color:#c4aaff;font-size:1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)" onmouseover="this.style.borderColor='var(--purple-ll)'" onmouseout="this.style.borderColor='var(--purple-l)'">📊</button>
+  <button onclick="openGlossary()" title="Glossary" style="width:42px;height:42px;border-radius:50%;background:rgba(13,17,32,0.95);border:1px solid var(--gold-d);color:var(--gold);font-size:1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-d)'">📖</button>
+  <button onclick="openShop()" title="Vault" style="width:42px;height:42px;border-radius:50%;background:rgba(13,17,32,0.95);border:1px solid var(--gold-d);color:var(--gold);font-size:1.1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(4px)" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-d)'">🏪</button>
+</div>
+
+
+<!-- ═══ KL2 QUIZ OVERLAY ═══ -->
+<div id="kl2-overlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(7,9,15,0.95);align-items:center;justify-content:center;backdrop-filter:blur(6px)">
+  <div style="width:min(500px,94vw);background:rgba(13,17,32,0.99);border:1px solid var(--purple-ll);border-radius:14px;padding:1.3rem;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+      <div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:.88rem" id="kl2-title">📝 Kirkpatrick L2 — Bilgi Testi</div>
+        <div style="font-size:.68rem;color:var(--text-dd)">Ön test ile son test karşılaştırılacak</div>
+      </div>
+      <button onclick="$('kl2-overlay').style.display='none'" style="background:none;border:none;color:var(--text-dd);font-size:1.2rem;cursor:pointer">×</button>
+    </div>
+    <div id="kl2-content"></div>
+  </div>
+</div>
+
+</body>
+</html>
